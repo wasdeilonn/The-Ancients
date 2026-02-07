@@ -1,0 +1,15 @@
+{
+    "id": "ancients",
+    "name": "Ancients",
+    "version": "0.1",
+    "authors": [
+        "wasd_", "bananique", "exploit"
+    ],
+    "dependencies": [
+        {
+            "id": "polytopia",
+            "min": "2.10.0"
+        }
+    ],
+    "description": "Ancients mod hehe"
+}
