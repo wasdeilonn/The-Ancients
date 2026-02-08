@@ -1,0 +1,30 @@
+{
+    "field_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, 0.11]
+    },
+    "forest_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, 0.45]
+    },
+    "mountain_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, -0.04]
+    },
+    "game_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, 0.45]
+    },
+    "game_outline_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, 0.45]
+    },
+    "fruit_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, 0.4]
+    },
+    "fruit_outline_ancients_": {
+        "pixelsPerUnit": 895,
+        "pivot": [0.5, 0.4]
+    }
+}

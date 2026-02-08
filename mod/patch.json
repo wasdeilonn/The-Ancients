@@ -1,0 +1,40 @@
+{
+    "tribeData": {
+        "ancients": {
+            "idx": -1,
+            "color":48127,
+            "language":"pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
+            "startingUnit":"warrior",
+            "category":2,
+            "terrainModifier":{
+                "mountain": 0.7,
+                "forest": 0.7
+            },
+            "resourceModifier":{
+                "metal": 2,
+                "fruit": 1.2,
+                "game": 1.3
+            },
+            "startingTech":[
+                "basic"
+            ],
+            "startingResource":[
+                "game",
+                "game",
+                "fruit"
+            ],
+            "tribeAbilities":[
+
+            ],
+            "techOverrides":{
+                
+            },
+            "unitOverrides":{
+                
+            },
+            "improvementOverrides":{
+                
+            }
+        }
+    }
+}
