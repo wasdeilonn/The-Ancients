@@ -2,10 +2,10 @@
     "tribeData": {
         "ancients": {
             "idx": -1,
-            "color":48127,
-            "language":"pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
-            "startingUnit":"warrior",
-            "category":2,
+            "color": 48127,
+            "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
+            "startingUnit": "rummager",
+            "category": 2,
             "terrainModifier":{
                 "mountain": 0.7,
                 "forest": 0.7
@@ -16,7 +16,8 @@
                 "game": 1.3
             },
             "startingTech":[
-                "basic"
+                "basic",
+                "climbing_tech_ancients"
             ],
             "startingResource":[
                 "game",
@@ -27,14 +28,68 @@
 
             ],
             "techOverrides":{
-                
+                "climbing": "climbing_tech_ancients"
             },
             "unitOverrides":{
-                
+                "mindbender": "archeologist_unit_ancients"
             },
             "improvementOverrides":{
                 
             }
+        }
+    },
+    "techData": {
+        "climbing_tech_ancients": {
+            "techUnlocks": [
+				"mining",
+				"meditation"
+			],
+			"defenceBonusUnlocks": {
+				"mountain": 15
+			},
+			"movementUnlocks": {
+				"mountain": 2
+			},
+            "unitUnlocks": [
+                "rummager"
+            ],
+			"cost": 1,
+			"idx": -1
+        }
+    },
+    "unitData": {
+        "rummager_unit_ancients": {
+            "idx": -1,
+            "health": 100,
+            "defence": 10,
+            "movement": 2,
+            "range": 1,
+            "attack": 20,
+            "cost": 8,
+            "unitAbilities": [
+                "dash",
+                "escape",
+                "fortify",
+                "polib_rummager"
+            ],
+            "weapon": 1,
+            "prefab": "rider"
+        },
+        "archeologist_unit_ancients": {
+            "idx": -1,
+            "health": 100,
+            "defence": 10,
+            "movement": 1,
+            "range": 1,
+            "attack": 0,
+            "cost": 5,
+            "unitAbilities": [
+                "convert",
+                "stiff",
+                "static"
+            ],
+            "weapon": 1,
+            "prefab": "mindbender"
         }
     }
 }

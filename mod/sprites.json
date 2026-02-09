@@ -12,19 +12,19 @@
         "pivot": [0.5, -0.04]
     },
     "game_ancients_": {
-        "pixelsPerUnit": 895,
+        "pixelsPerUnit": 800,
         "pivot": [0.5, 0.45]
     },
     "game_outline_ancients_": {
-        "pixelsPerUnit": 895,
+        "pixelsPerUnit": 800,
         "pivot": [0.5, 0.45]
     },
     "fruit_ancients_": {
-        "pixelsPerUnit": 895,
+        "pixelsPerUnit": 1000,
         "pivot": [0.5, 0.4]
     },
     "fruit_outline_ancients_": {
-        "pixelsPerUnit": 895,
+        "pixelsPerUnit": 1000,
         "pivot": [0.5, 0.4]
     }
 }
