@@ -3,6 +3,7 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Polytopia.Data;
 using UnityEngine;
+using UnityEngine.Rendering.RenderGraphModule.NativeRenderPassCompiler;
 
 
 namespace Ancients;
@@ -16,6 +17,16 @@ public static class Main
         modLogger = logger;
         logger.LogMessage("Ancients.dll loaded.");
         modLogger.LogMessage("Version INDEV1");
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.ExecuteDefault))]
+    public static void BuildAction_ExecuteDefault(GameState gameState, BuildAction __instance)
+    {
+        if (__instance.Type == EnumCache<ImprovementData.Type>.GetType("excavate_improvement_ancients"))
+        {
+            gameState.ActionStack.Add(new BuildAction(__instance.PlayerId, ImprovementData.Type.Ruin, __instance.Coordinates, __instance.DeductCost));
+        }
     }
 }
 

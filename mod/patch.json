@@ -40,6 +40,11 @@
         }
     },
     "techData": {
+        "basic": {
+            "improvementUnlocks": [
+                "+excavate_improvement_ancients"
+            ]
+        },
         "climbing_tech_ancients": {
             "techUnlocks": [
 				"mining",
@@ -109,17 +114,7 @@
             "improvementAbilities": [
                 "manual", "discrete", "freelance"
             ],
-            "unitAbilityWhitelist": ["excavation_ability_ancients"],
-            "triggers": {
-                "onBuild": "excavate_paction"
-            }
+            "unitAbilityWhitelist": ["excavation_ability_ancients"]
         }
-    },
-    "pActions": {
-        "excavate_paction": [
-            "killUnit : @origin_auto",
-            "vfx : shine, @origin_auto",
-            "build : @origin_auto, ruin, false"
-        ]
     }
 }
