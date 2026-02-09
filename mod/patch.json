@@ -2,9 +2,10 @@
     "tribeData": {
         "ancients": {
             "idx": -1,
+            "startingStars": 5,
             "color": 48127,
             "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
-            "startingUnit": "rummager",
+            "startingUnit": "rummager_unit_ancients",
             "category": 2,
             "terrainModifier":{
                 "mountain": 0.7,
@@ -51,7 +52,7 @@
 				"mountain": 2
 			},
             "unitUnlocks": [
-                "rummager"
+                "rummager_unit_ancients"
             ],
 			"cost": 1,
 			"idx": -1
@@ -86,10 +87,39 @@
             "unitAbilities": [
                 "convert",
                 "stiff",
-                "static"
+                "static",
+                "excavation_ability_ancients"
             ],
             "weapon": 1,
-            "prefab": "mindbender"
+            "prefab": "warrior"
         }
+    },
+    "unitAbility": {
+        "excavation_ability_ancients": {
+            "idx": -1
+        }
+    },
+    "improvementData": {
+        "immafixthisonceiswear": {
+            "idx": -1
+        },
+        "excavate_improvement_ancients": {
+            "idx": -1,
+            "cost": 0,
+            "improvementAbilities": [
+                "manual", "discrete", "freelance"
+            ],
+            "unitAbilityWhitelist": ["excavation_ability_ancients"],
+            "triggers": {
+                "onBuild": "excavate_paction"
+            }
+        }
+    },
+    "pActions": {
+        "excavate_paction": [
+            "killUnit : @origin_auto",
+            "vfx : shine, @origin_auto",
+            "build : @origin_auto, ruin, false"
+        ]
     }
 }
