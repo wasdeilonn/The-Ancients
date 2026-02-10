@@ -8,13 +8,14 @@
             "startingUnit": "rummager_unit_ancients",
             "category": 2,
             "terrainModifier":{
-                "mountain": 0.7,
-                "forest": 0.7
+                "mountain": 1,
+                "forest": 0.5
             },
             "resourceModifier":{
-                "metal": 2,
-                "fruit": 1.2,
-                "game": 1.3
+                "metal": 1,
+                "fruit": 1,
+                "game": 1.2,
+                "crop": 0.3
             },
             "startingTech":[
                 "basic",
@@ -45,6 +46,7 @@
                 "+excavate_improvement_ancients"
             ]
         },
+
         "climbing_tech_ancients": {
             "techUnlocks": [
 				"mining",
@@ -64,6 +66,24 @@
         }
     },
     "unitData": {
+        "warrior_unit_ancients": {
+            "idx": -1,
+            "health": 100,
+            "defence": 20,
+            "movement": 1,
+            "range": 1,
+            "attack": 20,
+            "cost": 2,
+            "unitAbilities": [
+                "land",
+                "dash",
+                "fortify",
+                "charge_ability_ancients"
+            ],
+            "weapon": 1,
+            "prefab": "warrior"
+        },
+
         "rummager_unit_ancients": {
             "idx": -1,
             "health": 100,
@@ -71,16 +91,16 @@
             "movement": 2,
             "range": 1,
             "attack": 20,
-            "cost": 8,
+            "cost": 5,
             "unitAbilities": [
-                "dash",
                 "escape",
-                "fortify",
-                "polib_rummager"
+                "polib_rummager",
+                "scout"
             ],
             "weapon": 1,
             "prefab": "rider"
         },
+
         "archeologist_unit_ancients": {
             "idx": -1,
             "health": 100,
@@ -97,24 +117,68 @@
             ],
             "weapon": 1,
             "prefab": "warrior"
+        },
+
+        "teslatower_unit_ancients": {
+            "idx": -1,
+            "health": 100,
+            "defence": 0,
+            "movement": 1,
+            "range": 1,
+            "attack": 30,
+            "cost": 8,
+            "unitAbilities": [
+                "stiff",
+                "static",
+                "capacitor_ability_ancients"
+            ],
+            "weapon": 14,
+            "prefab": "catapult"
         }
     },
     "unitAbility": {
         "excavation_ability_ancients": {
             "idx": -1
+        },
+
+        "capacitor_ability_ancients": {
+            "idx": -1
+        },
+
+        "charge_ability_ancients": {
+            "idx": -1
+        }
+    },
+    "unitEffectData": {
+        "charge": {
+            "add": {
+                "range": 1,
+                "attack": 5
+            }
         }
     },
     "improvementData": {
         "immafixthisonceiswear": {
             "idx": -1
         },
+
         "excavate_improvement_ancients": {
             "idx": -1,
             "cost": 0,
             "improvementAbilities": [
                 "manual", "discrete", "freelance"
             ],
-            "unitAbilityWhitelist": ["excavation_ability_ancients"]
+            "unitAbilityWhitelist": ["excavation_ability_ancients"],
+            "triggers": {
+                "onBuild": "excavate_paction"
+            }
         }
+    },
+    "pActions": {
+        "excavate_paction": [
+            "vfx : shine, @origin_auto",
+            "kill : @origin_auto",
+            "build : @origin_auto, ruin, false"
+        ]
     }
 }

@@ -5,6 +5,8 @@ using Polytopia.Data;
 using UnityEngine;
 using UnityEngine.Rendering.RenderGraphModule.NativeRenderPassCompiler;
 
+using Il2Gen = Il2CppSystem.Collections.Generic;
+
 
 namespace Ancients;
 
@@ -20,14 +22,44 @@ public static class Main
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.ExecuteDefault))]
-    public static void BuildAction_ExecuteDefault(GameState gameState, BuildAction __instance)
+    [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.CanBuild))]
+    public static void GLD_CanBuild(ref bool __result, GameState gameState, TileData tile, PlayerState playerState, ImprovementData improvement)
     {
-        if (__instance.Type == EnumCache<ImprovementData.Type>.GetType("excavate_improvement_ancients"))
+        if (!EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement_ancients", out var type))
         {
-            gameState.ActionStack.Add(new BuildAction(__instance.PlayerId, ImprovementData.Type.Ruin, __instance.Coordinates, __instance.DeductCost));
+            modLogger.LogInfo("excavate renamed but not updated in polyscript?");
+        }
+        if (improvement.type == type)
+        {
+            if (tile.improvement != null)
+            {
+                __result = false;
+            }
         }
     }
+
+	[HarmonyPostfix]
+    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
+    private static void GetAttackOptionsAtPosition(Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
+	{
+		Il2Gen.List<TileData> list = gameState.Map.GetArea(position, range, true, false);
+
+		if (gameState.Map.GetTile(position).unit == null) return;
+		if (!EnumCache<UnitAbility.Type>.TryGetType("charge_ability_ancients", out var chargeType) || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability_ancients", out var capacitorType)) return;
+
+		if (gameState.Map.GetTile(position).unit.HasAbility(chargeType))
+		{
+			foreach (TileData tile in list)
+			{
+				if (tile.unit == null) continue;
+
+				if (tile.unit.HasAbility(capacitorType))
+				{
+					__result.Add(tile.coordinates);
+				}
+			}
+		}
+	}
 }
 
 
