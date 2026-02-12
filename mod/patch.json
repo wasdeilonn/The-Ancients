@@ -33,7 +33,9 @@
                 "climbing": "climbing_tech_ancients"
             },
             "unitOverrides":{
-                "mindbender": "archeologist_unit_ancients"
+                "warrior": "warrior_unit_ancients",
+                "mindbender": "archeologist_unit_ancients",
+                "catapult": "teslatower_unit_ancients"
             },
             "improvementOverrides":{
                 
@@ -132,7 +134,7 @@
                 "static",
                 "capacitor_ability_ancients"
             ],
-            "weapon": 14,
+            "weapon": 5,
             "prefab": "catapult"
         }
     },
@@ -150,11 +152,12 @@
         }
     },
     "unitEffectData": {
-        "charge": {
+        "charge_effect_ancients": {
+            "idx": -1,
             "add": {
-                "range": 1,
-                "attack": 5
-            }
+                "attack": 1
+            },
+            "color": "0,0.73,1,1"
         }
     },
     "improvementData": {
