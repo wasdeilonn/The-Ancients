@@ -44,7 +44,6 @@ public static class Main
     }
 
 	public static Dictionary<UnitData.Type, int> MaxCharge = new Dictionary<UnitData.Type, int>();
-
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
     public static UnitEffect Charged;
@@ -124,7 +123,9 @@ public static class Main
 
         if (attacker.HasAbility(Capacitor))
         {
-            for (int i = 0; i <= 3; i++)
+            int consumption = 3; //make sure to do parsing to gld later
+
+            for (int i = 0; i <= consumption; i++)
             {
                 attacker.effects.Remove(Charged);
             }
