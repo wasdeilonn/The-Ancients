@@ -5,7 +5,7 @@
             "startingStars": 5,
             "color": 48127,
             "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
-            "startingUnit": "rummager_unit_ancients",
+            "startingUnit": "warrior_unit_ancients",
             "category": 2,
             "terrainModifier":{
                 "mountain": 1,
@@ -18,8 +18,7 @@
                 "crop": 0.3
             },
             "startingTech":[
-                "basic",
-                "climbing_tech_ancients"
+                "basic"
             ],
             "startingResource":[
                 "game",
@@ -34,8 +33,7 @@
             },
             "unitOverrides":{
                 "warrior": "warrior_unit_ancients",
-                "mindbender": "archeologist_unit_ancients",
-                "catapult": "teslatower_unit_ancients"
+                "mindbender": "archeologist_unit_ancients"
             },
             "improvementOverrides":{
                 
@@ -64,6 +62,48 @@
                 "rummager_unit_ancients"
             ],
 			"cost": 1,
+			"idx": -1
+        },
+        "tesla_secrettech_ancients": {
+            "unitUnlocks": [
+                "teslatower_unit_ancients"
+            ],
+			"cost": 0,
+			"idx": -1
+        },
+        "capacitor_secrettech_ancients": {
+            "unitUnlocks": [
+                "teslatower_unit_ancients"
+            ],
+			"cost": 0,
+			"idx": -1
+        },
+        "drone_secrettech_ancients": {
+            "unitUnlocks": [
+                "teslatower_unit_ancients"
+            ],
+			"cost": 0,
+			"idx": -1
+        },
+        "idk1_secrettech_ancients": {
+            "unitUnlocks": [
+                "teslatower_unit_ancients"
+            ],
+			"cost": 0,
+			"idx": -1
+        },
+        "idk2_secrettech_ancients": {
+            "unitUnlocks": [
+                "teslatower_unit_ancients"
+            ],
+			"cost": 0,
+			"idx": -1
+        },
+        "idk3_secrettech_ancients": {
+            "unitUnlocks": [
+                "teslatower_unit_ancients"
+            ],
+			"cost": 0,
 			"idx": -1
         }
     },
@@ -126,8 +166,8 @@
             "health": 100,
             "defence": 0,
             "movement": 1,
-            "range": 1,
-            "attack": 30,
+            "range": 2,
+            "attack": 20,
             "cost": 8,
             "unitAbilities": [
                 "stiff",
@@ -135,7 +175,10 @@
                 "capacitor_ability_ancients"
             ],
             "weapon": 5,
-            "prefab": "catapult"
+            "prefab": "catapult",
+
+            "maxCharge": 3,
+            "chargeConsumption": 3
         }
     },
     "unitAbility": {
@@ -155,7 +198,7 @@
         "charge_effect_ancients": {
             "idx": -1,
             "add": {
-                "attack": 1
+                "attack": 10
             },
             "color": "0,0.73,1,1"
         }

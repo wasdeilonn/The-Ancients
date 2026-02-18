@@ -4,9 +4,13 @@ using Il2CppInterop.Runtime.Injection;
 using Polytopia.Data;
 using UnityEngine;
 using UnityEngine.Rendering.RenderGraphModule.NativeRenderPassCompiler;
+using Newtonsoft.Json.Linq;
 //using Polibrary; <-- it would be so awesome, it would be so cool
 
 using Il2Gen = Il2CppSystem.Collections.Generic;
+using Il2CppSystem.Linq;
+using MS.Internal.Xml.XPath;
+using PolytopiaBackendBase.Common;
 
 
 namespace Ancients;
@@ -22,6 +26,27 @@ public static class Main
         modLogger.LogMessage("Version INDEV1");
     }
 
+    public static void ParsePerEach<targetType, T>(JObject rootObject, string categoryName, string fieldName, Dictionary<targetType, T> dict)
+        where targetType : struct, System.IConvertible
+    {
+        foreach (JToken jtoken in rootObject.SelectTokens($"$.{categoryName}.*").ToList())
+        {
+            JObject token = jtoken.TryCast<JObject>();
+            if (token != null)
+            {
+                if (EnumCache<targetType>.TryGetType(token.Path.Split('.').Last(), out var type))
+                {
+                    if (token[fieldName] != null)
+                    {
+                        T v = token[fieldName]!.ToObject<T>();
+                        dict[type] = v;
+                        token.Remove(fieldName);
+                    }
+                }
+            }
+        }
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.AddGameLogicPlaceholders))]
     public static void GetEnumShit(Newtonsoft.Json.Linq.JObject rootObject)
@@ -31,19 +56,26 @@ public static class Main
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability_ancients", out var capacitorType) 
             || !EnumCache<UnitEffect>.TryGetType("charge_effect_ancients", out var chargeEffectType)
             || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement_ancients", out var excavateType)
+            || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
             )
 		{
 			modLogger.LogInfo("couldnt find some enumcache shit");
 			return;
 		}
 
+        Ancients = ancientsType;
         Charge = chargeType;
         Capacitor = capacitorType;
         Charged = chargeEffectType;
         Excavate = excavateType;
+
+        ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
+        ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumption", ChargeConsumption);
     }
 
 	public static Dictionary<UnitData.Type, int> MaxCharge = new Dictionary<UnitData.Type, int>();
+    public static Dictionary<UnitData.Type, int> ChargeConsumption = new Dictionary<UnitData.Type, int>();
+    public static TribeType Ancients;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
     public static UnitEffect Charged;
@@ -123,13 +155,34 @@ public static class Main
 
         if (attacker.HasAbility(Capacitor))
         {
-            int consumption = 3; //make sure to do parsing to gld later
+            int consumption = GetChargeConsumption(attacker.type);
 
             for (int i = 0; i <= consumption; i++)
             {
                 attacker.effects.Remove(Charged);
             }
         }
+	}
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(ExamineRuinsAction), nameof(ExamineRuinsAction.ExecuteDefault))]
+    private static bool ExamineRuins_Execute(GameState gameState, ExamineRuinsAction __instance)
+	{
+        TileData tile = gameState.Map.GetTile(__instance.Coordinates);
+        gameState.TryGetPlayer(__instance.PlayerId, out var player);
+        if (player.tribe != Ancients)
+        {
+            return true;
+        }
+        tile.improvement = null;
+        if (tile.unit != null)
+        {
+            tile.unit.MakeExhauseted(gameState);
+        }
+
+        
+
+		return false;
 	}
 
     static int GetChargeCount(UnitState unit)
@@ -151,6 +204,13 @@ public static class Main
     {
         int i = 3;
         MaxCharge.TryGetValue(unit, out i);
+        return i;
+    }
+
+    static int GetChargeConsumption(UnitData.Type unit)
+    {
+        int i = 3;
+        ChargeConsumption.TryGetValue(unit, out i);
         return i;
     }
 }
