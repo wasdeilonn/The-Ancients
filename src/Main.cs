@@ -23,7 +23,7 @@ public static class Main
         Harmony.CreateAndPatchAll(typeof(Main));
         modLogger = logger;
         logger.LogMessage("Ancients.dll loaded.");
-        modLogger.LogMessage("Version INDEV1");
+        modLogger.LogMessage("Version INDEV2");
     }
 
     public static void ParsePerEach<targetType, T>(JObject rootObject, string categoryName, string fieldName, Dictionary<targetType, T> dict)
@@ -45,6 +45,50 @@ public static class Main
                 }
             }
         }
+    }
+
+    public static void ParseListPerEach<targetType, T>(JObject rootObject, string categoryName, string fieldName, Dictionary<targetType, List<T>> dict)
+        where targetType : struct, System.IConvertible
+    {
+        foreach (JToken jtoken in rootObject.SelectTokens($"$.{categoryName}.*").ToList())
+        {
+            JObject token = jtoken.TryCast<JObject>();
+            if (token != null)
+            {
+                if (EnumCache<targetType>.TryGetType(token.Path.Split('.').Last(), out var type))
+                {
+                    if (token[fieldName] != null)
+                    {
+                        List<T> v = ParseToSysList<T>(token[fieldName]);
+                        dict[type] = v;
+                        token.Remove(fieldName);
+                    }
+                }
+            }
+        }
+    }
+
+    public static List<T> ParseToSysList<T>(JToken token)
+    {
+        JArray jArray = token.TryCast<JArray>();
+        if (jArray == null)
+        {
+            modLogger.LogWarning($"couldnt parse {token.GetName()}, not a jArray");
+            return new List<T>();
+        }
+        return ParseJArray<T>(jArray);
+    }
+
+    public static List<T> ParseJArray<T>(JArray token)
+    {
+        List<T> list = new List<T>();
+
+        for (int i = 0; i < token.Count - 1; i++)
+        {
+            list.Add(token[i].ToObject<T>());
+        }
+
+        return list;
     }
 
     [HarmonyPostfix]
@@ -70,11 +114,13 @@ public static class Main
         Excavate = excavateType;
 
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
-        ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumption", ChargeConsumption);
+        ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
+        ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeConsumptionEvent", ChargeConsumptionEvent);
     }
 
 	public static Dictionary<UnitData.Type, int> MaxCharge = new Dictionary<UnitData.Type, int>();
-    public static Dictionary<UnitData.Type, int> ChargeConsumption = new Dictionary<UnitData.Type, int>();
+    public static Dictionary<UnitData.Type, int> ChargeConsumptionAmount = new Dictionary<UnitData.Type, int>();
+    public static Dictionary<UnitData.Type, List<string>> ChargeConsumptionEvent = new Dictionary<UnitData.Type, List<string>>();
     public static TribeType Ancients;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
@@ -153,9 +199,9 @@ public static class Main
             defender.effects.Add(Charged);
 		}
 
-        if (attacker.HasAbility(Capacitor))
+        if (attacker.HasAbility(Capacitor) && DoesConsume(attacker.type, "attack"))
         {
-            int consumption = GetChargeConsumption(attacker.type);
+            int consumption = GetChargeConsumptionAmount(attacker.type);
 
             for (int i = 0; i <= consumption; i++)
             {
@@ -164,6 +210,7 @@ public static class Main
         }
 	}
 
+    /*                          klipi pls do this thx
     [HarmonyPrefix]
     [HarmonyPatch(typeof(ExamineRuinsAction), nameof(ExamineRuinsAction.ExecuteDefault))]
     private static bool ExamineRuins_Execute(GameState gameState, ExamineRuinsAction __instance)
@@ -181,9 +228,11 @@ public static class Main
         }
 
         
+        RewardPopup popup = PopupManager.GetRewardPopup();
+        popup.SetData();
 
 		return false;
-	}
+	}*/
 
     static int GetChargeCount(UnitState unit)
     {
@@ -207,11 +256,17 @@ public static class Main
         return i;
     }
 
-    static int GetChargeConsumption(UnitData.Type unit)
+    static int GetChargeConsumptionAmount(UnitData.Type unit)
     {
         int i = 3;
-        ChargeConsumption.TryGetValue(unit, out i);
+        ChargeConsumptionAmount.TryGetValue(unit, out i);
         return i;
+    }
+
+    static bool DoesConsume(UnitData.Type unit, string e)
+    {
+        ChargeConsumptionEvent.TryGetValue(unit, out var strings);
+        return strings.Contains(e);
     }
 }
 

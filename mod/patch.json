@@ -29,7 +29,7 @@
 
             ],
             "techOverrides":{
-                "climbing": "climbing_tech_ancients"
+                
             },
             "unitOverrides":{
                 "warrior": "warrior_unit_ancients",
@@ -47,23 +47,6 @@
             ]
         },
 
-        "climbing_tech_ancients": {
-            "techUnlocks": [
-				"mining",
-				"meditation"
-			],
-			"defenceBonusUnlocks": {
-				"mountain": 15
-			},
-			"movementUnlocks": {
-				"mountain": 2
-			},
-            "unitUnlocks": [
-                "rummager_unit_ancients"
-            ],
-			"cost": 1,
-			"idx": -1
-        },
         "tesla_secrettech_ancients": {
             "unitUnlocks": [
                 "teslatower_unit_ancients"
@@ -73,14 +56,14 @@
         },
         "capacitor_secrettech_ancients": {
             "unitUnlocks": [
-                "teslatower_unit_ancients"
+                "accumulator_unit_ancients"
             ],
 			"cost": 0,
 			"idx": -1
         },
         "drone_secrettech_ancients": {
             "unitUnlocks": [
-                "teslatower_unit_ancients"
+                "drone_unit_ancients"
             ],
 			"cost": 0,
 			"idx": -1
@@ -126,23 +109,6 @@
             "prefab": "warrior"
         },
 
-        "rummager_unit_ancients": {
-            "idx": -1,
-            "health": 100,
-            "defence": 10,
-            "movement": 2,
-            "range": 1,
-            "attack": 20,
-            "cost": 5,
-            "unitAbilities": [
-                "escape",
-                "polib_rummager",
-                "scout"
-            ],
-            "weapon": 1,
-            "prefab": "rider"
-        },
-
         "archeologist_unit_ancients": {
             "idx": -1,
             "health": 100,
@@ -178,7 +144,58 @@
             "prefab": "catapult",
 
             "maxCharge": 3,
-            "chargeConsumption": 3
+            "chargeConsumption": 3,
+            "chargeConsumptionEvent": [
+                "attack"
+            ]
+        },
+
+        "accumulator_unit_ancients": {
+            "idx": -1,
+            "health": 200,
+            "defence": 3,
+            "movement": 1,
+            "range": 0,
+            "attack": 20,
+            "cost": 8,
+            "unitAbilities": [
+                "stiff",
+                "static",
+                "capacitor_ability_ancients"
+            ],
+            "weapon": 5,
+            "prefab": "defender",
+
+            "maxCharge": 3,
+            "chargeConsumption": 3,
+            "chargeConsumptionEvent": [
+                "build"
+            ]
+        },
+
+        "drone_unit_ancients": {
+            "idx": -1,
+            "health": 100,
+            "defence": 1,
+            "movement": 1,
+            "range": 1,
+            "attack": 25,
+            "cost": 5,
+            "unitAbilities": [
+                "dash",
+                "escape",
+                "fly",
+                "static",
+                "capacitor_ability_ancients"
+            ],
+            "weapon": 5,
+            "prefab": "rammership",
+
+            "maxCharge": 2,
+            "chargeConsumption": 1,
+            "chargeConsumptionEvent": [
+                "move"
+            ]
         }
     },
     "unitAbility": {
@@ -197,9 +214,6 @@
     "unitEffectData": {
         "charge_effect_ancients": {
             "idx": -1,
-            "add": {
-                "attack": 10
-            },
             "color": "0,0.73,1,1"
         }
     },
