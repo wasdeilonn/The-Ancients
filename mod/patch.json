@@ -147,6 +147,10 @@
             "chargeConsumption": 3,
             "chargeConsumptionEvent": [
                 "attack"
+            ],
+            "chargeBuff": [
+                "range",
+                "attack"
             ]
         },
 
@@ -170,6 +174,9 @@
             "chargeConsumption": 3,
             "chargeConsumptionEvent": [
                 "build"
+            ],
+            "chargeBuff": [
+                "attack"
             ]
         },
 
@@ -195,6 +202,9 @@
             "chargeConsumption": 1,
             "chargeConsumptionEvent": [
                 "move"
+            ],
+            "chargeBuff": [
+                "movement"
             ]
         }
     },
@@ -209,6 +219,10 @@
 
         "charge_ability_ancients": {
             "idx": -1
+        },
+
+        "discharge_ability_ancients": {
+            "idx":-1
         }
     },
     "unitEffectData": {
@@ -232,6 +246,14 @@
             "triggers": {
                 "onBuild": "excavate_paction"
             }
+        },
+        "discharge_improvement_ancients": {
+            "idx": -1,
+            "cost": 0,
+            "improvementAbilities": [
+                "manual", "discrete", "freelance"
+            ],
+            "unitAbilityWhitelist": ["discharge_ability_ancients"]
         }
     },
     "pActions": {

@@ -100,6 +100,7 @@ public static class Main
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability_ancients", out var capacitorType) 
             || !EnumCache<UnitEffect>.TryGetType("charge_effect_ancients", out var chargeEffectType)
             || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement_ancients", out var excavateType)
+            || !EnumCache<ImprovementData.Type>.TryGetType("discharge_improvement_ancients", out var dischargeType)
             || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
             )
 		{
@@ -112,20 +113,25 @@ public static class Main
         Capacitor = capacitorType;
         Charged = chargeEffectType;
         Excavate = excavateType;
+        Discharge = dischargeType;
 
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
         ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeConsumptionEvent", ChargeConsumptionEvent);
+        ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeBuff", ChargeBuff);
     }
 
 	public static Dictionary<UnitData.Type, int> MaxCharge = new Dictionary<UnitData.Type, int>();
     public static Dictionary<UnitData.Type, int> ChargeConsumptionAmount = new Dictionary<UnitData.Type, int>();
     public static Dictionary<UnitData.Type, List<string>> ChargeConsumptionEvent = new Dictionary<UnitData.Type, List<string>>();
+    public static Dictionary<UnitData.Type, List<string>> ChargeBuff = new Dictionary<UnitData.Type, List<string>>();
     public static TribeType Ancients;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
     public static UnitEffect Charged;
     public static ImprovementData.Type Excavate;
+    public static ImprovementData.Type Discharge;
+
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.CanBuild))]
@@ -140,12 +146,34 @@ public static class Main
         }
     }
 
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.ExecuteDefault))]
+    public static void BuildAction_Execute(BuildAction __instance, GameState gameState)
+    {
+        if (__instance.Type == Discharge)
+        {
+            UnitState unit = gameState.Map.GetTile(__instance.Coordinates).unit;
+            int radius = (GetChargeCount(unit) == GetMaxCharge(unit.type)) ? 2 : 1;
+            Il2Gen.List<TileData> area = gameState.Map.GetArea(__instance.Coordinates, radius, true, false);
+
+            foreach (TileData tile in area)
+            {
+                BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, tile.unit);
+                gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
+            }
+
+            ConsumeCharge(unit);
+        }
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
     private static void RangeFix(Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, ref int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
 	{
         UnitState unit = gameState.Map.GetTile(position).unit;
-        if (unit == null) return;
+        if (unit == null ) return;
+
+        if (!GetsChargeBuff(unit.type, "range")) return;
 
         int newrange = range;
         foreach (UnitEffect effect in unit.effects)
@@ -157,6 +185,36 @@ public static class Main
         }
 
         range = newrange;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttack))]
+    private static void AddAttack(int __result, GameState gameState, UnitState unitState)
+	{
+        if (!GetsChargeBuff(unitState.type, "attack")) return;
+
+        foreach (UnitEffect effect in unitState.effects)
+        {
+            if (effect == Charged)
+            {
+                __result += 100;
+            }
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetMovement))]
+    private static void AddMovement(int __result, GameState gameState, UnitState unitState)
+	{
+        if (!GetsChargeBuff(unitState.type, "movement")) return;
+
+        foreach (UnitEffect effect in unitState.effects)
+        {
+            if (effect == Charged)
+            {
+                __result++;
+            }
+        }
     }
 
 	[HarmonyPostfix]
@@ -201,12 +259,7 @@ public static class Main
 
         if (attacker.HasAbility(Capacitor) && DoesConsume(attacker.type, "attack"))
         {
-            int consumption = GetChargeConsumptionAmount(attacker.type);
-
-            for (int i = 0; i <= consumption; i++)
-            {
-                attacker.effects.Remove(Charged);
-            }
+            ConsumeCharge(attacker);
         }
 	}
 
@@ -267,6 +320,22 @@ public static class Main
     {
         ChargeConsumptionEvent.TryGetValue(unit, out var strings);
         return strings.Contains(e);
+    }
+
+    static bool GetsChargeBuff(UnitData.Type unit, string e)
+    {
+        ChargeBuff.TryGetValue(unit, out var strings);
+        return strings.Contains(e);
+    }
+
+    static void ConsumeCharge(UnitState unit)
+    {
+        int consumption = GetChargeConsumptionAmount(unit.type);
+
+        for (int i = 0; i <= consumption; i++)
+        {
+            unit.effects.Remove(Charged);
+        }
     }
 }
 
