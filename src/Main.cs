@@ -12,6 +12,8 @@ using Il2CppSystem.Linq;
 using MS.Internal.Xml.XPath;
 using PolytopiaBackendBase.Common;
 using System.Data;
+using Steamworks.Data;
+using Il2CppSystem;
 
 
 namespace Ancients;
@@ -100,6 +102,7 @@ public static class Main
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out var capacitorType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out var eightwayType) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("chainlightning_ability", out var clightningType) 
             || !EnumCache<UnitEffect>.TryGetType("charge_effect", out var chargeEffectType)
             || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement", out var excavateType)
             || !EnumCache<ImprovementData.Type>.TryGetType("discharge_improvement", out var dischargeType)
@@ -114,6 +117,7 @@ public static class Main
         Charge = chargeType;
         Capacitor = capacitorType;
         Eightway = eightwayType;
+        ChainLightning = clightningType;
         Charged = chargeEffectType;
         Excavate = excavateType;
         Discharge = dischargeType;
@@ -132,6 +136,7 @@ public static class Main
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
     public static UnitAbility.Type Eightway;
+    public static UnitAbility.Type ChainLightning;
     public static UnitEffect Charged;
     public static ImprovementData.Type Excavate;
     public static ImprovementData.Type Discharge;
@@ -266,9 +271,6 @@ public static class Main
     [HarmonyPatch(typeof(AttackAction), nameof(AttackAction.Execute))]
     private static void AttackAction_Execute(GameState state, AttackAction __instance)
 	{
-		if (state.Map.GetTile(__instance.Origin).unit == null) return;
-		if (state.Map.GetTile(__instance.Target).unit == null) return;
-
 		UnitState attacker = state.Map.GetTile(__instance.Origin).unit;
 		UnitState defender = state.Map.GetTile(__instance.Target).unit;
 
@@ -285,24 +287,79 @@ public static class Main
         }
 	}
     
-    [HarmonyPostfix]
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(AttackCommand), nameof(AttackCommand.ExecuteDefault))]
-    private static void AttackCommand_ExecuteDefault(GameState gameState, AttackCommand __instance)
+    private static bool AttackCommand_ExecuteDefault(GameState gameState, AttackCommand __instance)
 	{
-		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return;
+		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return true;
 
         if (unit.HasAbility(Eightway))
         {
             GridDirection direction = WorldCoordinates.GetDirection(__instance.Origin, __instance.Target);
 
-            TileData secondTile = gameState.Map.GetTile(__instance.Target + direction.ToCoordinates());
-            TileData thirdTile = gameState.Map.GetTile(secondTile.coordinates + direction.ToCoordinates());
+            WorldCoordinates coordinates = __instance.Origin;
+            Il2Gen.List<ActionBase> stack = new();
+            for (int i = 0; i < unit.GetRange(gameState); i ++)
+            {
+                coordinates += direction.ToCoordinates();
+                TileData tile = gameState.Map.GetTile(coordinates);
 
-            BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, secondTile.unit);
-            BattleResults battleResults3 = BattleHelpers.GetBattleResults(gameState, unit, thirdTile.unit);
-            gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, secondTile.coordinates, battleResults2.attackDamage, false));
-            gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, thirdTile.coordinates, battleResults3.attackDamage, false));
+                if (tile == null) continue;
+
+                if (tile.unit == null)
+                {
+                    stack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, coordinates, 0, false, AttackAction.AnimationType.Splash, 20));
+                    continue;
+                }
+                BattleResults battleResults = BattleHelpers.GetBattleResults(gameState, unit, tile.unit);
+                stack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, coordinates, battleResults.attackDamage, false, AttackAction.AnimationType.Splash, 20));
+            }
+
+            stack.Reverse();
+
+            foreach(ActionBase action in stack)
+            {
+                gameState.ActionStack.Add(action);
+            }
+
+            unit.attacked = true;
+            return false;
         }
+
+        if (unit.HasAbility(ChainLightning))
+        {
+            UnitState defender = gameState.Map.GetTile(__instance.Target).unit;
+            if (defender == null) return true;
+
+            List<WorldCoordinates> targets = new();
+            
+            bool flag = true;
+            UnitState tempunit = defender;
+
+            while (flag)
+            {
+                targets.Add(tempunit.coordinates);
+
+                Il2Gen.List<TileData> neighbors = gameState.Map.GetArea(tempunit.coordinates, 1, true, false);
+
+                List<UnitState> chainableUnits = new();
+
+                foreach (TileData tile in neighbors)
+                {
+                    if (tile.unit != null && !targets.Contains(tile.unit.coordinates))
+                    chainableUnits.Add(tile.unit);
+                }
+
+                foreach (UnitState chainTarget in chainableUnits)
+                {
+                    
+                }
+            }
+
+            unit.attacked = true;
+            return false;
+        }
+        return true;
 	}
 
     /*                          klipi pls do this thx

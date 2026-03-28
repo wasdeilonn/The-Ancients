@@ -225,6 +225,22 @@
                 "eightway_ability"
 			],
 			"idx": -1
+        },
+
+        "sentry_unit": {
+            "health": 100,
+			"defence": 1,
+			"movement": 1,
+			"range": 2,
+			"attack": 3,
+			"cost": 8,
+			"weapon": 3,
+			"unitAbilities": [
+				"stiff",
+				"land",
+                "chainlightning"
+			],
+			"idx": -1
         }
     },
     "unitAbility": {
@@ -245,6 +261,10 @@
         },
 
         "eightway_ability": {
+            "idx": -1
+        },
+
+        "chainlightning_ability": {
             "idx": -1
         }
     },
