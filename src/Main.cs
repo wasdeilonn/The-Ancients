@@ -14,6 +14,7 @@ using PolytopiaBackendBase.Common;
 using System.Data;
 using Steamworks.Data;
 using Il2CppSystem;
+using System.Timers;
 
 
 namespace Ancients;
@@ -102,8 +103,11 @@ public static class Main
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out var capacitorType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out var eightwayType) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("chainlightning_ability", out var clightningType) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out var shockType) 
+            || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out var shockedEffectType)
             || !EnumCache<UnitEffect>.TryGetType("charge_effect", out var chargeEffectType)
+            || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out var lightningType)
+            || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out var electricType)
             || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement", out var excavateType)
             || !EnumCache<ImprovementData.Type>.TryGetType("discharge_improvement", out var dischargeType)
             || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
@@ -117,13 +121,18 @@ public static class Main
         Charge = chargeType;
         Capacitor = capacitorType;
         Eightway = eightwayType;
-        ChainLightning = clightningType;
+        Shock = shockType;
+        Conductive = shockedEffectType;
         Charged = chargeEffectType;
+        Lightning = lightningType;
+        Electric = electricType;
         Excavate = excavateType;
         Discharge = dischargeType;
 
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
+        ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
+        ParsePerEach<ImprovementData.Type, bool>(rootObject, "improvementData", "lightningGrow", LightningGrow);
         ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeConsumptionEvent", ChargeConsumptionEvent);
         ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeBuff", ChargeBuff);
     }
@@ -132,12 +141,17 @@ public static class Main
     public static Dictionary<UnitData.Type, int> ChargeConsumptionAmount = new Dictionary<UnitData.Type, int>();
     public static Dictionary<UnitData.Type, List<string>> ChargeConsumptionEvent = new Dictionary<UnitData.Type, List<string>>();
     public static Dictionary<UnitData.Type, List<string>> ChargeBuff = new Dictionary<UnitData.Type, List<string>>();
+    public static Dictionary<ImprovementData.Type, int> LightningStars = new();
+    public static Dictionary<ImprovementData.Type, bool> LightningGrow = new();
     public static TribeType Ancients;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
     public static UnitAbility.Type Eightway;
-    public static UnitAbility.Type ChainLightning;
+    public static UnitAbility.Type Shock;
     public static UnitEffect Charged;
+    public static UnitEffect Conductive;
+    public static ImprovementAbility.Type Lightning;
+    public static ImprovementAbility.Type Electric;
     public static ImprovementData.Type Excavate;
     public static ImprovementData.Type Discharge;
 
@@ -285,6 +299,45 @@ public static class Main
         {
             ConsumeCharge(attacker);
         }
+
+        if (attacker.HasAbility(Shock))
+        {
+            defender.AddEffect(Conductive);
+
+            if (attacker.HasAbility(UnitAbility.Type.Splash))
+            {
+                state.TryGetPlayer(__instance.PlayerId, out var player);
+                foreach (TileData tile in state.Map.GetArea(__instance.Target, 1, true, false))
+                {
+                    if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != __instance.PlayerId)
+                    {
+                        tile.unit.AddEffect(Conductive);
+                    }
+                }
+            }
+        }
+	}
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(AttackAction), nameof(AttackAction.Execute))]
+    private static void Kill(GameState state, AttackAction __instance)
+	{
+        TileData tile = state.Map.GetTile(__instance.Target);
+        UnitState unit = tile.unit;
+        if (unit == null) return;
+
+        if (unit.HasEffect(Conductive) && unit.health <= __instance.Damage)
+        {
+            foreach (TileData tile1 in state.Map.GetArea(__instance.Target, 1, true, false))
+            {
+                if (tile1.unit != null && tile1.coordinates != __instance.Origin)
+                {
+                    tile1.unit.AddEffect(Conductive);
+                    modLogger.LogInfo("did");
+                    state.ActionStack.Add(new AttackAction(__instance.PlayerId, tile1.coordinates, tile1.coordinates, 50, false, AttackAction.AnimationType.Splash, 20));
+                }
+            }
+        }
 	}
     
     [HarmonyPrefix]
@@ -325,41 +378,24 @@ public static class Main
             unit.attacked = true;
             return false;
         }
+        return true;
+	}
 
-        if (unit.HasAbility(ChainLightning))
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(StartTurnAction), nameof(StartTurnAction.ExecuteDefault))]
+    private static void StartTurn(GameState gameState, StartTurnAction __instance)
+	{
+		foreach (TileData tile in gameState.Map.tiles)
         {
-            UnitState defender = gameState.Map.GetTile(__instance.Target).unit;
-            if (defender == null) return true;
-
-            List<WorldCoordinates> targets = new();
-            
-            bool flag = true;
-            UnitState tempunit = defender;
-
-            while (flag)
+            if (tile.improvement != null && tile.owner == __instance.PlayerId)
             {
-                targets.Add(tempunit.coordinates);
-
-                Il2Gen.List<TileData> neighbors = gameState.Map.GetArea(tempunit.coordinates, 1, true, false);
-
-                List<UnitState> chainableUnits = new();
-
-                foreach (TileData tile in neighbors)
+                if (gameState.GameLogicData.GetImprovementData(tile.improvement.type).HasAbility(Lightning))
                 {
-                    if (tile.unit != null && !targets.Contains(tile.unit.coordinates))
-                    chainableUnits.Add(tile.unit);
-                }
-
-                foreach (UnitState chainTarget in chainableUnits)
-                {
-                    
+                    LightningStrike(tile.coordinates, gameState);
                 }
             }
-
-            unit.attacked = true;
-            return false;
+            
         }
-        return true;
 	}
 
     /*                          klipi pls do this thx
@@ -385,6 +421,32 @@ public static class Main
 
 		return false;
 	}*/
+
+    public static void LightningStrike(WorldCoordinates position, GameState gameState)
+    {
+        Il2Gen.List<TileData> tiles = gameState.Map.GetArea(position, 1, true, false);
+
+        int num = 0;
+        foreach (TileData tile in tiles)
+        {
+            if (tile.improvement == null)
+            continue;
+
+            ImprovementData data = gameState.GameLogicData.GetImprovementData(tile.improvement.type);
+            if (!data.HasAbility(Electric))
+            continue;
+
+            if (GetLightningStars(data.type) < 0)
+            {
+                gameState.ActionStack.Add(new IncreaseCurrencyAction(tile.improvement.owner, tile.coordinates, GetLightningStars(data.type), 20));
+            }
+            if (GetLightningGrow(data.type))
+            {
+                gameState.ActionStack.Add(new ImprovementLevelUpAction(tile.improvement.owner, tile.coordinates));
+            }
+            num++;
+        }
+    }
 
     static int GetChargeCount(UnitState unit)
     {
@@ -414,6 +476,21 @@ public static class Main
         ChargeConsumptionAmount.TryGetValue(unit, out i);
         return i;
     }
+
+    static int GetLightningStars(ImprovementData.Type imp)
+    {
+        int i = 0;
+        LightningStars.TryGetValue(imp, out i);
+        return i;
+    }
+
+    static bool GetLightningGrow(ImprovementData.Type imp)
+    {
+        bool b = false;
+        LightningGrow.TryGetValue(imp, out b);
+        return b;
+    }
+
 
     static bool DoesConsume(UnitData.Type unit, string e)
     {

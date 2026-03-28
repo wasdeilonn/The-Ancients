@@ -34,7 +34,8 @@
             "unitOverrides":{
                 "warrior": "warrior_unit",
                 "mindbender": "archeologist_unit",
-                "catapult": "railcannon_unit"
+                "catapult": "railcannon_unit",
+                "knight": "sentry_unit"
             },
             "improvementOverrides":{
                 
@@ -229,16 +230,17 @@
 
         "sentry_unit": {
             "health": 100,
-			"defence": 1,
+			"defence": 10,
 			"movement": 1,
 			"range": 2,
-			"attack": 3,
+			"attack": 30,
 			"cost": 8,
 			"weapon": 3,
 			"unitAbilities": [
 				"stiff",
 				"land",
-                "chainlightning"
+                "splash",
+                "shock_ability"
 			],
 			"idx": -1
         }
@@ -264,7 +266,7 @@
             "idx": -1
         },
 
-        "chainlightning_ability": {
+        "shock_ability": {
             "idx": -1
         }
     },
@@ -272,6 +274,18 @@
         "charge_effect": {
             "idx": -1,
             "color": "0,0.73,1,1"
+        },
+        "conductive_effect": {
+            "idx": -1,
+            "color": "0.4,0.97,1,1"
+        }
+    },
+    "improvementAbility": {
+        "lightning_improvementability": {
+            "idx": -1
+        },
+        "electric_improvementability": {
+            "idx": -1
         }
     },
     "improvementData": {
@@ -297,7 +311,66 @@
                 "manual", "discrete", "freelance"
             ],
             "unitAbilityWhitelist": ["discharge_ability"]
-        }
+        },
+        "lightningrod_improvement": {
+			"cost": 5,
+			"terrainRequirements": [
+				{
+					"terrain": "forest"
+				},
+                {
+					"terrain": "field"
+				}
+			],
+            "improvementAbilities": [
+                "limited",
+                "lightning_improvementability"
+            ],
+			"maxLevel": 0,
+			"idx": -1
+		},
+        "electrode_improvement": {
+			"cost": 3,
+			"terrainRequirements": [
+				{
+					"terrain": "forest"
+				},
+                {
+					"terrain": "field"
+				}
+			],
+            "improvementAbilities": [
+                "electric_improvementability"
+            ],
+			"maxLevel": 0,
+			"idx": -1,
+
+            "lightningStars": 1
+		},
+        "battery_improvement": {
+			"cost": 5,
+			"terrainRequirements": [
+				{
+					"terrain": "forest"
+				},
+                {
+					"terrain": "field"
+				}
+			],
+			"maxLevel": 4,
+            "improvementAbilities": [
+                "limited",
+                "electric_improvementability"
+            ],
+            "growthRewards": [
+				{
+					"population": 1
+				}
+			],
+			"idx": -1,
+
+            "lightningGrow": true
+		}
     },
     "pActions": {
         "excavate_paction": [
