@@ -5,7 +5,7 @@
             "startingStars": 5,
             "color": 48127,
             "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
-            "startingUnit": "warrior_unit_ancients",
+            "startingUnit": "warrior_unit",
             "category": 2,
             "terrainModifier":{
                 "mountain": 1,
@@ -32,8 +32,9 @@
                 
             },
             "unitOverrides":{
-                "warrior": "warrior_unit_ancients",
-                "mindbender": "archeologist_unit_ancients"
+                "warrior": "warrior_unit",
+                "mindbender": "archeologist_unit",
+                "catapult": "railcannon_unit"
             },
             "improvementOverrides":{
                 
@@ -43,55 +44,55 @@
     "techData": {
         "basic": {
             "improvementUnlocks": [
-                "+excavate_improvement_ancients"
+                "+excavate_improvement"
             ]
         },
 
-        "tesla_secrettech_ancients": {
+        "tesla_secrettech": {
             "unitUnlocks": [
-                "teslatower_unit_ancients"
+                "teslatower_unit"
             ],
 			"cost": 0,
 			"idx": -1
         },
-        "capacitor_secrettech_ancients": {
+        "accumulator_secrettech": {
             "unitUnlocks": [
-                "accumulator_unit_ancients"
+                "accumulator_unit"
             ],
 			"cost": 0,
 			"idx": -1
         },
-        "drone_secrettech_ancients": {
+        "drone_secrettech": {
             "unitUnlocks": [
-                "drone_unit_ancients"
+                "drone_unit"
             ],
 			"cost": 0,
 			"idx": -1
         },
-        "idk1_secrettech_ancients": {
+        "idk1_secrettech": {
             "unitUnlocks": [
-                "teslatower_unit_ancients"
+                "teslatower_unit"
             ],
 			"cost": 0,
 			"idx": -1
         },
-        "idk2_secrettech_ancients": {
+        "idk2_secrettech": {
             "unitUnlocks": [
-                "teslatower_unit_ancients"
+                "teslatower_unit"
             ],
 			"cost": 0,
 			"idx": -1
         },
-        "idk3_secrettech_ancients": {
+        "idk3_secrettech": {
             "unitUnlocks": [
-                "teslatower_unit_ancients"
+                "teslatower_unit"
             ],
 			"cost": 0,
 			"idx": -1
         }
     },
     "unitData": {
-        "warrior_unit_ancients": {
+        "warrior_unit": {
             "idx": -1,
             "health": 100,
             "defence": 20,
@@ -103,13 +104,13 @@
                 "land",
                 "dash",
                 "fortify",
-                "charge_ability_ancients"
+                "charge_ability"
             ],
             "weapon": 1,
             "prefab": "warrior"
         },
 
-        "archeologist_unit_ancients": {
+        "archeologist_unit": {
             "idx": -1,
             "health": 100,
             "defence": 10,
@@ -121,13 +122,13 @@
                 "convert",
                 "stiff",
                 "static",
-                "excavation_ability_ancients"
+                "excavation_ability"
             ],
             "weapon": 1,
             "prefab": "warrior"
         },
 
-        "teslatower_unit_ancients": {
+        "teslatower_unit": {
             "idx": -1,
             "health": 100,
             "defence": 0,
@@ -138,7 +139,7 @@
             "unitAbilities": [
                 "stiff",
                 "static",
-                "capacitor_ability_ancients"
+                "capacitor_ability"
             ],
             "weapon": 5,
             "prefab": "catapult",
@@ -154,7 +155,7 @@
             ]
         },
 
-        "accumulator_unit_ancients": {
+        "accumulator_unit": {
             "idx": -1,
             "health": 200,
             "defence": 3,
@@ -165,8 +166,8 @@
             "unitAbilities": [
                 "stiff",
                 "static",
-                "capacitor_ability_ancients",
-                "discharge_ability_ancients"
+                "capacitor_ability",
+                "discharge_ability"
             ],
             "weapon": 5,
             "prefab": "defender",
@@ -181,7 +182,7 @@
             ]
         },
 
-        "drone_unit_ancients": {
+        "drone_unit": {
             "idx": -1,
             "health": 100,
             "defence": 1,
@@ -194,7 +195,7 @@
                 "escape",
                 "fly",
                 "static",
-                "capacitor_ability_ancients"
+                "capacitor_ability"
             ],
             "weapon": 5,
             "prefab": "rammership",
@@ -207,27 +208,48 @@
             "chargeBuff": [
                 "movement"
             ]
+        },
+
+        "railcannon_unit": {
+            "health": 100,
+			"defence": 0,
+			"movement": 1,
+			"range": 3,
+			"attack": 40,
+			"cost": 8,
+			"weapon": 6,
+			"unitAbilities": [
+				"stiff",
+				"land",
+                "dash",
+                "eightway_ability"
+			],
+			"idx": -1
         }
     },
     "unitAbility": {
-        "excavation_ability_ancients": {
+        "excavation_ability": {
             "idx": -1
         },
 
-        "capacitor_ability_ancients": {
+        "capacitor_ability": {
             "idx": -1
         },
 
-        "charge_ability_ancients": {
+        "charge_ability": {
             "idx": -1
         },
 
-        "discharge_ability_ancients": {
+        "discharge_ability": {
             "idx":-1
+        },
+
+        "eightway_ability": {
+            "idx": -1
         }
     },
     "unitEffectData": {
-        "charge_effect_ancients": {
+        "charge_effect": {
             "idx": -1,
             "color": "0,0.73,1,1"
         }
@@ -237,24 +259,24 @@
             "idx": -1
         },
 
-        "excavate_improvement_ancients": {
+        "excavate_improvement": {
             "idx": -1,
             "cost": 0,
             "improvementAbilities": [
                 "manual", "discrete", "freelance"
             ],
-            "unitAbilityWhitelist": ["excavation_ability_ancients"],
+            "unitAbilityWhitelist": ["excavation_ability"],
             "triggers": {
                 "onBuild": "excavate_paction"
             }
         },
-        "discharge_improvement_ancients": {
+        "discharge_improvement": {
             "idx": -1,
             "cost": 0,
             "improvementAbilities": [
                 "manual", "discrete", "freelance"
             ],
-            "unitAbilityWhitelist": ["discharge_ability_ancients"]
+            "unitAbilityWhitelist": ["discharge_ability"]
         }
     },
     "pActions": {

@@ -11,6 +11,7 @@ using Il2Gen = Il2CppSystem.Collections.Generic;
 using Il2CppSystem.Linq;
 using MS.Internal.Xml.XPath;
 using PolytopiaBackendBase.Common;
+using System.Data;
 
 
 namespace Ancients;
@@ -96,11 +97,12 @@ public static class Main
     public static void GetEnumShit(Newtonsoft.Json.Linq.JObject rootObject)
     {
         if (
-            !EnumCache<UnitAbility.Type>.TryGetType("charge_ability_ancients", out var chargeType) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability_ancients", out var capacitorType) 
-            || !EnumCache<UnitEffect>.TryGetType("charge_effect_ancients", out var chargeEffectType)
-            || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement_ancients", out var excavateType)
-            || !EnumCache<ImprovementData.Type>.TryGetType("discharge_improvement_ancients", out var dischargeType)
+            !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out var capacitorType) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out var eightwayType) 
+            || !EnumCache<UnitEffect>.TryGetType("charge_effect", out var chargeEffectType)
+            || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement", out var excavateType)
+            || !EnumCache<ImprovementData.Type>.TryGetType("discharge_improvement", out var dischargeType)
             || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
             )
 		{
@@ -111,6 +113,7 @@ public static class Main
         Ancients = ancientsType;
         Charge = chargeType;
         Capacitor = capacitorType;
+        Eightway = eightwayType;
         Charged = chargeEffectType;
         Excavate = excavateType;
         Discharge = dischargeType;
@@ -128,6 +131,7 @@ public static class Main
     public static TribeType Ancients;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
+    public static UnitAbility.Type Eightway;
     public static UnitEffect Charged;
     public static ImprovementData.Type Excavate;
     public static ImprovementData.Type Discharge;
@@ -219,7 +223,7 @@ public static class Main
 
 	[HarmonyPostfix]
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
-    private static void UnitDataExtensions_GetAttackOptionsAtPosition(Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
+    private static void UnitDataExtensions_GetAttackOptionsAtPosition(ref Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
 	{
         UnitState unit = gameState.Map.GetTile(position).unit;
         if (unit == null) return;
@@ -240,6 +244,22 @@ public static class Main
 				}
 			}
 		}
+
+        if (unit.HasAbility(Eightway))
+        {
+            if (!unit.moved)
+            {
+                __result = new Il2Gen.List<WorldCoordinates>();
+                return;
+            }
+
+            Il2Gen.List<WorldCoordinates> ewaylist = new();
+            foreach (TileData tile in gameState.Map.GetArea(position, 1, true, false))
+            {
+                ewaylist.Add(tile.coordinates);
+            }
+            __result = ewaylist;
+        }
 	}
 
 	[HarmonyPostfix]
@@ -252,6 +272,8 @@ public static class Main
 		UnitState attacker = state.Map.GetTile(__instance.Origin).unit;
 		UnitState defender = state.Map.GetTile(__instance.Target).unit;
 
+        if (attacker == null || defender == null) return;
+
 		if (attacker.HasAbility(Charge) && defender.HasAbility(Capacitor))
 		{
             defender.effects.Add(Charged);
@@ -260,6 +282,26 @@ public static class Main
         if (attacker.HasAbility(Capacitor) && DoesConsume(attacker.type, "attack"))
         {
             ConsumeCharge(attacker);
+        }
+	}
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(AttackCommand), nameof(AttackCommand.ExecuteDefault))]
+    private static void AttackCommand_ExecuteDefault(GameState gameState, AttackCommand __instance)
+	{
+		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return;
+
+        if (unit.HasAbility(Eightway))
+        {
+            GridDirection direction = WorldCoordinates.GetDirection(__instance.Origin, __instance.Target);
+
+            TileData secondTile = gameState.Map.GetTile(__instance.Target + direction.ToCoordinates());
+            TileData thirdTile = gameState.Map.GetTile(secondTile.coordinates + direction.ToCoordinates());
+
+            BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, secondTile.unit);
+            BattleResults battleResults3 = BattleHelpers.GetBattleResults(gameState, unit, thirdTile.unit);
+            gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, secondTile.coordinates, battleResults2.attackDamage, false));
+            gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, thirdTile.coordinates, battleResults2.attackDamage, false));
         }
 	}
 
