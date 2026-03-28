@@ -301,7 +301,7 @@ public static class Main
             BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, secondTile.unit);
             BattleResults battleResults3 = BattleHelpers.GetBattleResults(gameState, unit, thirdTile.unit);
             gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, secondTile.coordinates, battleResults2.attackDamage, false));
-            gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, thirdTile.coordinates, battleResults2.attackDamage, false));
+            gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Origin, thirdTile.coordinates, battleResults3.attackDamage, false));
         }
 	}
 
