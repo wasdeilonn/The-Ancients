@@ -165,7 +165,8 @@
             "unitAbilities": [
                 "stiff",
                 "static",
-                "capacitor_ability_ancients"
+                "capacitor_ability_ancients",
+                "discharge_ability_ancients"
             ],
             "weapon": 5,
             "prefab": "defender",

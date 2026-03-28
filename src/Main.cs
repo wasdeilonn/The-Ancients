@@ -168,7 +168,7 @@ public static class Main
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
-    private static void RangeFix(Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, ref int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
+    private static void RangeFix(GameState gameState, byte playerId, WorldCoordinates position, ref int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
 	{
         UnitState unit = gameState.Map.GetTile(position).unit;
         if (unit == null ) return;
@@ -188,7 +188,7 @@ public static class Main
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttack))]
+    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttack), typeof(UnitState), typeof(GameState))]
     private static void AddAttack(int __result, GameState gameState, UnitState unitState)
 	{
         if (!GetsChargeBuff(unitState.type, "attack")) return;
@@ -324,8 +324,11 @@ public static class Main
 
     static bool GetsChargeBuff(UnitData.Type unit, string e)
     {
-        ChargeBuff.TryGetValue(unit, out var strings);
+        if (ChargeBuff.TryGetValue(unit, out var strings))
         return strings.Contains(e);
+
+        else
+        return false;
     }
 
     static void ConsumeCharge(UnitState unit)
