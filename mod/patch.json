@@ -2,27 +2,28 @@
     "tribeData": {
         "ancients": {
             "idx": -1,
-            "startingStars": 5,
+            "startingStars": 7,
             "color": 48127,
             "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
-            "startingUnit": "warrior_unit",
+            "startingUnit": "archeologist_unit",
             "category": 2,
             "terrainModifier":{
-                "mountain": 1,
-                "forest": 0.5
+                "mountain": 0.5,
+                "forest": 0.1
             },
             "resourceModifier":{
-                "metal": 1,
-                "fruit": 1,
-                "game": 1.2,
+                "metal": 1.5,
+                "fruit": 1.2,
+                "game": 2,
                 "crop": 0.3
             },
             "startingTech":[
-                "basic"
+                "basic",
+                "hunting"
             ],
             "startingResource":[
-                "game",
-                "game",
+                "crop",
+                "fruit",
                 "fruit"
             ],
             "tribeAbilities":[
@@ -38,7 +39,10 @@
                 "knight": "sentry_unit"
             },
             "improvementOverrides":{
-                
+                "lumberhut": "electrode_improvement",
+                "hunting": "lightningrod_improvement",
+                "sawmill": "battery_improvement",
+                "market": "semiconductor_improvement"
             }
         }
     },
@@ -342,6 +346,11 @@
             "improvementAbilities": [
                 "electric_improvementability"
             ],
+            "adjacencyRequirements": [
+				{
+					"improvement": "lightningrod_improvement"
+				}
+			],
 			"maxLevel": 0,
 			"idx": -1,
 
@@ -362,6 +371,11 @@
                 "limited",
                 "electric_improvementability"
             ],
+            "adjacencyRequirements": [
+				{
+					"improvement": "lightningrod_improvement"
+				}
+			],
             "growthRewards": [
 				{
 					"population": 1
@@ -370,7 +384,33 @@
 			"idx": -1,
 
             "lightningGrow": true
-		}
+		},
+
+        "semiconductor_improvement": {
+            "idx": -1,
+			"maxLevel": 8,
+			"cost": 5,
+			"work": 1,
+			"terrainRequirements": [
+				{
+					"terrain": "field"
+				}
+			],
+			"adjacencyImprovements": [
+				{
+					"improvement": "electrode_improvement"
+				}
+			],
+			"adjacencyRequirements": [
+				{
+					"improvement": "electrode_improvement"
+				}
+			],
+			"improvementAbilities": [
+				"limited",
+				"simple"
+			]
+        }
     },
     "pActions": {
         "excavate_paction": [

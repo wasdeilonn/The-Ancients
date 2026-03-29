@@ -15,6 +15,7 @@ using System.Data;
 using Steamworks.Data;
 using Il2CppSystem;
 using System.Timers;
+using Il2CppMono.Security.Interface;
 
 
 namespace Ancients;
@@ -422,11 +423,35 @@ public static class Main
 		return false;
 	}*/
 
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ImprovementLevelUpAction), nameof(ImprovementLevelUpAction.IsValid))]
+    private static void LvlUpFix(GameState state, ImprovementLevelUpAction __instance, ref bool __result)
+	{
+        TileData tile = state.Map.GetTile(__instance.Coordinates);
+		if (tile == null) return;
+        if (tile.improvement == null) return;
+
+        if (!state.GameLogicData.TryGetData(tile.improvement.type, out var data))
+        {
+            modLogger.LogInfo("Nice one dumbfuck");
+            return;
+        }
+
+        if (data.HasAbility(Electric))
+        {
+            __result = true;
+        }
+	}
+
     public static void LightningStrike(WorldCoordinates position, GameState gameState)
     {
         Il2Gen.List<TileData> tiles = gameState.Map.GetArea(position, 1, true, false);
 
         int num = 0;
+        
+        MapRenderer.Current.GetTileInstance(position).SpawnExplosion();
+
+
         foreach (TileData tile in tiles)
         {
             if (tile.improvement == null)
@@ -436,14 +461,20 @@ public static class Main
             if (!data.HasAbility(Electric))
             continue;
 
-            if (GetLightningStars(data.type) < 0)
+            MapRenderer.Current.GetTileInstance(tile.coordinates).SpawnPuff();
+
+            if (GetLightningStars(data.type) > 0)
             {
-                gameState.ActionStack.Add(new IncreaseCurrencyAction(tile.improvement.owner, tile.coordinates, GetLightningStars(data.type), 20));
+                gameState.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, GetLightningStars(data.type), 0));
             }
             if (GetLightningGrow(data.type))
             {
-                gameState.ActionStack.Add(new ImprovementLevelUpAction(tile.improvement.owner, tile.coordinates));
+                gameState.ActionStack.Add(new ImprovementLevelUpAction(gameState.CurrentPlayer, tile.coordinates));
+                modLogger.LogInfo("should level up");
             }
+
+            
+
             num++;
         }
     }
