@@ -107,6 +107,16 @@ public static class Main
             || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out var shockType) 
             || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out var shockedEffectType)
             || !EnumCache<UnitEffect>.TryGetType("charge_effect", out var chargeEffectType)
+            || !EnumCache<CityReward>.TryGetType("highvoltage_secretreward", out var teslaReward) 
+            || !EnumCache<CityReward>.TryGetType("aviation_secretreward", out var droneReward) 
+            || !EnumCache<CityReward>.TryGetType("chargestorage_secretreward", out var accReward) 
+            || !EnumCache<CityReward>.TryGetType("pylons_secretreward", out var pylonReward) 
+            || !EnumCache<CityReward>.TryGetType("redirection_secretreward", out var sentryReward) 
+            || !EnumCache<TechData.Type>.TryGetType("tesla_secrettech", out var teslaTech) 
+            || !EnumCache<TechData.Type>.TryGetType("accumulator_secrettech", out var accTech) 
+            || !EnumCache<TechData.Type>.TryGetType("drone_secrettech", out var droneTech)
+            || !EnumCache<TechData.Type>.TryGetType("pylon_secrettech", out var pylonTech)
+            || !EnumCache<TechData.Type>.TryGetType("sentry_secrettech", out var sentryTech)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out var lightningType)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out var electricType)
             || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement", out var excavateType)
@@ -130,6 +140,21 @@ public static class Main
         Excavate = excavateType;
         Discharge = dischargeType;
 
+        TeslaTech = teslaTech;
+        DroneTech = droneTech;
+        AccumulatorTech = accTech;
+        PylonTech = pylonTech;
+        SentryTech = sentryTech;
+
+        SecretRewards.AddRange(new CityReward[]
+        {
+            teslaReward,
+            droneReward,
+            accReward,
+            pylonReward,
+            sentryReward
+        });
+
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
         ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
@@ -144,6 +169,12 @@ public static class Main
     public static Dictionary<UnitData.Type, List<string>> ChargeBuff = new Dictionary<UnitData.Type, List<string>>();
     public static Dictionary<ImprovementData.Type, int> LightningStars = new();
     public static Dictionary<ImprovementData.Type, bool> LightningGrow = new();
+    public static List<CityReward> SecretRewards = new();
+    public static TechData.Type TeslaTech;
+    public static TechData.Type DroneTech;
+    public static TechData.Type AccumulatorTech;
+    public static TechData.Type PylonTech;
+    public static TechData.Type SentryTech;
     public static TribeType Ancients;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
@@ -217,10 +248,13 @@ public static class Main
 	{
         if (!GetsChargeBuff(unitState.type, "attack")) return;
 
+        modLogger.LogInfo("adding to atk");
+
         foreach (UnitEffect effect in unitState.effects)
         {
             if (effect == Charged)
             {
+                
                 __result += 100;
             }
         }
@@ -334,7 +368,6 @@ public static class Main
                 if (tile1.unit != null && tile1.coordinates != __instance.Origin)
                 {
                     tile1.unit.AddEffect(Conductive);
-                    modLogger.LogInfo("did");
                     state.ActionStack.Add(new AttackAction(__instance.PlayerId, tile1.coordinates, tile1.coordinates, 50, false, AttackAction.AnimationType.Splash, 20));
                 }
             }
@@ -382,6 +415,148 @@ public static class Main
         return true;
 	}
 
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(ExamineRuinsAction), nameof(ExamineRuinsAction.ExecuteDefault))]
+    private static bool ExamineRuins_Execute(GameState gameState, ExamineRuinsAction __instance)
+	{
+        TileData tile = gameState.Map.GetTile(__instance.Coordinates);
+        if (!gameState.TryGetPlayer(__instance.PlayerId, out var player))
+        {
+            return true;
+        }
+        tile.improvement = null;
+        if (tile.unit != null)
+        {
+            tile.unit.MakeExhauseted(gameState);
+        }
+
+        if (__instance.PlayerId == GameManager.LocalPlayer.Id)
+        {
+            
+            List<TechData.Type> techs = new()
+            {
+                TeslaTech,
+                DroneTech,
+                AccumulatorTech,
+                PylonTech,
+                SentryTech
+            };
+
+            List<TechData.Type> eligibleTechs = new();
+            
+            int num = 0;
+
+            foreach (TechData.Type tech in techs)
+            {
+                if (!player.HasTech(tech))
+                {
+                    num++;
+                    eligibleTechs.Add(tech);
+                }
+            }
+
+            Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<CityReward> rewards = new CityReward[2];
+            
+            if (num == 0)
+            {
+                return true;
+            }
+            else if (num == 1)
+            {
+                rewards = new CityReward[1]
+                {
+                    SecretRewards[techs.LastIndexOf(eligibleTechs[0])]
+                };
+            }
+            else
+            {
+                Il2CppSystem.Random random = new Il2CppSystem.Random(gameState.Seed);
+                for (int i = 0; i < eligibleTechs.Count - 1; i++)
+                {
+                    int index = random.Range(i, eligibleTechs.Count);
+                    TechData.Type value = eligibleTechs[index];
+                    eligibleTechs[index] = eligibleTechs[i];
+                    eligibleTechs[i] = value;
+                }
+
+                rewards[0] = SecretRewards[techs.LastIndexOf(eligibleTechs[0])];
+                rewards[1] = SecretRewards[techs.LastIndexOf(eligibleTechs[1])];
+            }
+            if (num != 0)
+            {
+                var popup = PopupManager.GetRewardPopup();
+                popup.SetData(GameManager.LocalPlayer, gameState.Map.GetTile(__instance.Coordinates), rewards, RewardPopup.PopupType.CityLevelUp, false);
+                popup.Header = Localization.Get("world.ancients.popup.header");
+                popup.Description = Localization.Get("world.ancients.popup.description");
+                popup.Show();
+            }
+        }
+
+        return false;
+	}
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(RewardPopup), nameof(RewardPopup.OnRewardButtonClicked))]
+    private static void fix(int id, UnityEngine.EventSystems.BaseEventData eventData, RewardPopup __instance)
+	{
+        GameState gameState = GameManager.GameState;
+        CityReward reward = __instance.cityRewards[id];
+
+        if (SecretRewards.Contains(reward))
+        {
+            List<TechData.Type> techs = new()
+            {
+                TeslaTech,
+                DroneTech,
+                AccumulatorTech,
+                PylonTech,
+                SentryTech
+            };
+
+            TechData.Type type = techs[SecretRewards.LastIndexOf(reward)];
+
+            gameState.TryGetPlayer(gameState.CurrentPlayer, out var player);
+            player.availableTech.Add(type);
+            gameState.ActionStack.Add(new ResearchAction(gameState.CurrentPlayer, type, 0));
+        }
+	}
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(ExamineRuinsReaction), nameof(ExamineRuinsReaction.Execute))]
+    private static bool ExamineRuins_ReactionFix(Il2CppSystem.Action onComplete, ExamineRuinsReaction __instance)
+	{
+        if (!GameManager.GameState.TryGetPlayer(__instance.action.PlayerId, out var player)) return true;
+        if (player.tribe != Ancients) return true;
+
+        Tile tileInstance = MapRenderer.Current.GetTileInstance(__instance.action.Coordinates);
+        if (tileInstance.IsHidden)
+        {
+            tileInstance.StopRainbowFire(false);
+            onComplete.Invoke();
+            return false;
+        }
+        tileInstance.Render();
+        tileInstance.SpawnShine();
+        tileInstance.SpawnSparkles();
+        AudioManager.PlaySFXAtTile(SFXTypes.Examine, tileInstance.Coordinates);
+        
+        onComplete.Invoke();
+        return false;
+	}
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(RewardPopup), nameof(RewardPopup.SetData))]
+    private static bool SetDataFix(RewardPopup __instance, PlayerState playerState, TileData tile, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<CityReward> rewards, RewardPopup.PopupType type, bool isReplay = false)
+	{
+        if (tile.improvement == null)
+        {
+            __instance.SetRewards(playerState, rewards, isReplay);
+            RewardPopup.OnDataSet?.Invoke(__instance);
+            return false;
+        }
+        return true;
+	}
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(StartTurnAction), nameof(StartTurnAction.ExecuteDefault))]
     private static void StartTurn(GameState gameState, StartTurnAction __instance)
@@ -399,30 +574,6 @@ public static class Main
         }
 	}
 
-    /*                          klipi pls do this thx
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(ExamineRuinsAction), nameof(ExamineRuinsAction.ExecuteDefault))]
-    private static bool ExamineRuins_Execute(GameState gameState, ExamineRuinsAction __instance)
-	{
-        TileData tile = gameState.Map.GetTile(__instance.Coordinates);
-        gameState.TryGetPlayer(__instance.PlayerId, out var player);
-        if (player.tribe != Ancients)
-        {
-            return true;
-        }
-        tile.improvement = null;
-        if (tile.unit != null)
-        {
-            tile.unit.MakeExhauseted(gameState);
-        }
-
-        
-        RewardPopup popup = PopupManager.GetRewardPopup();
-        popup.SetData();
-
-		return false;
-	}*/
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ImprovementLevelUpAction), nameof(ImprovementLevelUpAction.IsValid))]
     private static void LvlUpFix(GameState state, ImprovementLevelUpAction __instance, ref bool __result)
@@ -437,7 +588,7 @@ public static class Main
             return;
         }
 
-        if (data.HasAbility(Electric))
+        if (data.HasAbility(Electric) && tile.improvement.level <= data.maxLevel)
         {
             __result = true;
         }
@@ -470,7 +621,6 @@ public static class Main
             if (GetLightningGrow(data.type))
             {
                 gameState.ActionStack.Add(new ImprovementLevelUpAction(gameState.CurrentPlayer, tile.coordinates));
-                modLogger.LogInfo("should level up");
             }
 
             

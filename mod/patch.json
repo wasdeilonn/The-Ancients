@@ -36,7 +36,7 @@
                 "warrior": "warrior_unit",
                 "mindbender": "archeologist_unit",
                 "catapult": "railcannon_unit",
-                "knight": "sentry_unit"
+                "knight": "spark_unit"
             },
             "improvementOverrides":{
                 "lumberhut": "electrode_improvement",
@@ -74,23 +74,16 @@
 			"cost": 0,
 			"idx": -1
         },
-        "idk1_secrettech": {
-            "unitUnlocks": [
-                "teslatower_unit"
+        "pylon_secrettech": {
+            "improvementUnlocks": [
+                "pylon_improvement"
             ],
 			"cost": 0,
 			"idx": -1
         },
-        "idk2_secrettech": {
+        "sentry_secrettech": {
             "unitUnlocks": [
-                "teslatower_unit"
-            ],
-			"cost": 0,
-			"idx": -1
-        },
-        "idk3_secrettech": {
-            "unitUnlocks": [
-                "teslatower_unit"
+                "sentry_unit"
             ],
 			"cost": 0,
 			"idx": -1
@@ -215,6 +208,30 @@
             ]
         },
 
+        "sentry_unit": {
+            "idx": -1,
+            "health": 100,
+            "defence": 2,
+            "movement": 1,
+            "range": 0,
+            "attack": 0,
+            "cost": 8,
+            "unitAbilities": [
+                "land",
+                "static",
+                "stiff",
+                "capacitor_ability"
+            ],
+            "weapon": 1,
+            "prefab": "defender",
+
+            "maxCharge": 3,
+            "chargeConsumption": 1,
+            "chargeBuff": [
+                "defence"
+            ]
+        },
+
         "railcannon_unit": {
             "health": 100,
 			"defence": 0,
@@ -232,11 +249,11 @@
 			"idx": -1
         },
 
-        "sentry_unit": {
-            "health": 100,
+        "spark_unit": {
+            "health": 50,
 			"defence": 10,
-			"movement": 1,
-			"range": 2,
+			"movement": 2,
+			"range": 1,
 			"attack": 30,
 			"cost": 8,
 			"weapon": 3,
@@ -244,6 +261,8 @@
 				"stiff",
 				"land",
                 "splash",
+                "consumed",
+                "creep",
                 "shock_ability"
 			],
 			"idx": -1
@@ -316,6 +335,19 @@
             ],
             "unitAbilityWhitelist": ["discharge_ability"]
         },
+        "pylon_improvement": {
+			"cost": 7,
+			"terrainRequirements": [
+                {
+					"terrain": "field"
+				}
+			],
+            "improvementAbilities": [
+                "limited"
+            ],
+			"maxLevel": 0,
+			"idx": -1
+		},
         "lightningrod_improvement": {
 			"cost": 5,
 			"terrainRequirements": [
@@ -366,7 +398,7 @@
 					"terrain": "field"
 				}
 			],
-			"maxLevel": 4,
+			"maxLevel": 5,
             "improvementAbilities": [
                 "limited",
                 "electric_improvementability"
@@ -412,6 +444,25 @@
 			]
         }
     },
+
+    "cityRewardData": {
+        "highvoltage_secretreward": {
+            "idx": -1
+        },
+        "aviation_secretreward": {
+            "idx": -1
+        },
+        "chargestorage_secretreward": {
+            "idx": -1
+        },
+        "pylons_secretreward": {
+            "idx": -1
+        },
+        "redirection_secretreward": {
+            "idx": -1
+        }
+    },
+
     "pActions": {
         "excavate_paction": [
             "vfx : shine, @origin_auto",
