@@ -641,7 +641,7 @@ public static class Main
             {
                 gameState.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, GetLightningStars(data.type), 0));
             }
-            if (GetLightningGrow(data.type))
+            if (GetLightningGrow(data.type) && tile.improvement.level <= data.maxLevel)
             {
                 gameState.ActionStack.Add(new ImprovementLevelUpAction(gameState.CurrentPlayer, tile.coordinates));
             }

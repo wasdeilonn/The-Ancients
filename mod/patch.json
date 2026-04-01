@@ -36,7 +36,9 @@
                 "warrior": "warrior_unit",
                 "mindbender": "archeologist_unit",
                 "catapult": "railcannon_unit",
-                "knight": "spark_unit"
+                "knight": "spark_unit",
+                "archer": "archer_unit",
+                "rider": "rider_unit"
             },
             "improvementOverrides":{
                 "lumberhut": "electrode_improvement",
