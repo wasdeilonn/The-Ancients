@@ -88,7 +88,7 @@ public static class Main
     {
         List<T> list = new List<T>();
 
-        for (int i = 0; i < token.Count - 1; i++)
+        for (int i = 0; i < token.Count; i++)
         {
             list.Add(token[i].ToObject<T>());
         }
@@ -194,10 +194,17 @@ public static class Main
     {
         if (improvement.type == Excavate)
         {
-            if (tile.improvement != null)
+            if (tile.improvement != null) //this is needed cuz discrete is needed so it doesnt look fucking ass
             {
                 __result = false;
             }
+        }
+        if (improvement.type == Discharge)
+        {
+            if (tile.unit == null) return;
+
+            if (GetChargeCount(tile.unit) == 0)
+            __result = false;
         }
     }
 
@@ -205,6 +212,11 @@ public static class Main
     [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.ExecuteDefault))]
     public static void BuildAction_Execute(BuildAction __instance, GameState gameState)
     {
+        if (!gameState.TryGetPlayer(__instance.PlayerId, out var player))
+        {
+            modLogger.LogError("YOU WIN!!");
+            return;
+        }
         if (__instance.Type == Discharge)
         {
             UnitState unit = gameState.Map.GetTile(__instance.Coordinates).unit;
@@ -213,10 +225,12 @@ public static class Main
 
             foreach (TileData tile in area)
             {
-                BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, tile.unit);
-                gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
+                if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != __instance.PlayerId)
+                {
+                    BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, tile.unit);
+                    gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
+                }
             }
-
             ConsumeCharge(unit);
         }
     }
@@ -244,11 +258,9 @@ public static class Main
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttack), typeof(UnitState), typeof(GameState))]
-    private static void AddAttack(int __result, GameState gameState, UnitState unitState)
+    private static void AddAttack(ref int __result, GameState gameState, UnitState unitState)
 	{
         if (!GetsChargeBuff(unitState.type, "attack")) return;
-
-        modLogger.LogInfo("adding to atk");
 
         foreach (UnitEffect effect in unitState.effects)
         {
@@ -262,7 +274,7 @@ public static class Main
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetMovement))]
-    private static void AddMovement(int __result, GameState gameState, UnitState unitState)
+    private static void AddMovement(ref int __result, GameState gameState, UnitState unitState)
 	{
         if (!GetsChargeBuff(unitState.type, "movement")) return;
 
@@ -313,6 +325,17 @@ public static class Main
                 ewaylist.Add(tile.coordinates);
             }
             __result = ewaylist;
+        }
+	}
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(MoveAction), nameof(MoveAction.ExecuteDefault))]
+    private static void MoveAction_Execute(GameState gameState, MoveAction __instance)
+	{
+		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return;
+        if (unit.HasAbility(Capacitor) && DoesConsume(unit.type, "move") && __instance.Reason == MoveAction.MoveReason.Command)
+        {
+            ConsumeCharge(unit);
         }
 	}
 
@@ -584,7 +607,7 @@ public static class Main
 
         if (!state.GameLogicData.TryGetData(tile.improvement.type, out var data))
         {
-            modLogger.LogInfo("Nice one dumbfuck");
+            modLogger.LogError("Nice one dumbfuck");
             return;
         }
 
@@ -675,15 +698,18 @@ public static class Main
 
     static bool DoesConsume(UnitData.Type unit, string e)
     {
-        ChargeConsumptionEvent.TryGetValue(unit, out var strings);
+        if (!ChargeConsumptionEvent.TryGetValue(unit, out var strings))
+        return false;
+
         return strings.Contains(e);
     }
 
     static bool GetsChargeBuff(UnitData.Type unit, string e)
     {
         if (ChargeBuff.TryGetValue(unit, out var strings))
-        return strings.Contains(e);
-
+        {
+            return strings.Contains(e);
+        }
         else
         return false;
     }
@@ -692,9 +718,10 @@ public static class Main
     {
         int consumption = GetChargeConsumptionAmount(unit.type);
 
-        for (int i = 0; i <= consumption; i++)
+        for (int i = 0; i < consumption; i++)
         {
             unit.effects.Remove(Charged);
+            modLogger.LogInfo($"removed charge, consumption: {consumption}");
         }
     }
 }

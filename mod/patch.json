@@ -49,7 +49,8 @@
     "techData": {
         "basic": {
             "improvementUnlocks": [
-                "+excavate_improvement"
+                "+excavate_improvement",
+                "+discharge_improvement"
             ]
         },
 
@@ -108,6 +109,43 @@
             "prefab": "warrior"
         },
 
+        "archer_unit": {
+            "idx": -1,
+            "health": 100,
+            "defence": 10,
+            "movement": 1,
+            "range": 2,
+            "attack": 20,
+            "cost": 3,
+            "unitAbilities": [
+                "land",
+                "dash",
+                "fortify",
+                "charge_ability"
+            ],
+            "weapon": 3,
+            "prefab": "archer"
+        },
+
+        "rider_unit": {
+            "idx": -1,
+            "health": 100,
+            "defence": 10,
+            "movement": 2,
+            "range": 1,
+            "attack": 20,
+            "cost": 3,
+            "unitAbilities": [
+                "land",
+                "dash",
+                "escape",
+                "fortify",
+                "charge_ability"
+            ],
+            "weapon": 1,
+            "prefab": "rider"
+        },
+
         "archeologist_unit": {
             "idx": -1,
             "health": 100,
@@ -143,7 +181,7 @@
             "prefab": "catapult",
 
             "maxCharge": 3,
-            "chargeConsumption": 3,
+            "chargeConsumptionAmount": 3,
             "chargeConsumptionEvent": [
                 "attack"
             ],
@@ -156,7 +194,7 @@
         "accumulator_unit": {
             "idx": -1,
             "health": 200,
-            "defence": 3,
+            "defence": 30,
             "movement": 1,
             "range": 0,
             "attack": 20,
@@ -171,7 +209,7 @@
             "prefab": "defender",
 
             "maxCharge": 3,
-            "chargeConsumption": 3,
+            "chargeConsumptionAmount": 3,
             "chargeConsumptionEvent": [
                 "build"
             ],
@@ -183,7 +221,7 @@
         "drone_unit": {
             "idx": -1,
             "health": 100,
-            "defence": 1,
+            "defence": 10,
             "movement": 1,
             "range": 1,
             "attack": 25,
@@ -199,7 +237,7 @@
             "prefab": "rammership",
 
             "maxCharge": 2,
-            "chargeConsumption": 1,
+            "chargeConsumptionAmount": 1,
             "chargeConsumptionEvent": [
                 "move"
             ],
@@ -211,7 +249,7 @@
         "sentry_unit": {
             "idx": -1,
             "health": 100,
-            "defence": 2,
+            "defence": 20,
             "movement": 1,
             "range": 0,
             "attack": 0,
@@ -226,7 +264,7 @@
             "prefab": "defender",
 
             "maxCharge": 3,
-            "chargeConsumption": 1,
+            "chargeConsumptionAmount": 1,
             "chargeBuff": [
                 "defence"
             ]
