@@ -4,7 +4,7 @@
             "idx": -1,
             "startingStars": 7,
             "color": 48127,
-            "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,cy,ty,cap,kap,sua,ius,xin,imp,ouy,urk,kik,lux,ven,zeb,tza,ely,aqu,cy",
+            "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,ty,cap,kap,sua,ius,xin,ouy,urk,ki,dor,wast,zeb,tza,on,aqu,cy",
             "startingUnit": "archeologist_unit",
             "category": 2,
             "terrainModifier":{
@@ -13,9 +13,9 @@
             },
             "resourceModifier":{
                 "metal": 1.5,
-                "fruit": 1.2,
-                "game": 2,
-                "crop": 0.3
+                "fruit": 1,
+                "game": 1.5,
+                "crop": 0.2
             },
             "startingTech":[
                 "basic",
@@ -44,7 +44,9 @@
                 "lumberhut": "electrode_improvement",
                 "hunting": "lightningrod_improvement",
                 "sawmill": "battery_improvement",
-                "market": "semiconductor_improvement"
+                "market": "semiconductor_improvement",
+
+                "clearforest": "hunting"
             }
         }
     },
