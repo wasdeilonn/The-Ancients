@@ -447,6 +447,7 @@ public static class Main
         {
             return true;
         }
+        if (player.tribe != Ancients) return true;
         tile.improvement = null;
         if (tile.unit != null)
         {
