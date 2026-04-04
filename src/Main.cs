@@ -377,21 +377,22 @@ public static class Main
 	}
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(AttackAction), nameof(AttackAction.Execute))]
-    private static void Kill(GameState state, AttackAction __instance)
+    [HarmonyPatch(typeof(ActionUtils), nameof(ActionUtils.KillUnit))]
+    private static void ActionUtils_KillUnit(GameState gameState, TileData tile)
 	{
-        TileData tile = state.Map.GetTile(__instance.Target);
-        UnitState unit = tile.unit;
-        if (unit == null) return;
-
-        if (unit.HasEffect(Conductive) && unit.health <= __instance.Damage)
+        if (tile.unit == null || !gameState.TryGetPlayer(tile.unit.owner, out var player))
         {
-            foreach (TileData tile1 in state.Map.GetArea(__instance.Target, 1, true, false))
+            modLogger.LogInfo("Good job shitsmear");
+            return;
+        }
+        if (tile.unit.HasEffect(Conductive))
+        {
+            foreach (TileData tile1 in gameState.Map.GetArea(tile.coordinates, 1, true, false))
             {
-                if (tile1.unit != null && tile1.coordinates != __instance.Origin)
+                if (tile1.unit != null && tile1.unit.owner == tile.unit.owner)
                 {
                     tile1.unit.AddEffect(Conductive);
-                    state.ActionStack.Add(new AttackAction(__instance.PlayerId, tile1.coordinates, tile1.coordinates, 50, false, AttackAction.AnimationType.Splash, 20));
+                    gameState.ActionStack.Add(new AttackAction(tile.unit.owner, tile1.coordinates, tile1.coordinates, 50, false, AttackAction.AnimationType.Splash, 20));
                 }
             }
         }

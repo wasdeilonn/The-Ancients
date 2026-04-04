@@ -1,3 +1,108 @@
 {
-    
+    "unit_names_archeologist__unit": {
+        "English": "Archeologist"
+    },
+    "unit_names_warrior__unit": {
+        "English": "Lightning Warrior"
+    },
+    "unit_names_rider__unit": {
+        "English": "Lightning Rider"
+    },
+    "unit_names_archer__unit": {
+        "English": "Lightning Archer"
+    },
+    "unit_names_railcannon__unit": {
+        "English": "Railcannon"
+    },
+    "unit_names_teslatower__unit": {
+        "English": "Tesla Coil"
+    },
+    "unit_names_accumulator__unit": {
+        "English": "Accumulator"
+    },
+    "unit_names_drone__unit": {
+        "English": "Drone"
+    },
+    "unit_names_sentry__unit": {
+        "English": "Sentry"
+    },
+    "unit_names_spark__unit": {
+        "English": "Jumpspark"
+    },
+
+    "unit_abilities_consumed": {
+        "English": "CONSUMED"
+    },
+    "tooltip_ability_consumed": {
+        "English": "This unit sacrifices itself to attack."
+    },
+    "unit_abilities_excavation__ability": {
+        "English": "EXCAVATE"
+    },
+    "tooltip_ability_excavation__ability": {
+        "English": "This unit can excavate ruins, consuming itself in the process."
+    },
+    "unit_abilities_charge__ability": {
+        "English": "CHARGE"
+    },
+    "tooltip_ability_charge__ability": {
+        "English": "This unit can charge capacitors."
+    },
+    "unit_abilities_eightway__ability": {
+        "English": "8-WAY"
+    },
+    "tooltip_ability_eightway__ability": {
+        "English": "This unit can only attack in an 8-way pattern."
+    },
+    "unit_abilities_capacitor__ability": {
+        "English": "CAPACITOR"
+    },
+    "tooltip_ability_capacitor__ability": {
+        "English": "This unit can store charges to become more powerful."
+    },
+    "unit_abilities_discharge__ability": {
+        "English": "DISCHARGE"
+    },
+    "tooltip_ability_discharge__ability": {
+        "English": "This unit can unleash an explosion based on its charge."
+    },
+    "unit_abilities_shock__ability": {
+        "English": "JUMPSTART"
+    },
+    "tooltip_ability_shock__ability": {
+        "English": "This unit can shock enemies, making them conductive. Conductive units shock units and explode after death."
+    },
+
+    "actionbox_unit_charge__effect": {
+        "English": "Charge"
+    },
+    "actionbox_unit_conductive__effect": {
+        "English": "Conductive"
+    },
+
+    "building_names_lightningrod__improvement": {
+        "English": "Lightning Rod"
+    },
+    "building_names_electrode__improvement": {
+        "English": "Electrode"
+    },
+    "building_names_excavate__improvement": {
+        "English": "Excavate"
+    },
+    "building_names_discharge__improvement": {
+        "English": "Discharge"
+    },
+    "building_names_pylon__improvement": {
+        "English": "Pylon"
+    },
+    "building_names_battery__improvement": {
+        "English": "Battery"
+    },
+    "building_names_semiconductor__improvement": {
+        "English": "Semiconductor"
+    },
+
+    "tribe_names_ancients": {
+        "English": "The Ancients"
+    }
 }

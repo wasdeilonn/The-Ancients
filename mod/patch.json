@@ -302,9 +302,11 @@
 			"unitAbilities": [
 				"stiff",
 				"land",
-                "splash",
-                "consumed",
+                "dash",
                 "creep",
+                "consumed",
+                "surprise",
+                "splash",
                 "shock_ability"
 			],
 			"idx": -1
