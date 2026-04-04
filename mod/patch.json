@@ -47,7 +47,401 @@
                 "market": "semiconductor_improvement",
 
                 "clearforest": "hunting"
-            }
+            },
+            "preview": [
+                {
+                    "x": -3,
+                    "y": -1,
+                    "terrainType": "ocean",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "ruin"
+                },
+                {
+                    "x": -3,
+                    "y": 0,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -3,
+                    "y": 2,
+                    "terrainType": "water",
+                    "resourceType": "fish",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -3,
+                    "y": 4,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -3,
+                    "y": 5,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -3,
+                    "y": 6,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": -2,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": -1,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": 0,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": 1,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": 2,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": 3,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "foresttemple"
+                },
+                {
+                    "x": -2,
+                    "y": 4,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": 5,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -2,
+                    "y": 6,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": -2,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": -1,
+                    "terrainType": "mountain",
+                    "resourceType": "metal",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 0,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "giant",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 1,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 2,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "rider",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 3,
+                    "terrainType": "forest",
+                    "resourceType": "game",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 4,
+                    "terrainType": "field",
+                    "resourceType": "crop",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 5,
+                    "terrainType": "field",
+                    "resourceType": "fruit",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": -1,
+                    "y": 6,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": -3,
+                    "terrainType": "ocean",
+                    "resourceType": "starfish",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": -2,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": -1,
+                    "terrainType": "field",
+                    "resourceType": "fruit",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 0,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 1,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "swordsman",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 2,
+                    "terrainType": "mountain",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 3,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "archer",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 4,
+                    "terrainType": "field",
+                    "resourceType": "fruit",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 5,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 0,
+                    "y": 6,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": -2,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": -1,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 0,
+                    "terrainType": "field",
+                    "resourceType": "fruit",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 1,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "warrior",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 2,
+                    "terrainType": "forest",
+                    "resourceType": "game",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 3,
+                    "terrainType": "forest",
+                    "resourceType": "none",
+                    "unitType": "archer",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 4,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 5,
+                    "terrainType": "mountain",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 1,
+                    "y": 6,
+                    "terrainType": "field",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 2,
+                    "y": -2,
+                    "terrainType": "ocean",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "ruin"
+                },
+                {
+                    "x": 2,
+                    "y": -1,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 2,
+                    "y": 0,
+                    "terrainType": "ocean",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 2,
+                    "y": 1,
+                    "terrainType": "water",
+                    "resourceType": "fish",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 2,
+                    "y": 3,
+                    "terrainType": "water",
+                    "resourceType": "none",
+                    "unitType": "none",
+                    "improvementType": "none"
+                },
+                {
+                    "x": 2,
+                    "y": 5,
+                    "terrainType": "water",
+                    "resourceType": "fish",
+                    "unitType": "none",
+                    "improvementType": "none"
+                }
+            ]
         }
     },
     "techData": {

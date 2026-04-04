@@ -42,5 +42,30 @@
     "fruit_outline_ancients_": {
         "pixelsPerUnit": 2000,
         "pivot": [0.5, 0.3]
+    },
+
+    "house_ancients_1": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_ancients_2": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_ancients_3": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_ancients_4": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_ancients_5": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_ancients_7": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
     }
 }
