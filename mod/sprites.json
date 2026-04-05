@@ -67,5 +67,18 @@
     "house_ancients_7": {
         "pixelsPerUnit": 1450,
         "pivot": [0.5, 0.2]
+    },
+
+    "weapon_club_warrior_unit_ancients_": {
+        "pixelsPerUnit": 3100,
+        "pivot": [1, 0]
+    },
+    "weapon_club_rider_unit_ancients_": {
+        "pixelsPerUnit": 3100,
+        "pivot": [1, 0]
+    },
+    "weapon_bow_archer_unit_ancients_": {
+        "pixelsPerUnit": 1800,
+        "pivot": [0.2, 0.425]
     }
 }
