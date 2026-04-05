@@ -1,6 +1,6 @@
 {
     "field_ancients_": {
-        "pixelsPerUnit": 1024,
+        "pixelsPerUnit": 1000,
         "pivot": [0.5, 0.05]
     },
     "forest_ancients_": {
@@ -9,7 +9,7 @@
     },
     "mountain_ancients_": {
         "pixelsPerUnit": 1024,
-        "pivot": [0.5, -0.1]
+        "pivot": [0.5, -0.11]
     },
     "game_ancients_": {
         "pixelsPerUnit": 2000,
