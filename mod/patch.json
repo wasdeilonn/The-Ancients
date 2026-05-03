@@ -447,8 +447,7 @@
     "techData": {
         "basic": {
             "improvementUnlocks": [
-                "+excavate_improvement",
-                "+discharge_improvement"
+                "+excavate_improvement"
             ]
         },
 
@@ -765,14 +764,6 @@
                 "onBuild": "excavate_paction"
             }
         },
-        "discharge_improvement": {
-            "idx": -1,
-            "cost": 0,
-            "improvementAbilities": [
-                "manual", "discrete", "freelance"
-            ],
-            "unitAbilityWhitelist": ["discharge_ability"]
-        },
         "pylon_improvement": {
 			"cost": 7,
 			"terrainRequirements": [
@@ -897,6 +888,17 @@
             "idx": -1
         },
         "redirection_secretreward": {
+            "idx": -1
+        }
+    },
+
+    "commandType": {
+        "dischargecommand": {
+            "idx": -1
+        }
+    },
+    "actionType": {
+        "dischargeaction": {
             "idx": -1
         }
     },

@@ -15,6 +15,7 @@ using Steamworks.Data;
 using Il2CppSystem;
 using System.Timers;
 using Il2CppMono.Security.Interface;
+using Polibrary.Parsing;
 
 
 namespace Ancients;
@@ -30,75 +31,13 @@ public static class Main
         modLogger.LogMessage("Version INDEV2");
     }
 
-    public static void ParsePerEach<targetType, T>(JObject rootObject, string categoryName, string fieldName, Dictionary<targetType, T> dict)
-        where targetType : struct, System.IConvertible
-    {
-        foreach (JToken jtoken in rootObject.SelectTokens($"$.{categoryName}.*").ToList())
-        {
-            JObject token = jtoken.TryCast<JObject>();
-            if (token != null)
-            {
-                if (EnumCache<targetType>.TryGetType(token.Path.Split('.').Last(), out var type))
-                {
-                    if (token[fieldName] != null)
-                    {
-                        T v = token[fieldName]!.ToObject<T>();
-                        dict[type] = v;
-                        token.Remove(fieldName);
-                    }
-                }
-            }
-        }
-    }
-
-    public static void ParseListPerEach<targetType, T>(JObject rootObject, string categoryName, string fieldName, Dictionary<targetType, List<T>> dict)
-        where targetType : struct, System.IConvertible
-    {
-        foreach (JToken jtoken in rootObject.SelectTokens($"$.{categoryName}.*").ToList())
-        {
-            JObject token = jtoken.TryCast<JObject>();
-            if (token != null)
-            {
-                if (EnumCache<targetType>.TryGetType(token.Path.Split('.').Last(), out var type))
-                {
-                    if (token[fieldName] != null)
-                    {
-                        List<T> v = ParseToSysList<T>(token[fieldName]);
-                        dict[type] = v;
-                        token.Remove(fieldName);
-                    }
-                }
-            }
-        }
-    }
-
-    public static List<T> ParseToSysList<T>(JToken token)
-    {
-        JArray jArray = token.TryCast<JArray>();
-        if (jArray == null)
-        {
-            modLogger.LogWarning($"couldnt parse {token.GetName()}, not a jArray");
-            return new List<T>();
-        }
-        return ParseJArray<T>(jArray);
-    }
-
-    public static List<T> ParseJArray<T>(JArray token)
-    {
-        List<T> list = new List<T>();
-
-        for (int i = 0; i < token.Count; i++)
-        {
-            list.Add(token[i].ToObject<T>());
-        }
-
-        return list;
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.AddGameLogicPlaceholders))]
     public static void GetEnumShit(Newtonsoft.Json.Linq.JObject rootObject)
     {
+        PolibCommandManager.RegisterCommand<DischargeCommand>("dischargecommand");
+        PolibActionManager.RegisterAction<DischargeAction>("dischargeaction");
+
         if (
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out var capacitorType) 
@@ -119,7 +58,6 @@ public static class Main
             || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out var lightningType)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out var electricType)
             || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement", out var excavateType)
-            || !EnumCache<ImprovementData.Type>.TryGetType("discharge_improvement", out var dischargeType)
             || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
             )
 		{
@@ -137,7 +75,6 @@ public static class Main
         Lightning = lightningType;
         Electric = electricType;
         Excavate = excavateType;
-        Discharge = dischargeType;
 
         TeslaTech = teslaTech;
         DroneTech = droneTech;
@@ -154,12 +91,12 @@ public static class Main
             sentryReward
         });
 
-        ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
-        ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
-        ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
-        ParsePerEach<ImprovementData.Type, bool>(rootObject, "improvementData", "lightningGrow", LightningGrow);
-        ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeConsumptionEvent", ChargeConsumptionEvent);
-        ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeBuff", ChargeBuff);
+        PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
+        PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
+        PolibUtils.ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
+        PolibUtils.ParsePerEach<ImprovementData.Type, bool>(rootObject, "improvementData", "lightningGrow", LightningGrow);
+        PolibUtils.ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeConsumptionEvent", ChargeConsumptionEvent);
+        PolibUtils.ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeBuff", ChargeBuff);
     }
 
 	public static Dictionary<UnitData.Type, int> MaxCharge = new Dictionary<UnitData.Type, int>();
@@ -184,7 +121,6 @@ public static class Main
     public static ImprovementAbility.Type Lightning;
     public static ImprovementAbility.Type Electric;
     public static ImprovementData.Type Excavate;
-    public static ImprovementData.Type Discharge;
 
 
     [HarmonyPostfix]
@@ -197,40 +133,6 @@ public static class Main
             {
                 __result = false;
             }
-        }
-        if (improvement.type == Discharge)
-        {
-            if (tile.unit == null) return;
-
-            if (GetChargeCount(tile.unit) == 0)
-            __result = false;
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.ExecuteDefault))]
-    public static void BuildAction_Execute(BuildAction __instance, GameState gameState)
-    {
-        if (!gameState.TryGetPlayer(__instance.PlayerId, out var player))
-        {
-            modLogger.LogError("YOU WIN!!");
-            return;
-        }
-        if (__instance.Type == Discharge)
-        {
-            UnitState unit = gameState.Map.GetTile(__instance.Coordinates).unit;
-            int radius = (GetChargeCount(unit) == GetMaxCharge(unit.type)) ? 2 : 1;
-            Il2Gen.List<TileData> area = gameState.Map.GetArea(__instance.Coordinates, radius, true, false);
-
-            foreach (TileData tile in area)
-            {
-                if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != __instance.PlayerId)
-                {
-                    BattleResults battleResults2 = BattleHelpers.GetBattleResults(gameState, unit, tile.unit);
-                    gameState.ActionStack.Add(new AttackAction(__instance.PlayerId, __instance.Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
-                }
-            }
-            ConsumeCharge(unit);
         }
     }
 
@@ -653,7 +555,7 @@ public static class Main
         }
     }
 
-    static int GetChargeCount(UnitState unit)
+    public static int GetChargeCount(UnitState unit)
     {
         int charges = 0;
 
@@ -668,28 +570,28 @@ public static class Main
         return charges;
     }
 
-    static int GetMaxCharge(UnitData.Type unit)
+    public static int GetMaxCharge(UnitData.Type unit)
     {
         int i = 3;
         MaxCharge.TryGetValue(unit, out i);
         return i;
     }
 
-    static int GetChargeConsumptionAmount(UnitData.Type unit)
+    public static int GetChargeConsumptionAmount(UnitData.Type unit)
     {
         int i = 3;
         ChargeConsumptionAmount.TryGetValue(unit, out i);
         return i;
     }
 
-    static int GetLightningStars(ImprovementData.Type imp)
+    public static int GetLightningStars(ImprovementData.Type imp)
     {
         int i = 0;
         LightningStars.TryGetValue(imp, out i);
         return i;
     }
 
-    static bool GetLightningGrow(ImprovementData.Type imp)
+    public static bool GetLightningGrow(ImprovementData.Type imp)
     {
         bool b = false;
         LightningGrow.TryGetValue(imp, out b);
@@ -697,7 +599,7 @@ public static class Main
     }
 
 
-    static bool DoesConsume(UnitData.Type unit, string e)
+    public static bool DoesConsume(UnitData.Type unit, string e)
     {
         if (!ChargeConsumptionEvent.TryGetValue(unit, out var strings))
         return false;
@@ -705,7 +607,7 @@ public static class Main
         return strings.Contains(e);
     }
 
-    static bool GetsChargeBuff(UnitData.Type unit, string e)
+    public static bool GetsChargeBuff(UnitData.Type unit, string e)
     {
         if (ChargeBuff.TryGetValue(unit, out var strings))
         {
@@ -715,7 +617,7 @@ public static class Main
         return false;
     }
 
-    static void ConsumeCharge(UnitState unit)
+    public static void ConsumeCharge(UnitState unit)
     {
         int consumption = GetChargeConsumptionAmount(unit.type);
 
