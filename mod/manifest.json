@@ -9,6 +9,10 @@
         {
             "id": "polytopia",
             "min": "2.10.0"
+        },
+        {
+            "id": "polibrary",
+            "min": "2.1.2"
         }
     ],
     "description": "Ancients mod hehe"
