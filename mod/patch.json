@@ -445,12 +445,6 @@
         }
     },
     "techData": {
-        "basic": {
-            "improvementUnlocks": [
-                "+excavate_improvement"
-            ]
-        },
-
         "tesla_secrettech": {
             "unitUnlocks": [
                 "teslatower_unit"
@@ -752,18 +746,6 @@
         "immafixthisonceiswear": {
             "idx": -1
         },
-
-        "excavate_improvement": {
-            "idx": -1,
-            "cost": 0,
-            "improvementAbilities": [
-                "manual", "discrete", "freelance"
-            ],
-            "unitAbilityWhitelist": ["excavation_ability"],
-            "triggers": {
-                "onBuild": "excavate_paction"
-            }
-        },
         "pylon_improvement": {
 			"cost": 7,
 			"terrainRequirements": [
@@ -895,19 +877,24 @@
     "commandType": {
         "dischargecommand": {
             "idx": -1
+        },
+        "excavatecommand": {
+            "idx": -1
         }
     },
     "actionType": {
         "dischargeaction": {
             "idx": -1
+        },
+        "ancientsexamineaction": {
+            "idx": -1
+        },
+        "excavateaction": {
+            "idx": -1
         }
     },
 
     "pActions": {
-        "excavate_paction": [
-            "vfx : shine, @origin_auto",
-            "kill : @origin_auto",
-            "build : @origin_auto, ruin, false"
-        ]
+
     }
 }

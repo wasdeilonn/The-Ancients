@@ -3,45 +3,55 @@ using HarmonyLib;
 using Polytopia.Data;
 using Polibrary;
 using PolibMain = Polibrary.Main;
+using AMain = Ancients.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
 
-public class DischargeCommand : PolibCommandBase
+public class ExcavateCommand : PolibCommandBase
 {
-    public int Level; 
     public WorldCoordinates Coordinates;
-    public DischargeCommand(System.IntPtr ptr) : base(ptr) {}
-    public DischargeCommand() {}
-    public DischargeCommand(byte playerId, int level, WorldCoordinates coordinates) 
+    public ExcavateCommand(System.IntPtr ptr) : base(ptr) {}
+    public ExcavateCommand() {}
+    public ExcavateCommand(byte playerId, WorldCoordinates coordinates) 
     : base(playerId)
     {
-        Level = level;
         Coordinates = coordinates;
+    }
+    public override bool IsValid(GameState state, out string validationError)
+    {
+        if (!base.PassesBasicValidation(state, out validationError))
+        {
+            return false;
+        }
+        if (state.Map.GetTile(Coordinates).improvement != null)
+        {
+            validationError = VALIDATION_ERROR_CANT_BUILD;
+            return false;
+        }
+        validationError = null;
+        return true;
     }
 
     public override void ExecuteNew(GameState state)
     {
-        DischargeAction action = PolibActionManager.MakeIl2CppAction<DischargeAction>();
+        ExcavateAction action = PolibActionManager.MakeIl2CppAction<ExcavateAction>();
         action.PlayerId = PlayerId;
-        action.Level = Level;
         action.Coordinates = Coordinates;
         state.ActionStack.Add(action);
     }
 
     public override void SerializeNew(Il2CppSystem.IO.BinaryWriter writer, int version)
     {
-        writer.Write(Level);
         Coordinates.Serialize(writer, version);
     }
 
     public override void DeserializeNew(Il2CppSystem.IO.BinaryReader reader, int version)
     {
-        Level = reader.ReadInt32();
         Coordinates.Deserialize(reader, version);
     }
     
     public override CommandType GetCommandType()
     {
-        CommandType type = EnumCache<CommandType>.GetType("dischargecommand");
+        CommandType type = EnumCache<CommandType>.GetType("excavatecommand");
         return type;
     }
 
@@ -51,24 +61,21 @@ public class DischargeCommand : PolibCommandBase
         {
             base.GetType(),
             base.PlayerId,
-            this.Level,
             this.Coordinates
         });
     }
 }
 
-public class DischargeAction : PolibActionBase
+public class ExcavateAction : PolibActionBase
 {
-    public int Level;
     public WorldCoordinates Coordinates;
-    public DischargeAction(IntPtr ptr) : base(ptr) {}
-    public DischargeAction() {}
+    public ExcavateAction(IntPtr ptr) : base(ptr) {}
+    public ExcavateAction() {}
 
-    public DischargeAction(byte playerId, int level, WorldCoordinates coordinates) 
+    public ExcavateAction(byte playerId, WorldCoordinates coordinates) 
     : base(playerId)
     {
         base.PlayerId = playerId;
-        this.Level = level;
         Coordinates = coordinates;
     }
     
@@ -79,75 +86,69 @@ public class DischargeAction : PolibActionBase
 
     public override ActionType GetActionType()
     {
-        return EnumCache<ActionType>.GetType("dischargeaction");
+        return EnumCache<ActionType>.GetType("excavateaction");
     }
     
     public override void Execute(GameState state)
     {
-        if (!state.TryGetPlayer(base.PlayerId, out var player))
+        TileData tile = state.Map.GetTile(Coordinates);
+        if (tile != null && state.GameLogicData.TryGetData(ImprovementData.Type.Ruin, out var data))
         {
-            Ancients.Main.modLogger.LogError("YOU WIN!!");
-            return;
-        }
-
-        UnitState unit = state.Map.GetTile(Coordinates).unit;
-        int radius = (Level == 2) ? 2 : 1;
-        Il2Gen.List<TileData> area = state.Map.GetArea(Coordinates, radius, true, false);
-
-        foreach (TileData tile in area)
-        {
-            if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != base.PlayerId)
+            tile.improvement = new ImprovementState
             {
-                BattleResults battleResults2 = BattleHelpers.GetBattleResults(state, unit, tile.unit);
-                state.ActionStack.Add(new AttackAction(base.PlayerId, Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
-            }
+                type = ImprovementData.Type.Ruin,
+                borderSize = (ushort)data.borderSize,
+                level = 0,
+                xp = 0,
+                production = 1,
+                founded = (ushort)state.CurrentTurn,
+                baseScore = (ushort)data.GetScoreReward(),
+                founder = base.PlayerId
+            };
         }
-        Ancients.Main.ConsumeCharge(unit);
+        ActionUtils.KillUnit(state, tile);
     }
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
     {
         base.Serialize(writer, version); //this line is important btw
-        writer.Write(Level);
         Coordinates.Serialize(writer, version);
     }
 
     public override void Deserialize(Il2CppSystem.IO.BinaryReader reader, int version)
     {
         base.Deserialize(reader, version); //leave this line in
-        Level = reader.ReadInt32();
         Coordinates.Deserialize(reader, version);
     }
 
     public override string ToString()
     {
-        return string.Format("{0} (PlayerId: {1}, Level: {2}, Coordinates: {3})", new object[]
+        return string.Format("{0} (PlayerId: {1}, Coordinates: {2})", new object[]
         {
             base.GetType(),
             base.PlayerId,
-            this.Level,
             this.Coordinates
         });
     }
 }
 
-public class DischargeReaction : PolibReactionBase
+public class ExcavateReaction : PolibReactionBase
 {
-    protected DischargeAction action;
+    protected ExcavateAction action;
     public override ActionBase actionProperty 
     { 
         get => this.action; 
         set
         {
-            DischargeAction dischargeAction = value.TryCast<DischargeAction>();
-            if (dischargeAction != null)
-            this.action = dischargeAction;
+            ExcavateAction action = value.TryCast<ExcavateAction>();
+            if (action != null)
+            this.action = action;
             else
-            Ancients.Main.modLogger.LogInfo("shits fucked");
+            AMain.modLogger.LogInfo("shits fucked");
         } 
     }
-    public DischargeReaction(IntPtr ptr) : base(ptr) {}
-    public DischargeReaction(DischargeAction action)
+    public ExcavateReaction(IntPtr ptr) : base(ptr) {}
+    public ExcavateReaction(ExcavateAction action)
     {
         this.action = action;
     }
@@ -169,13 +170,9 @@ public class DischargeReaction : PolibReactionBase
         if (instance != null && !instance.IsHidden)
         {
             instance.Render();
-
-            VFXManager.EnsureCustomPuffRegistered("DischargePuff");
-            instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
-            
+            instance.SpawnShine();
             instance.Sway();
-            
-            AudioManager.PlaySFXAtTile(SFXTypes.Explode, tile.coordinates);
+            AudioManager.PlaySFXAtTile(SFXTypes.Capture, tile.coordinates);
             GameManager.DelayCall(200, onComplete);
         }
         else

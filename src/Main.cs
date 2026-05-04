@@ -36,10 +36,20 @@ public static class Main
     public static void GetEnumShit(Newtonsoft.Json.Linq.JObject rootObject)
     {
         PolibCommandManager.RegisterCommand<DischargeCommand>("dischargecommand");
+        PolibCommandManager.RegisterCommand<ExcavateCommand>("excavatecommand");
+
         PolibActionManager.RegisterAction<DischargeAction>("dischargeaction");
+        PolibActionManager.RegisterAction<ExcavateAction>("excavateaction");
+        PolibActionManager.RegisterAction<AncientsExamineAction>("ancientsexamineaction");
+
+        PolibReactionManager.AssignReaction<DischargeReaction>("dischargeaction");
+        PolibReactionManager.AssignReaction<ExcavateReaction>("excavateaction");
+        PolibReactionManager.AssignReaction<AncientsExamineReaction>("ancientsexamineaction");
 
         if (
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("excavation_ability", out var excavateType)
+            || !EnumCache<UnitAbility.Type>.TryGetType("discharge_ability", out var dischargeAbilityType)
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out var capacitorType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out var eightwayType) 
             || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out var shockType) 
@@ -57,7 +67,6 @@ public static class Main
             || !EnumCache<TechData.Type>.TryGetType("sentry_secrettech", out var sentryTech)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out var lightningType)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out var electricType)
-            || !EnumCache<ImprovementData.Type>.TryGetType("excavate_improvement", out var excavateType)
             || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
             )
 		{
@@ -71,6 +80,7 @@ public static class Main
         Eightway = eightwayType;
         Shock = shockType;
         Conductive = shockedEffectType;
+        Discharge = dischargeAbilityType;
         Charged = chargeEffectType;
         Lightning = lightningType;
         Electric = electricType;
@@ -112,6 +122,7 @@ public static class Main
     public static TechData.Type PylonTech;
     public static TechData.Type SentryTech;
     public static TribeType Ancients;
+    public static UnitAbility.Type Discharge;
     public static UnitAbility.Type Charge;
     public static UnitAbility.Type Capacitor;
     public static UnitAbility.Type Eightway;
@@ -120,19 +131,30 @@ public static class Main
     public static UnitEffect Conductive;
     public static ImprovementAbility.Type Lightning;
     public static ImprovementAbility.Type Electric;
-    public static ImprovementData.Type Excavate;
+    public static UnitAbility.Type Excavate;
 
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.CanBuild))]
-    public static void GLD_CanBuild(ref bool __result, GameState gameState, TileData tile, PlayerState playerState, ImprovementData improvement)
+    [HarmonyPatch(typeof(CommandUtils), nameof(CommandUtils.GetUnitActions))]
+    private static void AddCommands(ref Il2Gen.List<CommandBase> __result, GameState gameState, PlayerState player, TileData tile, bool includeUnavailable)
     {
-        if (improvement.type == Excavate)
+        if (tile.unit == null || tile.unit.owner != player.Id) return;
+
+        if (tile.unit.HasAbility(Discharge) && tile.unit.HasAbility(Capacitor) && !tile.unit.moved && !tile.unit.attacked && GetChargeCount(tile.unit) > 0)
         {
-            if (tile.improvement != null) //this is needed cuz discrete is needed so it doesnt look fucking ass
-            {
-                __result = false;
-            }
+            DischargeCommand command = PolibCommandManager.MakeIl2CppCommand<DischargeCommand>();
+            command.Coordinates = tile.coordinates;
+            command.PlayerId = player.Id;
+            command.Level = GetChargeCount(tile.unit) - 1; //subtract 1 cause its 0 based
+            CommandUtils.AddCommand(gameState, __result, command, includeUnavailable);
+        }
+
+        if (tile.unit.HasAbility(Excavate) && !tile.unit.moved && !tile.unit.attacked)
+        {
+            ExcavateCommand command = PolibCommandManager.MakeIl2CppCommand<ExcavateCommand>();
+            command.Coordinates = tile.coordinates;
+            command.PlayerId = player.Id;
+            CommandUtils.AddCommand(gameState, __result, command, includeUnavailable);
         }
     }
 
@@ -340,148 +362,7 @@ public static class Main
         return true;
 	}
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(ExamineRuinsAction), nameof(ExamineRuinsAction.ExecuteDefault))]
-    private static bool ExamineRuins_Execute(GameState gameState, ExamineRuinsAction __instance)
-	{
-        TileData tile = gameState.Map.GetTile(__instance.Coordinates);
-        if (!gameState.TryGetPlayer(__instance.PlayerId, out var player))
-        {
-            return true;
-        }
-        if (player.tribe != Ancients) return true;
-        tile.improvement = null;
-        if (tile.unit != null)
-        {
-            tile.unit.MakeExhauseted(gameState);
-        }
-
-        if (__instance.PlayerId == GameManager.LocalPlayer.Id)
-        {
-            
-            List<TechData.Type> techs = new()
-            {
-                TeslaTech,
-                DroneTech,
-                AccumulatorTech,
-                PylonTech,
-                SentryTech
-            };
-
-            List<TechData.Type> eligibleTechs = new();
-            
-            int num = 0;
-
-            foreach (TechData.Type tech in techs)
-            {
-                if (!player.HasTech(tech))
-                {
-                    num++;
-                    eligibleTechs.Add(tech);
-                }
-            }
-
-            Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<CityReward> rewards = new CityReward[2];
-            
-            if (num == 0)
-            {
-                return true;
-            }
-            else if (num == 1)
-            {
-                rewards = new CityReward[1]
-                {
-                    SecretRewards[techs.LastIndexOf(eligibleTechs[0])]
-                };
-            }
-            else
-            {
-                Il2CppSystem.Random random = new Il2CppSystem.Random(gameState.Seed);
-                for (int i = 0; i < eligibleTechs.Count - 1; i++)
-                {
-                    int index = random.Range(i, eligibleTechs.Count);
-                    TechData.Type value = eligibleTechs[index];
-                    eligibleTechs[index] = eligibleTechs[i];
-                    eligibleTechs[i] = value;
-                }
-
-                rewards[0] = SecretRewards[techs.LastIndexOf(eligibleTechs[0])];
-                rewards[1] = SecretRewards[techs.LastIndexOf(eligibleTechs[1])];
-            }
-            if (num != 0)
-            {
-                var popup = PopupManager.GetRewardPopup();
-                popup.SetData(GameManager.LocalPlayer, gameState.Map.GetTile(__instance.Coordinates), rewards, RewardPopup.PopupType.CityLevelUp, false);
-                popup.Header = Localization.Get("world.ancients.popup.header");
-                popup.Description = Localization.Get("world.ancients.popup.description");
-                popup.Show();
-            }
-        }
-
-        return false;
-	}
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(RewardPopup), nameof(RewardPopup.OnRewardButtonClicked))]
-    private static void fix(int id, UnityEngine.EventSystems.BaseEventData eventData, RewardPopup __instance)
-	{
-        GameState gameState = GameManager.GameState;
-        CityReward reward = __instance.cityRewards[id];
-
-        if (SecretRewards.Contains(reward))
-        {
-            List<TechData.Type> techs = new()
-            {
-                TeslaTech,
-                DroneTech,
-                AccumulatorTech,
-                PylonTech,
-                SentryTech
-            };
-
-            TechData.Type type = techs[SecretRewards.LastIndexOf(reward)];
-
-            gameState.TryGetPlayer(gameState.CurrentPlayer, out var player);
-            player.availableTech.Add(type);
-            gameState.ActionStack.Add(new ResearchAction(gameState.CurrentPlayer, type, 0));
-        }
-	}
-
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(ExamineRuinsReaction), nameof(ExamineRuinsReaction.Execute))]
-    private static bool ExamineRuins_ReactionFix(Il2CppSystem.Action onComplete, ExamineRuinsReaction __instance)
-	{
-        if (!GameManager.GameState.TryGetPlayer(__instance.action.PlayerId, out var player)) return true;
-        if (player.tribe != Ancients) return true;
-
-        Tile tileInstance = MapRenderer.Current.GetTileInstance(__instance.action.Coordinates);
-        if (tileInstance.IsHidden)
-        {
-            tileInstance.StopRainbowFire(false);
-            onComplete.Invoke();
-            return false;
-        }
-        tileInstance.Render();
-        tileInstance.SpawnShine();
-        tileInstance.SpawnSparkles();
-        AudioManager.PlaySFXAtTile(SFXTypes.Examine, tileInstance.Coordinates);
-        
-        onComplete.Invoke();
-        return false;
-	}
-
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(RewardPopup), nameof(RewardPopup.SetData))]
-    private static bool SetDataFix(RewardPopup __instance, PlayerState playerState, TileData tile, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<CityReward> rewards, RewardPopup.PopupType type, bool isReplay = false)
-	{
-        if (tile.improvement == null)
-        {
-            __instance.SetRewards(playerState, rewards, isReplay);
-            RewardPopup.OnDataSet?.Invoke(__instance);
-            return false;
-        }
-        return true;
-	}
+    
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(StartTurnAction), nameof(StartTurnAction.ExecuteDefault))]
