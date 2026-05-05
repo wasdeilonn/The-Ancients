@@ -5,6 +5,7 @@ using Polibrary;
 using PolibMain = Polibrary.Main;
 using AMain = Ancients.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
+using UnityEngine.UIElements.UIR;
 
 public static class RuinPatcher
 {
@@ -32,11 +33,142 @@ public static class RuinPatcher
 	}
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(RewardPopup), nameof(RewardPopup.OnRewardButtonClicked))]
-    private static void fix(int id, UnityEngine.EventSystems.BaseEventData eventData, RewardPopup __instance)
+    [HarmonyPatch(typeof(CommandTriggerUIUtils), nameof(CommandTriggerUIUtils.ShowCommandTrigger))]
+    public static bool CommandTriggerPrefix(CommandTrigger commandTrigger)
+    {
+        GameState state = GameManager.GameState;
+        if (!GameManager.GameState.TryGetPlayer(commandTrigger.playerId, out var player)) return true;
+        TileData tile = state.Map.GetTile(commandTrigger.coordinates);
+
+        if (commandTrigger.type != CommandTriggerType.CityLevelUp) return true;
+
+        if (tile.improvement == null || tile.improvement.type == ImprovementData.Type.City)
+        {
+            if (!PopupManager.IsPopupShowing<RewardPopup>())
+            {
+                List<TechData.Type> techs = new()
+                {
+                    AMain.TeslaTech,
+                    AMain.DroneTech,
+                    AMain.AccumulatorTech,
+                    AMain.PylonTech,
+                    AMain.SentryTech
+                };
+
+                List<TechData.Type> eligibleTechs = new();
+                
+                int num = 0;
+
+                foreach (TechData.Type tech in techs)
+                {
+                    if (!player.HasTech(tech))
+                    {
+                        num++;
+                        eligibleTechs.Add(tech);
+                    }
+                }
+
+                Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<CityReward> rewards = new CityReward[2];
+                
+                if (num == 0)
+                {
+                    return false;
+                }
+                else if (num == 1)
+                {
+                    rewards = new CityReward[1]
+                    {
+                        AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[0])]
+                    };
+                }
+                else
+                {
+                    Il2CppSystem.Random random = new Il2CppSystem.Random(state.Seed);
+                    for (int i = 0; i < eligibleTechs.Count - 1; i++)
+                    {
+                        int index = random.Range(i, eligibleTechs.Count);
+                        TechData.Type value = eligibleTechs[index];
+                        eligibleTechs[index] = eligibleTechs[i];
+                        eligibleTechs[i] = value;
+                    }
+
+                    rewards[0] = AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[0])];
+                    rewards[1] = AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[1])];
+                }
+                if (num != 0)
+                {
+                    var popup = PopupManager.GetRewardPopup();
+                    popup.RewardChoosenCallback = Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action<TileData, CityReward>>(
+                        (System.Action<TileData, CityReward>)((tileData, reward) => PerformCityRewardActionTwo(tileData, reward, commandTrigger.coordinates))
+                    );
+                    popup.SetData(player, tile, rewards, RewardPopup.PopupType.CityLevelUp, false);
+                    popup.Header = Localization.Get("world.ancients.popup.header");
+                    popup.Description = Localization.Get("world.ancients.popup.description");
+                    popup.Show();
+                    AudioManager.PlaySFX(SFXTypes.Popup);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static void PerformCityRewardActionTwo(TileData tile, CityReward cityReward, WorldCoordinates coordinates) //tile is NULL!! DONT USE IT!!
+    {
+        GameManager.GameState.TryGetPlayer(GameManager.GameState.CurrentPlayer, out var player);
+        CityRewardCommand cityRewardCommand = new CityRewardCommand(player.Id, cityReward, coordinates);
+        if (!GameManager.GameState.TryGetPendingCommandTrigger(player.Id, out var trigger) && trigger.type == CommandTriggerType.CityLevelUp)
+        {
+            AMain.modLogger.LogInfo("valid");
+            GameManager.Client.SendCommand(cityRewardCommand);
+            AudioManager.PlaySFX(SFXTypes.RewardEnd);
+        }
+        else
+        {
+            AMain.modLogger.LogInfo($"invalid");
+            CommandTriggerUIUtils.TryShowNextCommandTrigger();
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(CityRewardAction), nameof(CityRewardAction.Execute))]
+    private static bool CityRewardActionPatch(GameState state, CityRewardAction __instance)
+    {
+        if (AMain.SecretRewards.Contains(__instance.Reward))
+        {
+            List<TechData.Type> techs = new()
+            {
+                AMain.TeslaTech,
+                AMain.DroneTech,
+                AMain.AccumulatorTech,
+                AMain.PylonTech,
+                AMain.SentryTech
+            };
+
+            TechData.Type type = techs[AMain.SecretRewards.LastIndexOf(__instance.Reward)];
+            state.ActionStack.Add(new ResearchAction(__instance.PlayerId, type, 0));
+            return false;
+        }
+        return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(CityRewardReaction), nameof(CityRewardReaction.Execute))]
+    private static bool CityRewardReactionPatch(Il2CppSystem.Action onComplete, CityRewardReaction __instance)
+    {
+        if (AMain.SecretRewards.Contains(__instance.action.Reward))
+        {
+            onComplete.Invoke();
+            return false;
+        }
+
+        return true;
+    }
+
+    /*public static void CallBackTarget(CityReward reward, byte playerId)
 	{
+        AMain.modLogger.LogInfo("called back");
         GameState gameState = GameManager.GameState;
-        CityReward reward = __instance.cityRewards[id];
 
         if (AMain.SecretRewards.Contains(reward))
         {
@@ -51,36 +183,52 @@ public static class RuinPatcher
 
             TechData.Type type = techs[AMain.SecretRewards.LastIndexOf(reward)];
 
-            gameState.TryGetPlayer(gameState.CurrentPlayer, out var player);
-            player.availableTech.Add(type);
-            gameState.ActionStack.Add(new ResearchAction(gameState.CurrentPlayer, type, 0));
-        }
+            if (GameManager.IsPlayerViewing(GameManager.GameState.CurrentPlayer) && !GameManager.Client.IsRecap)
+            {
+                var dict = new Il2Gen.Dictionary<string, Il2CppSystem.Object>();
+                dict["game_id"] = GameManager.Client.CurrentGameId;
+                dict["type"] = (Il2CppSystem.Object)(int)reward;
+                GameManager.GetAnalyticsManager().SendEvent("level_up_reward_choose", dict);
+            }
 
-        
-	}
+            ResearchCommand command = new ResearchCommand(playerId, type);
+            gameState.PopPendingCommandTrigger(playerId, CommandTriggerType.CityLevelUp);
+            if (command.IsValid(GameManager.GameState, out var validationError))
+            {
+                AMain.modLogger.LogInfo("valid");
+                GameManager.Client.SendCommand(command);
+                AudioManager.PlaySFX(SFXTypes.RewardEnd);
+            }
+            else
+            {
+                AMain.modLogger.LogInfo($"invalid: {validationError}");
+                CommandTriggerUIUtils.TryShowNextCommandTrigger();
+            }
+        }        
+	}*/
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(ExamineRuinsReaction), nameof(ExamineRuinsReaction.Execute))]
-    private static bool ExamineRuins_ReactionFix(Il2CppSystem.Action onComplete, ExamineRuinsReaction __instance)
-	{
-        if (!GameManager.GameState.TryGetPlayer(__instance.action.PlayerId, out var player)) return true;
-        if (player.tribe != AMain.Ancients) return true;
-
-        Tile tileInstance = MapRenderer.Current.GetTileInstance(__instance.action.Coordinates);
-        if (tileInstance.IsHidden)
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.GetUnlockableTech))]
+    private static void SecretTechUnlockabilityFix(Il2Gen.List<TechData> __result, PlayerState player, GameState gameState)
+    {
+        if(player.tribe == AMain.Ancients)
         {
-            tileInstance.StopRainbowFire(false);
-            onComplete.Invoke();
-            return false;
+            List<TechData.Type> techs = new()
+            {
+                AMain.TeslaTech,
+                AMain.DroneTech,
+                AMain.AccumulatorTech,
+                AMain.PylonTech,
+                AMain.SentryTech
+            };
+
+            foreach (TechData.Type type in techs)
+            {
+                gameState.GameLogicData.TryGetData(type, out var data);
+                __result.Add(data);
+            }
         }
-        tileInstance.Render();
-        tileInstance.SpawnShine();
-        tileInstance.SpawnSparkles();
-        AudioManager.PlaySFXAtTile(SFXTypes.Examine, tileInstance.Coordinates);
-        
-        onComplete.Invoke();
-        return false;
-	}
+    }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(RewardPopup), nameof(RewardPopup.SetData))]
@@ -123,73 +271,21 @@ public class AncientsExamineAction : PolibActionBase
         if (!GameManager.GameState.TryGetPlayer(PlayerId, out var player)) return;
         TileData tile = state.Map.GetTile(Coordinates);
 
+        if (tile == null) return;
+
         tile.improvement = null;
         if (tile.unit != null)
         {
             tile.unit.MakeExhauseted(state);
         }
 
-        if (PlayerId == GameManager.LocalPlayer.Id)
+        CommandTrigger commandTrigger = new CommandTrigger
         {
-            
-            List<TechData.Type> techs = new()
-            {
-                AMain.TeslaTech,
-                AMain.DroneTech,
-                AMain.AccumulatorTech,
-                AMain.PylonTech,
-                AMain.SentryTech
-            };
-
-            List<TechData.Type> eligibleTechs = new();
-            
-            int num = 0;
-
-            foreach (TechData.Type tech in techs)
-            {
-                if (!player.HasTech(tech))
-                {
-                    num++;
-                    eligibleTechs.Add(tech);
-                }
-            }
-
-            Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<CityReward> rewards = new CityReward[2];
-            
-            if (num == 0)
-            {
-                return;
-            }
-            else if (num == 1)
-            {
-                rewards = new CityReward[1]
-                {
-                    AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[0])]
-                };
-            }
-            else
-            {
-                Il2CppSystem.Random random = new Il2CppSystem.Random(state.Seed);
-                for (int i = 0; i < eligibleTechs.Count - 1; i++)
-                {
-                    int index = random.Range(i, eligibleTechs.Count);
-                    TechData.Type value = eligibleTechs[index];
-                    eligibleTechs[index] = eligibleTechs[i];
-                    eligibleTechs[i] = value;
-                }
-
-                rewards[0] = AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[0])];
-                rewards[1] = AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[1])];
-            }
-            if (num != 0)
-            {
-                var popup = PopupManager.GetRewardPopup();
-                popup.SetData(GameManager.LocalPlayer, tile, rewards, RewardPopup.PopupType.CityLevelUp, false);
-                popup.Header = Localization.Get("world.ancients.popup.header");
-                popup.Description = Localization.Get("world.ancients.popup.description");
-                popup.Show();
-            }
-        }
+            playerId = PlayerId,
+            type = CommandTriggerType.CityLevelUp,
+            coordinates = Coordinates
+        };
+        state.pendingCommandTriggers.Add(commandTrigger);
     }
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
@@ -250,7 +346,7 @@ public class AncientsExamineReaction : PolibReactionBase
     {
         Tile instance = MapRenderer.Current.GetTileInstance(action.Coordinates);
         if (instance == null) return;
-        
+
         if (instance.IsHidden)
         {
             instance.StopRainbowFire(false);

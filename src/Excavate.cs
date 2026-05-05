@@ -5,6 +5,7 @@ using Polibrary;
 using PolibMain = Polibrary.Main;
 using AMain = Ancients.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
+using Il2CppSystem;
 
 public class ExcavateCommand : PolibCommandBase
 {
@@ -69,7 +70,7 @@ public class ExcavateCommand : PolibCommandBase
 public class ExcavateAction : PolibActionBase
 {
     public WorldCoordinates Coordinates;
-    public ExcavateAction(IntPtr ptr) : base(ptr) {}
+    public ExcavateAction(System.IntPtr ptr) : base(ptr) {}
     public ExcavateAction() {}
 
     public ExcavateAction(byte playerId, WorldCoordinates coordinates) 
@@ -147,7 +148,7 @@ public class ExcavateReaction : PolibReactionBase
             AMain.modLogger.LogInfo("shits fucked");
         } 
     }
-    public ExcavateReaction(IntPtr ptr) : base(ptr) {}
+    public ExcavateReaction(System.IntPtr ptr) : base(ptr) {}
     public ExcavateReaction(ExcavateAction action)
     {
         this.action = action;
