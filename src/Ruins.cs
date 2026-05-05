@@ -117,7 +117,7 @@ public static class RuinPatcher
     {
         GameManager.GameState.TryGetPlayer(GameManager.GameState.CurrentPlayer, out var player);
         CityRewardCommand cityRewardCommand = new CityRewardCommand(player.Id, cityReward, coordinates);
-        if (!GameManager.GameState.TryGetPendingCommandTrigger(player.Id, out var trigger) && trigger.type == CommandTriggerType.CityLevelUp)
+        if (cityRewardCommand.IsValid(GameManager.GameState))
         {
             AMain.modLogger.LogInfo("valid");
             GameManager.Client.SendCommand(cityRewardCommand);
@@ -128,6 +128,20 @@ public static class RuinPatcher
             AMain.modLogger.LogInfo($"invalid");
             CommandTriggerUIUtils.TryShowNextCommandTrigger();
         }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(CityRewardCommand), nameof(CityRewardCommand.IsValid))]
+    private static bool CityRewardCommand_IsValid(GameState gameState, out string validationError, CityRewardCommand __instance, ref bool __result)
+    {
+        if (AMain.SecretRewards.Contains(__instance.Reward))
+        {
+            __result = true;
+            validationError = "";
+            return false;
+        }
+        validationError = "";
+        return true;
     }
 
     [HarmonyPrefix]
