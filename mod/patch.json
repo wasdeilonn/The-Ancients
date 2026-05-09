@@ -889,6 +889,9 @@
         "ancientsexamineaction": {
             "idx": -1
         },
+        "chargeaction": {
+            "idx": -1
+        },
         "excavateaction": {
             "idx": -1
         }

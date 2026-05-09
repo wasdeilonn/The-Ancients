@@ -10,7 +10,7 @@
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    sodipodi:docname="vfx.svg"
    xml:space="preserve"
-   inkscape:export-filename="../mod/dischargecommand__.png"
+   inkscape:export-filename="../mod/vfx_chargepuff__.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="0.25000001"
-     inkscape:cx="-613.99998"
-     inkscape:cy="347.99999"
+     inkscape:zoom="0.3535534"
+     inkscape:cx="216.37467"
+     inkscape:cy="166.87719"
      inkscape:window-width="1920"
      inkscape:window-height="1052"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="g39"
      showgrid="true" /><defs
      id="defs1"><linearGradient
        id="linearGradient73"
@@ -212,7 +212,8 @@
        id="path16" /></g><g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Lightning"><path
+     inkscape:label="Lightning"
+     style="display:none"><path
        style="fill:url(#linearGradient74);stroke-width:0.499999;stroke-linejoin:round;filter:url(#filter74)"
        d="m 139.56814,132.83295 -12.09105,-38.892407 12.35336,0.367719 -16.84178,-53.057091 10.26063,-8.749591 -5.01104,-25.0824192 17.09114,0.1456294 2.06531,29.5974838 -13.77548,8.94316 12.65295,56.455816 -11.85951,-1.96212 z"
        id="path73"
@@ -224,7 +225,7 @@
      inkscape:groupmode="layer"
      id="g39"
      inkscape:label="Charge"
-     style="display:none"
+     style="display:inline"
      transform="matrix(1.9332611,0,0,1.9332611,5.6668736,5.0297135)"><g
        inkscape:groupmode="layer"
        id="g71"

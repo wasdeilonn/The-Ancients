@@ -4,6 +4,7 @@ using Polytopia.Data;
 using Polibrary;
 using PolibMain = Polibrary.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
+using UnityEngine;
 
 public class DischargeCommand : PolibCommandBase
 {
@@ -172,6 +173,19 @@ public class DischargeReaction : PolibReactionBase
 
             VFXManager.EnsureCustomPuffRegistered("DischargePuff");
             instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
+
+            if (action.Level == 0)
+            {
+                
+            }
+            else if (action.Level == 1)
+            {
+                
+            }
+            else if (action.Level == 2)
+            {
+                PolibUtils.ShakeCamera(0.1f, 1f);
+            }
             
             instance.Sway();
             

@@ -41,10 +41,12 @@ public static class Main
         PolibActionManager.RegisterAction<DischargeAction>("dischargeaction");
         PolibActionManager.RegisterAction<ExcavateAction>("excavateaction");
         PolibActionManager.RegisterAction<AncientsExamineAction>("ancientsexamineaction");
+        PolibActionManager.RegisterAction<ChargeAction>("chargeaction");
 
         PolibReactionManager.AssignReaction<DischargeReaction>("dischargeaction");
         PolibReactionManager.AssignReaction<ExcavateReaction>("excavateaction");
         PolibReactionManager.AssignReaction<AncientsExamineReaction>("ancientsexamineaction");
+        PolibReactionManager.AssignReaction<ChargeReaction>("chargeaction");
 
         if (
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
