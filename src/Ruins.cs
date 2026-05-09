@@ -119,13 +119,11 @@ public static class RuinPatcher
         CityRewardCommand cityRewardCommand = new CityRewardCommand(player.Id, cityReward, coordinates);
         if (cityRewardCommand.IsValid(GameManager.GameState))
         {
-            AMain.modLogger.LogInfo("valid");
             GameManager.Client.SendCommand(cityRewardCommand);
             AudioManager.PlaySFX(SFXTypes.RewardEnd);
         }
         else
         {
-            AMain.modLogger.LogInfo($"invalid");
             CommandTriggerUIUtils.TryShowNextCommandTrigger();
         }
     }
@@ -178,48 +176,6 @@ public static class RuinPatcher
 
         return true;
     }
-
-    /*public static void CallBackTarget(CityReward reward, byte playerId)
-	{
-        AMain.modLogger.LogInfo("called back");
-        GameState gameState = GameManager.GameState;
-
-        if (AMain.SecretRewards.Contains(reward))
-        {
-            List<TechData.Type> techs = new()
-            {
-                AMain.TeslaTech,
-                AMain.DroneTech,
-                AMain.AccumulatorTech,
-                AMain.PylonTech,
-                AMain.SentryTech
-            };
-
-            TechData.Type type = techs[AMain.SecretRewards.LastIndexOf(reward)];
-
-            if (GameManager.IsPlayerViewing(GameManager.GameState.CurrentPlayer) && !GameManager.Client.IsRecap)
-            {
-                var dict = new Il2Gen.Dictionary<string, Il2CppSystem.Object>();
-                dict["game_id"] = GameManager.Client.CurrentGameId;
-                dict["type"] = (Il2CppSystem.Object)(int)reward;
-                GameManager.GetAnalyticsManager().SendEvent("level_up_reward_choose", dict);
-            }
-
-            ResearchCommand command = new ResearchCommand(playerId, type);
-            gameState.PopPendingCommandTrigger(playerId, CommandTriggerType.CityLevelUp);
-            if (command.IsValid(GameManager.GameState, out var validationError))
-            {
-                AMain.modLogger.LogInfo("valid");
-                GameManager.Client.SendCommand(command);
-                AudioManager.PlaySFX(SFXTypes.RewardEnd);
-            }
-            else
-            {
-                AMain.modLogger.LogInfo($"invalid: {validationError}");
-                CommandTriggerUIUtils.TryShowNextCommandTrigger();
-            }
-        }        
-	}*/
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.GetUnlockableTech))]
@@ -371,6 +327,6 @@ public class AncientsExamineReaction : PolibReactionBase
         instance.SpawnShine();
         instance.SpawnSparkles();
         AudioManager.PlaySFXAtTile(SFXTypes.Examine, instance.Coordinates);
-        onComplete.Invoke();
+        GameManager.DelayCall(200, onComplete);
     }
 }
