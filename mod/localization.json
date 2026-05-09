@@ -119,8 +119,36 @@
     "technology_names_tesla__secrettech": {
         "English": "High Voltage"
     },
+    "technology_names_accumulator__secrettech": {
+        "English": "Charge Storage"
+    },
+    "technology_names_drone__secrettech": {
+        "English": "Aviation"
+    },
+    "technology_names_pylon__secrettech": {
+        "English": "Pylons"
+    },
+    "technology_names_sentry__secrettech": {
+        "English": "Redirection"
+    },
+
+    "wcontroller_reward_highvoltage__secretreward": {
+        "English": "High Voltage"
+    },
+    "wcontroller_reward_chargestorage__secretreward": {
+        "English": "Charge Storage"
+    },
+    "wcontroller_reward_aviation__secretreward": {
+        "English": "Aviation"
+    },
+    "wcontroller_reward_pylons__secretreward": {
+        "English": "Pylons"
+    },
+    "wcontroller_reward_redirection__secretreward": {
+        "English": "Redirection"
+    },
 
     "tribes_ancients": {
-        "English": "The Ancients"
+        "English": "Ancients"
     }
 }
