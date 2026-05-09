@@ -101,6 +101,15 @@ public static class Main
             sentryReward
         });
 
+        Techs.AddRange(new TechData.Type[]
+        {
+            teslaTech,
+            droneTech,
+            accTech,
+            pylonTech,
+            sentryTech
+        });
+
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
         PolibUtils.ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
@@ -116,6 +125,7 @@ public static class Main
     public static Dictionary<ImprovementData.Type, int> LightningStars = new();
     public static Dictionary<ImprovementData.Type, bool> LightningGrow = new();
     public static List<CityReward> SecretRewards = new();
+    public static List<TechData.Type> Techs = new();
     public static TechData.Type TeslaTech;
     public static TechData.Type DroneTech;
     public static TechData.Type AccumulatorTech;
@@ -305,7 +315,6 @@ public static class Main
 	{
         if (tile.unit == null || !gameState.TryGetPlayer(tile.unit.owner, out var player))
         {
-            modLogger.LogInfo("Good job shitsmear");
             return;
         }
         if (tile.unit.HasEffect(Conductive))

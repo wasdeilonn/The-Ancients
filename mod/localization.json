@@ -86,9 +86,6 @@
     "building_names_electrode__improvement": {
         "English": "Electrode"
     },
-    "building_names_excavate__improvement": {
-        "English": "Excavate"
-    },
     "building_names_discharge__improvement": {
         "English": "Discharge"
     },
@@ -100,6 +97,27 @@
     },
     "building_names_semiconductor__improvement": {
         "English": "Semiconductor"
+    },
+
+    "action_info_excavatecommand": {
+        "English": "Excavate"
+    },
+    "action_info_dischargecommand": {
+        "English": "Excavate"
+    },
+
+    "world_ancients_popup_header": {
+        "English": "Ancient Writings"
+    },
+    "world_ancients_popup_description": {
+        "English": "You found ancient writings detailing forgotten applications of lightning magic. Your researchers could only partially decode the writings and are divided between 2 possible meanings."
+    },
+    "world_ancients_popup_description2": {
+        "English": "You found ancient writings detailing forgotten applications of lightning magic. Your researchers successfully decoded the writings."
+    },
+
+    "technology_names_tesla__secrettech": {
+        "English": "High Voltage"
     },
 
     "tribes_ancients": {

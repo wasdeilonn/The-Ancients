@@ -35,31 +35,23 @@ public static class RuinPatcher
     [HarmonyPrefix]
     [HarmonyPatch(typeof(CommandTriggerUIUtils), nameof(CommandTriggerUIUtils.ShowCommandTrigger))]
     public static bool CommandTriggerPrefix(CommandTrigger commandTrigger)
-    {
+    {   
         GameState state = GameManager.GameState;
         if (!GameManager.GameState.TryGetPlayer(commandTrigger.playerId, out var player)) return true;
         TileData tile = state.Map.GetTile(commandTrigger.coordinates);
 
         if (commandTrigger.type != CommandTriggerType.CityLevelUp) return true;
 
-        if (tile.improvement == null || tile.improvement.type == ImprovementData.Type.City)
+        if (tile.improvement == null)
         {
             if (!PopupManager.IsPopupShowing<RewardPopup>())
             {
-                List<TechData.Type> techs = new()
-                {
-                    AMain.TeslaTech,
-                    AMain.DroneTech,
-                    AMain.AccumulatorTech,
-                    AMain.PylonTech,
-                    AMain.SentryTech
-                };
 
                 List<TechData.Type> eligibleTechs = new();
                 
                 int num = 0;
 
-                foreach (TechData.Type tech in techs)
+                foreach (TechData.Type tech in AMain.Techs)
                 {
                     if (!player.HasTech(tech))
                     {
@@ -78,7 +70,7 @@ public static class RuinPatcher
                 {
                     rewards = new CityReward[1]
                     {
-                        AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[0])]
+                        AMain.SecretRewards[AMain.Techs.LastIndexOf(eligibleTechs[0])]
                     };
                 }
                 else
@@ -92,8 +84,8 @@ public static class RuinPatcher
                         eligibleTechs[i] = value;
                     }
 
-                    rewards[0] = AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[0])];
-                    rewards[1] = AMain.SecretRewards[techs.LastIndexOf(eligibleTechs[1])];
+                    rewards[0] = AMain.SecretRewards[AMain.Techs.LastIndexOf(eligibleTechs[0])];
+                    rewards[1] = AMain.SecretRewards[AMain.Techs.LastIndexOf(eligibleTechs[1])];
                 }
                 if (num != 0)
                 {
@@ -103,7 +95,7 @@ public static class RuinPatcher
                     );
                     popup.SetData(player, tile, rewards, RewardPopup.PopupType.CityLevelUp, false);
                     popup.Header = Localization.Get("world.ancients.popup.header");
-                    popup.Description = Localization.Get("world.ancients.popup.description");
+                    popup.Description = (num != 1) ? Localization.Get("world.ancients.popup.description") : Localization.Get("world.ancients.popup.description2");
                     popup.Show();
                     AudioManager.PlaySFX(SFXTypes.Popup);
                     return false;
@@ -148,16 +140,7 @@ public static class RuinPatcher
     {
         if (AMain.SecretRewards.Contains(__instance.Reward))
         {
-            List<TechData.Type> techs = new()
-            {
-                AMain.TeslaTech,
-                AMain.DroneTech,
-                AMain.AccumulatorTech,
-                AMain.PylonTech,
-                AMain.SentryTech
-            };
-
-            TechData.Type type = techs[AMain.SecretRewards.LastIndexOf(__instance.Reward)];
+            TechData.Type type = AMain.Techs[AMain.SecretRewards.LastIndexOf(__instance.Reward)];
             state.ActionStack.Add(new ResearchAction(__instance.PlayerId, type, 0));
             return false;
         }
@@ -183,16 +166,7 @@ public static class RuinPatcher
     {
         if(player.tribe == AMain.Ancients)
         {
-            List<TechData.Type> techs = new()
-            {
-                AMain.TeslaTech,
-                AMain.DroneTech,
-                AMain.AccumulatorTech,
-                AMain.PylonTech,
-                AMain.SentryTech
-            };
-
-            foreach (TechData.Type type in techs)
+            foreach (TechData.Type type in AMain.Techs)
             {
                 gameState.GameLogicData.TryGetData(type, out var data);
                 __result.Add(data);
@@ -249,13 +223,28 @@ public class AncientsExamineAction : PolibActionBase
             tile.unit.MakeExhauseted(state);
         }
 
-        CommandTrigger commandTrigger = new CommandTrigger
+        int techCounter = 0;
+
+        foreach (TechData.Type tech in AMain.Techs)
         {
-            playerId = PlayerId,
-            type = CommandTriggerType.CityLevelUp,
-            coordinates = Coordinates
-        };
-        state.pendingCommandTriggers.Add(commandTrigger);
+            if (player.availableTech.Contains(tech))
+            {
+                techCounter++;
+            }
+        }
+
+        if (techCounter < AMain.Techs.Count)
+        {
+            CommandTrigger commandTrigger = new CommandTrigger
+            {
+                playerId = PlayerId,
+                type = CommandTriggerType.CityLevelUp,
+                coordinates = Coordinates
+            };
+            state.AddPendingCommandTrigger(commandTrigger);
+        }
+        else
+        state.ActionStack.Add(new IncreaseCurrencyAction(PlayerId, Coordinates, 10, 20));
     }
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
