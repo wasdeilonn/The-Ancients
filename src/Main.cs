@@ -111,7 +111,7 @@ public static class Main
             pylonTech,
             sentryTech
         });
-
+        
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
         PolibUtils.ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
@@ -270,7 +270,11 @@ public static class Main
 		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return;
         if (unit.HasAbility(Capacitor) && DoesConsume(unit.type, "move") && __instance.Reason == MoveAction.MoveReason.Command)
         {
-            ConsumeCharge(unit);
+            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+            action.PlayerId = unit.owner;
+            action.Coordinates = unit.coordinates;
+            action.Positive = false;
+            gameState.ActionStack.Add(action);
         }
 	}
 
@@ -285,12 +289,20 @@ public static class Main
 
 		if (attacker.HasAbility(Charge) && defender.HasAbility(Capacitor))
 		{
-            defender.effects.Add(Charged);
+            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+            action.PlayerId = defender.owner;
+            action.Coordinates = defender.coordinates;
+            action.Positive = true;
+            state.ActionStack.Add(action);
 		}
 
         if (attacker.HasAbility(Capacitor) && DoesConsume(attacker.type, "attack"))
         {
-            ConsumeCharge(attacker);
+            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+            action.PlayerId = attacker.owner;
+            action.Coordinates = attacker.coordinates;
+            action.Positive = false;
+            state.ActionStack.Add(action);
         }
 
         if (attacker.HasAbility(Shock))

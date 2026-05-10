@@ -119,15 +119,16 @@ public class ChargeReaction : PolibReactionBase
 
             if (action.Positive)
             {
-                VFXManager.EnsureCustomPuffRegistered("ChargePuff");
+                VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
                 instance.DoPuff("ChargePuff", instance.transform, instance.VisualCenterObject.localPosition);
                 AudioManager.PlaySFXAtTile(SFXTypes.Connect, tile.coordinates);
             }
             else
-            instance.Sway();
-            AudioManager.PlaySFXAtTile(SFXTypes.Explode, tile.coordinates);
-            
-            GameManager.DelayCall(200, onComplete);
+            {
+                instance.Sway();
+                AudioManager.PlaySFXAtTile(SFXTypes.Explode, tile.coordinates);
+            }
+            onComplete.Invoke();
         }
         else
         {

@@ -103,7 +103,12 @@ public class DischargeAction : PolibActionBase
                 state.ActionStack.Add(new AttackAction(base.PlayerId, Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
             }
         }
-        Ancients.Main.ConsumeCharge(unit);
+
+        ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+        action.PlayerId = unit.owner;
+        action.Coordinates = unit.coordinates;
+        action.Positive = false;
+        state.ActionStack.Add(action);
     }
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
@@ -170,21 +175,33 @@ public class DischargeReaction : PolibReactionBase
         if (instance != null && !instance.IsHidden)
         {
             instance.Render();
-
-            VFXManager.EnsureCustomPuffRegistered("DischargePuff");
-            instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
-
+            VFXManager.SizeMappings["dischargepuff"] = 2f;
+            VFXManager.SizeMappings["dischargepufflarge"] = 4f;
+            VFXManager.SizeMappings["dischargeblast"] = 2f;
+            
             if (action.Level == 0)
             {
-                
+                instance.SpawnAreaDamage();
+
+                VFXManager.EnsureCustomPuffRegistered("DischargePuff", "Puff");
+                instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
             }
             else if (action.Level == 1)
             {
+                instance.SpawnAreaDamage();
                 
+                VFXManager.EnsureCustomPuffRegistered("DischargePuff", "Puff");
+                instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
             }
             else if (action.Level == 2)
             {
                 PolibUtils.ShakeCamera(0.1f, 1f);
+
+                VFXManager.EnsureCustomPuffRegistered("DischargePuffLarge", "Puff");
+                instance.DoPuff("DischargePuffLarge", instance.transform, instance.VisualCenterObject.localPosition);
+
+                VFXManager.EnsureCustomPuffRegistered("DischargeBlast", "Blast");
+                instance.DoPuff("DischargeBlast", instance.transform, instance.VisualCenterObject.localPosition);
             }
             
             instance.Sway();
