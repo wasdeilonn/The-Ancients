@@ -46,7 +46,7 @@
 
     "house_ancients_1": {
         "pixelsPerUnit": 1450,
-        "pivot": [0.5, 0.2]
+        "pivot": [0.5, 0.05]
     },
     "house_ancients_2": {
         "pixelsPerUnit": 1450,
@@ -80,5 +80,20 @@
     "weapon_bow_archer_unit_ancients_": {
         "pixelsPerUnit": 1800,
         "pivot": [0.2, 0.425]
+    },
+    "weapon_club_railcannon_unit__": {
+        "pixelsPerUnit": 1500,
+        "pivot": [0.20, 0.65]
+    },
+    "weapon_club_railcannon_unit_outline__": {
+        "pixelsPerUnit": 1500,
+        "pivot": [0.20, 0.65]
+    },
+
+    "lightningrod_improvement__": {
+        "pivot": [0.5, 0.15]
+    },
+    "electrode_improvement__": {
+        "pivot": [0.5, 0.4]
     }
 }
