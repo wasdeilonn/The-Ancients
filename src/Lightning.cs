@@ -32,8 +32,6 @@ public class LightningStrikeAction : PolibActionBase
     
     public override void Execute(GameState state)
     {
-        AMain.modLogger.LogInfo("yes");
-
         TileData origin = state.Map.GetTile(Coordinates);
 
         if (origin.unit != null && origin.unit.HasAbility(AMain.Capacitor))
@@ -173,10 +171,17 @@ public class LightningStrikeReaction : PolibReactionBase
             {
                 AMain.modLogger.LogInfo("can't find lightning sfx");
             }
+            AudioManager.PlaySFXAtTile(SFXTypes.FireImpact, tile.coordinates);
 
             VFXManager.SizeMappings["dischargepuff"] = 2f;
             VFXManager.EnsureCustomPuffRegistered("DischargePuff", "Puff");
             instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
+        }
+
+        if (tile.unit != null && tile.unit.HasAbility(AMain.Capacitor))
+        {
+            GameManager.DelayCall(200, onComplete);
+            return;
         }
 
         Il2Gen.List<TileData> tiles = GameManager.GameState.Map.GetArea(action.Coordinates, 1, true, false);
@@ -200,9 +205,13 @@ public class LightningStrikeReaction : PolibReactionBase
             if (!data.HasAbility(AMain.Electric))
             continue;
 
-            VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
-            instance.DoPuff("ChargePuff", instance.transform, instance.VisualCenterObject.localPosition);
-            AudioManager.PlaySFXAtTile(SFXTypes.Connect, tile.coordinates);
+            GameManager.DelayCall(100, (Il2CppSystem.Action)(() =>
+            {
+                VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
+                instance1.DoPuff("ChargePuff", instance1.transform, instance1.VisualCenterObject.localPosition);
+                AudioManager.PlaySFXAtTile(SFXTypes.Plop, tile.coordinates);
+            }));
+            
             
             groundingImprovementCount++;
         }
