@@ -100,7 +100,7 @@ public class DischargeAction : PolibActionBase
             if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != base.PlayerId)
             {
                 BattleResults battleResults2 = BattleHelpers.GetBattleResults(state, unit, tile.unit);
-                state.ActionStack.Add(new AttackAction(base.PlayerId, Coordinates, tile.coordinates, battleResults2.attackDamage / 2, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
+                state.ActionStack.Add(new AttackAction(base.PlayerId, Coordinates, tile.coordinates, battleResults2.attackDamage, shouldMoveToTarget: false, AttackAction.AnimationType.Splash, 20));
             }
         }
 
@@ -109,6 +109,8 @@ public class DischargeAction : PolibActionBase
         action.Coordinates = unit.coordinates;
         action.Positive = false;
         state.ActionStack.Add(action);
+
+        unit.MakeExhauseted(state);
     }
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
