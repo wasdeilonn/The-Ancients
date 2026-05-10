@@ -588,7 +588,7 @@
             "defence": 30,
             "movement": 1,
             "range": 0,
-            "attack": 20,
+            "attack": 10,
             "cost": 8,
             "unitAbilities": [
                 "stiff",
