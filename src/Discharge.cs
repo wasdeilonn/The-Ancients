@@ -188,10 +188,17 @@ public class DischargeReaction : PolibReactionBase
             }
             else if (action.Level == 1)
             {
+                PolibUtils.ShakeCamera(0.1f, 0.5f);
+
                 instance.SpawnAreaDamage();
                 
                 VFXManager.EnsureCustomPuffRegistered("DischargePuff", "Puff");
                 instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
+
+                foreach (TileData tileNeighbor in GameManager.GameState.Map.GetTileNeighbors(instance.Coordinates))
+                {
+                    MapRenderer.Current.GetTileInstance(tileNeighbor.coordinates).Sway();
+                }
             }
             else if (action.Level == 2)
             {
@@ -202,6 +209,22 @@ public class DischargeReaction : PolibReactionBase
 
                 VFXManager.EnsureCustomPuffRegistered("DischargeBlast", "Blast");
                 instance.DoPuff("DischargeBlast", instance.transform, instance.VisualCenterObject.localPosition);
+
+                List<Tile> doneTiles = new();
+
+                foreach (TileData tileNeighbor in GameManager.GameState.Map.GetTileNeighbors(instance.Coordinates))
+                {
+                    MapRenderer.Current.GetTileInstance(tileNeighbor.coordinates).Sway();
+                    doneTiles.Add(MapRenderer.Current.GetTileInstance(tileNeighbor.coordinates));
+                }
+
+                foreach (TileData tileData in GameManager.GameState.Map.GetArea(instance.Coordinates, 2, true, true))
+                {
+                    if (!doneTiles.Contains(MapRenderer.Current.GetTileInstance(tileData.coordinates)))
+                    MapRenderer.Current.GetTileInstance(tileData.coordinates).Sway(0.1f);
+                }
+
+
             }
             
             instance.Sway();
