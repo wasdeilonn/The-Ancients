@@ -12,7 +12,7 @@
         "English": "Lightning Archer"
     },
     "unit_names_railcannon__unit": {
-        "English": "Railcannon"
+        "English": "Railgunner"
     },
     "unit_names_teslatower__unit": {
         "English": "Tesla Coil"
@@ -46,7 +46,7 @@
         "English": "CHARGE"
     },
     "tooltip_ability_charge__ability": {
-        "English": "This unit can charge capacitors."
+        "English": "This unit can charge units with the 'Capacitor' ability."
     },
     "unit_abilities_eightway__ability": {
         "English": "8-WAY"

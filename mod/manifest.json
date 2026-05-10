@@ -3,7 +3,7 @@
     "name": "Ancients",
     "version": "0.1",
     "authors": [
-        "wasd_", "Bananique", "___exploit___"
+        "wasd_"
     ],
     "dependencies": [
         {
@@ -13,7 +13,11 @@
         {
             "id": "polibrary",
             "min": "2.1.2"
+        },
+        {
+            "id": "wral",
+            "required": false
         }
     ],
-    "description": "Ancients mod hehe"
+    "description": "REQUIRES POLIBRARY (min. 2.1.2)! wRAL RECOMMENDED! After countless turns of hiding and scheming, the Ancients rise again! Use forbidden lightning magic to power infrastructure, vanquish misaligned tribes and reinstate the ancient Polytopian Empire!"
 }

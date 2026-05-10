@@ -896,6 +896,14 @@
         },
         "excavateaction": {
             "idx": -1
+        },
+        "lightningstrikeaction": {
+            "idx": -1
+        }
+    },
+    "sfx": {
+        "lightning": {
+            "idx": -1
         }
     },
 

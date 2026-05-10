@@ -29,6 +29,8 @@ public static class Main
         modLogger = logger;
         logger.LogMessage("Ancients.dll loaded.");
         modLogger.LogMessage("Version INDEV2");
+
+        PolyMod.Loader.AddPatchDataType("sfx", typeof(SFXTypes));
     }
 
     [HarmonyPostfix]
@@ -42,11 +44,13 @@ public static class Main
         PolibActionManager.RegisterAction<ExcavateAction>("excavateaction");
         PolibActionManager.RegisterAction<AncientsExamineAction>("ancientsexamineaction");
         PolibActionManager.RegisterAction<ChargeAction>("chargeaction");
+        PolibActionManager.RegisterAction<LightningStrikeAction>("lightningstrikeaction");
 
         PolibReactionManager.AssignReaction<DischargeReaction>("dischargeaction");
         PolibReactionManager.AssignReaction<ExcavateReaction>("excavateaction");
         PolibReactionManager.AssignReaction<AncientsExamineReaction>("ancientsexamineaction");
         PolibReactionManager.AssignReaction<ChargeReaction>("chargeaction");
+        PolibReactionManager.AssignReaction<LightningStrikeReaction>("lightningstrikeaction");
 
         if (
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
@@ -397,10 +401,12 @@ public static class Main
             {
                 if (gameState.GameLogicData.GetImprovementData(tile.improvement.type).HasAbility(Lightning))
                 {
-                    LightningStrike(tile.coordinates, gameState);
+                    LightningStrikeAction action = PolibActionManager.MakeIl2CppAction<LightningStrikeAction>();
+                    action.PlayerId = __instance.PlayerId;
+                    action.Coordinates = tile.coordinates;
+                    gameState.ActionStack.Add(action);
                 }
             }
-            
         }
 	}
 
@@ -423,41 +429,6 @@ public static class Main
             __result = true;
         }
 	}
-
-    public static void LightningStrike(WorldCoordinates position, GameState gameState)
-    {
-        Il2Gen.List<TileData> tiles = gameState.Map.GetArea(position, 1, true, false);
-
-        int num = 0;
-        
-        MapRenderer.Current.GetTileInstance(position).SpawnExplosion();
-
-
-        foreach (TileData tile in tiles)
-        {
-            if (tile.improvement == null)
-            continue;
-
-            ImprovementData data = gameState.GameLogicData.GetImprovementData(tile.improvement.type);
-            if (!data.HasAbility(Electric))
-            continue;
-
-            MapRenderer.Current.GetTileInstance(tile.coordinates).SpawnPuff();
-
-            if (GetLightningStars(data.type) > 0)
-            {
-                gameState.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, GetLightningStars(data.type), 0));
-            }
-            if (GetLightningGrow(data.type) && tile.improvement.level <= data.maxLevel)
-            {
-                gameState.ActionStack.Add(new ImprovementLevelUpAction(gameState.CurrentPlayer, tile.coordinates));
-            }
-
-            
-
-            num++;
-        }
-    }
 
     public static int GetChargeCount(UnitState unit)
     {
