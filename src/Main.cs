@@ -1,21 +1,9 @@
 using BepInEx.Logging;
 using HarmonyLib;
-using Il2CppInterop.Runtime.Injection;
 using Polytopia.Data;
-using UnityEngine;
-using UnityEngine.Rendering.RenderGraphModule.NativeRenderPassCompiler;
-using Newtonsoft.Json.Linq;
 using Polibrary;
 using Il2Gen = Il2CppSystem.Collections.Generic;
-using Il2CppSystem.Linq;
-using MS.Internal.Xml.XPath;
 using PolytopiaBackendBase.Common;
-using System.Data;
-using Steamworks.Data;
-using Il2CppSystem;
-using System.Timers;
-using Il2CppMono.Security.Interface;
-using Polibrary.Parsing;
 
 
 namespace Ancients;
@@ -156,12 +144,12 @@ public static class Main
     {
         if (tile.unit == null || tile.unit.owner != player.Id) return;
 
-        if (tile.unit.HasAbility(Discharge) && tile.unit.HasAbility(Capacitor) && !tile.unit.moved && !tile.unit.attacked && GetChargeCount(tile.unit) > 0)
+        if (tile.unit.HasAbility(Discharge) && tile.unit.HasAbility(Capacitor) && !tile.unit.moved && !tile.unit.attacked && ChargeManager.GetChargeCount(tile.unit) > 0)
         {
             DischargeCommand command = PolibCommandManager.MakeIl2CppCommand<DischargeCommand>();
             command.Coordinates = tile.coordinates;
             command.PlayerId = player.Id;
-            command.Level = GetChargeCount(tile.unit) - 1; //subtract 1 cause its 0 based
+            command.Level = ChargeManager.GetChargeCount(tile.unit) - 1; //subtract 1 cause its 0 based
             CommandUtils.AddCommand(gameState, __result, command, includeUnavailable);
         }
 
@@ -174,57 +162,7 @@ public static class Main
         }
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
-    private static void RangeFix(GameState gameState, byte playerId, WorldCoordinates position, ref int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
-	{
-        UnitState unit = gameState.Map.GetTile(position).unit;
-        if (unit == null ) return;
-
-        if (!GetsChargeBuff(unit.type, "range")) return;
-
-        int newrange = range;
-        foreach (UnitEffect effect in unit.effects)
-        {
-            if (effect == Charged)
-            {
-                newrange++;
-            }
-        }
-
-        range = newrange;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttack), typeof(UnitState), typeof(GameState))]
-    private static void AddAttack(ref int __result, GameState gameState, UnitState unitState)
-	{
-        if (!GetsChargeBuff(unitState.type, "attack")) return;
-
-        foreach (UnitEffect effect in unitState.effects)
-        {
-            if (effect == Charged)
-            {
-                
-                __result += 100;
-            }
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetMovement))]
-    private static void AddMovement(ref int __result, GameState gameState, UnitState unitState)
-	{
-        if (!GetsChargeBuff(unitState.type, "movement")) return;
-
-        foreach (UnitEffect effect in unitState.effects)
-        {
-            if (effect == Charged)
-            {
-                __result++;
-            }
-        }
-    }
+    
 
 	[HarmonyPostfix]
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
@@ -232,23 +170,6 @@ public static class Main
 	{
         UnitState unit = gameState.Map.GetTile(position).unit;
         if (unit == null) return;
-
-		Il2Gen.List<TileData> list = gameState.Map.GetArea(position, range, true, false);
-		if (unit.HasAbility(Charge))
-		{
-			foreach (TileData tile in list)
-			{
-				if (tile.unit == null) continue;
-
-				if (tile.unit.HasAbility(Capacitor))
-				{
-                    if (GetChargeCount(tile.unit) < GetMaxCharge(tile.unit.type))
-                    {
-                        __result.Add(tile.coordinates);
-                    }
-				}
-			}
-		}
 
         if (unit.HasAbility(Eightway))
         {
@@ -267,47 +188,12 @@ public static class Main
         }
 	}
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(MoveAction), nameof(MoveAction.ExecuteDefault))]
-    private static void MoveAction_Execute(GameState gameState, MoveAction __instance)
-	{
-		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return;
-        if (unit.HasAbility(Capacitor) && DoesConsume(unit.type, "move") && __instance.Reason == MoveAction.MoveReason.Command)
-        {
-            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
-            action.PlayerId = unit.owner;
-            action.Coordinates = unit.coordinates;
-            action.Positive = false;
-            gameState.ActionStack.Add(action);
-        }
-	}
-
 	[HarmonyPostfix]
     [HarmonyPatch(typeof(AttackAction), nameof(AttackAction.Execute))]
     private static void AttackAction_Execute(GameState state, AttackAction __instance)
 	{
 		UnitState attacker = state.Map.GetTile(__instance.Origin).unit;
 		UnitState defender = state.Map.GetTile(__instance.Target).unit;
-
-        if (attacker == null || defender == null) return;
-
-		if (attacker.HasAbility(Charge) && defender.HasAbility(Capacitor))
-		{
-            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
-            action.PlayerId = defender.owner;
-            action.Coordinates = defender.coordinates;
-            action.Positive = true;
-            state.ActionStack.Add(action);
-		}
-
-        if (attacker.HasAbility(Capacitor) && DoesConsume(attacker.type, "attack"))
-        {
-            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
-            action.PlayerId = attacker.owner;
-            action.Coordinates = attacker.coordinates;
-            action.Positive = false;
-            state.ActionStack.Add(action);
-        }
 
         if (attacker.HasAbility(Shock))
         {
@@ -388,120 +274,6 @@ public static class Main
         }
         return true;
 	}
-
-    
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(StartTurnAction), nameof(StartTurnAction.ExecuteDefault))]
-    private static void StartTurn(GameState gameState, StartTurnAction __instance)
-	{
-		foreach (TileData tile in gameState.Map.tiles)
-        {
-            if (tile.improvement != null && tile.owner == __instance.PlayerId)
-            {
-                if (gameState.GameLogicData.GetImprovementData(tile.improvement.type).HasAbility(Lightning))
-                {
-                    LightningStrikeAction action = PolibActionManager.MakeIl2CppAction<LightningStrikeAction>();
-                    action.PlayerId = __instance.PlayerId;
-                    action.Coordinates = tile.coordinates;
-                    gameState.ActionStack.Add(action);
-                }
-            }
-        }
-	}
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(ImprovementLevelUpAction), nameof(ImprovementLevelUpAction.IsValid))]
-    private static void LvlUpFix(GameState state, ImprovementLevelUpAction __instance, ref bool __result)
-	{
-        TileData tile = state.Map.GetTile(__instance.Coordinates);
-		if (tile == null) return;
-        if (tile.improvement == null) return;
-
-        if (!state.GameLogicData.TryGetData(tile.improvement.type, out var data))
-        {
-            modLogger.LogError("Nice one dumbfuck");
-            return;
-        }
-
-        if (data.HasAbility(Electric) && tile.improvement.level <= data.maxLevel)
-        {
-            __result = true;
-        }
-	}
-
-    public static int GetChargeCount(UnitState unit)
-    {
-        int charges = 0;
-
-        foreach (UnitEffect effect in unit.effects)
-        {
-            if (effect == Charged)
-            {
-                charges++;
-            }
-        }
-
-        return charges;
-    }
-
-    public static int GetMaxCharge(UnitData.Type unit)
-    {
-        int i = 3;
-        MaxCharge.TryGetValue(unit, out i);
-        return i;
-    }
-
-    public static int GetChargeConsumptionAmount(UnitData.Type unit)
-    {
-        int i = 3;
-        ChargeConsumptionAmount.TryGetValue(unit, out i);
-        return i;
-    }
-
-    public static int GetLightningStars(ImprovementData.Type imp)
-    {
-        int i = 0;
-        LightningStars.TryGetValue(imp, out i);
-        return i;
-    }
-
-    public static bool GetLightningGrow(ImprovementData.Type imp)
-    {
-        bool b = false;
-        LightningGrow.TryGetValue(imp, out b);
-        return b;
-    }
-
-
-    public static bool DoesConsume(UnitData.Type unit, string e)
-    {
-        if (!ChargeConsumptionEvent.TryGetValue(unit, out var strings))
-        return false;
-
-        return strings.Contains(e);
-    }
-
-    public static bool GetsChargeBuff(UnitData.Type unit, string e)
-    {
-        if (ChargeBuff.TryGetValue(unit, out var strings))
-        {
-            return strings.Contains(e);
-        }
-        else
-        return false;
-    }
-
-    public static void ConsumeCharge(UnitState unit)
-    {
-        int consumption = GetChargeConsumptionAmount(unit.type);
-
-        for (int i = 0; i < consumption; i++)
-        {
-            unit.effects.Remove(Charged);
-            modLogger.LogInfo($"removed charge, consumption: {consumption}");
-        }
-    }
 }
 
 

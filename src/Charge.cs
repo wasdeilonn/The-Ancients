@@ -5,6 +5,7 @@ using Polibrary;
 using PolibMain = Polibrary.Main;
 using AMain = Ancients.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
+using Ancients;
 
 public class ChargeAction : PolibActionBase
 {
@@ -38,14 +39,14 @@ public class ChargeAction : PolibActionBase
 
         if (Positive)
         {
-            if (AMain.GetChargeCount(tile.unit) < AMain.GetMaxCharge(tile.unit.type))
+            if (ChargeManager.GetChargeCount(tile.unit) < ChargeManager.GetMaxCharge(tile.unit.type))
             {
                 tile.unit.effects.Add(AMain.Charged);
             }
         }
         else
         {
-            for (int i = 0; i < AMain.GetChargeConsumptionAmount(tile.unit.type); i++)
+            for (int i = 0; i < ChargeManager.GetChargeConsumptionAmount(tile.unit.type); i++)
             {
                 tile.unit.RemoveEffect(AMain.Charged);
             }

@@ -6,6 +6,7 @@ using PolibMain = Polibrary.Main;
 using AMain = Ancients.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
 using UnityEngine.Tilemaps;
+using Ancients;
 
 public class LightningStrikeAction : PolibActionBase
 {
@@ -59,11 +60,11 @@ public class LightningStrikeAction : PolibActionBase
             if (!data.HasAbility(AMain.Electric))
             continue;
 
-            if (AMain.GetLightningStars(data.type) > 0)
+            if (LightningManager.GetLightningStars(data.type) > 0)
             {
-                state.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, AMain.GetLightningStars(data.type), 0));
+                state.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, LightningManager.GetLightningStars(data.type), 0));
             }
-            if (AMain.GetLightningGrow(data.type) && tile.improvement.level <= data.maxLevel)
+            if (LightningManager.GetLightningGrow(data.type) && tile.improvement.level <= data.maxLevel)
             {
                 state.ActionStack.Add(new ImprovementLevelUpAction(state.CurrentPlayer, tile.coordinates));
             }
