@@ -19,6 +19,7 @@ public static class Main
         modLogger.LogMessage("Version INDEV2");
 
         PolyMod.Loader.AddPatchDataType("sfx", typeof(SFXTypes));
+        PolyMod.Loader.AddPatchDataType("improvementEffect", typeof(ImprovementEffect));
     }
 
     [HarmonyPostfix]
@@ -54,12 +55,12 @@ public static class Main
             || !EnumCache<CityReward>.TryGetType("highvoltage_secretreward", out var teslaReward) 
             || !EnumCache<CityReward>.TryGetType("aviation_secretreward", out var droneReward) 
             || !EnumCache<CityReward>.TryGetType("chargestorage_secretreward", out var accReward) 
-            || !EnumCache<CityReward>.TryGetType("pylons_secretreward", out var pylonReward) 
+            || !EnumCache<CityReward>.TryGetType("logistics_secretreward", out var sapperReward) 
             || !EnumCache<CityReward>.TryGetType("redirection_secretreward", out var sentryReward) 
             || !EnumCache<TechData.Type>.TryGetType("tesla_secrettech", out var teslaTech) 
             || !EnumCache<TechData.Type>.TryGetType("accumulator_secrettech", out var accTech) 
             || !EnumCache<TechData.Type>.TryGetType("drone_secrettech", out var droneTech)
-            || !EnumCache<TechData.Type>.TryGetType("pylon_secrettech", out var pylonTech)
+            || !EnumCache<TechData.Type>.TryGetType("sapper_secrettech", out var sapperTech)
             || !EnumCache<TechData.Type>.TryGetType("sentry_secrettech", out var sentryTech)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out var lightningType)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out var electricType)
@@ -85,7 +86,7 @@ public static class Main
         TeslaTech = teslaTech;
         DroneTech = droneTech;
         AccumulatorTech = accTech;
-        PylonTech = pylonTech;
+        SapperTech = sapperTech;
         SentryTech = sentryTech;
 
         SecretRewards.AddRange(new CityReward[]
@@ -93,7 +94,7 @@ public static class Main
             teslaReward,
             droneReward,
             accReward,
-            pylonReward,
+            sapperReward,
             sentryReward
         });
 
@@ -102,14 +103,14 @@ public static class Main
             teslaTech,
             droneTech,
             accTech,
-            pylonTech,
+            sapperTech,
             sentryTech
         });
         
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
         PolibUtils.ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningStars", LightningStars);
-        PolibUtils.ParsePerEach<ImprovementData.Type, bool>(rootObject, "improvementData", "lightningGrow", LightningGrow);
+        PolibUtils.ParsePerEach<ImprovementData.Type, int>(rootObject, "improvementData", "lightningPop", LightningPop);
         PolibUtils.ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeConsumptionEvent", ChargeConsumptionEvent);
         PolibUtils.ParseListPerEach<UnitData.Type, string>(rootObject, "unitData", "chargeBuff", ChargeBuff);
     }
@@ -119,13 +120,13 @@ public static class Main
     public static Dictionary<UnitData.Type, List<string>> ChargeConsumptionEvent = new Dictionary<UnitData.Type, List<string>>();
     public static Dictionary<UnitData.Type, List<string>> ChargeBuff = new Dictionary<UnitData.Type, List<string>>();
     public static Dictionary<ImprovementData.Type, int> LightningStars = new();
-    public static Dictionary<ImprovementData.Type, bool> LightningGrow = new();
+    public static Dictionary<ImprovementData.Type, int> LightningPop = new();
     public static List<CityReward> SecretRewards = new();
     public static List<TechData.Type> Techs = new();
     public static TechData.Type TeslaTech;
     public static TechData.Type DroneTech;
     public static TechData.Type AccumulatorTech;
-    public static TechData.Type PylonTech;
+    public static TechData.Type SapperTech;
     public static TechData.Type SentryTech;
     public static TribeType Ancients;
     public static UnitAbility.Type Discharge;

@@ -35,7 +35,7 @@ public class LightningStrikeAction : PolibActionBase
     {
         TileData origin = state.Map.GetTile(Coordinates);
 
-        if (origin.unit != null && origin.unit.HasAbility(AMain.Capacitor))
+        if (origin.unit != null && origin.unit.HasAbility(AMain.Capacitor) && ChargeManager.GetChargeCount(origin.unit) < ChargeManager.GetMaxCharge(origin.unit.type))
         {
             ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
             action.PlayerId = origin.unit.owner;
@@ -62,11 +62,11 @@ public class LightningStrikeAction : PolibActionBase
 
             if (LightningManager.GetLightningStars(data.type) > 0)
             {
-                state.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, LightningManager.GetLightningStars(data.type), 0));
+                state.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, LightningManager.GetLightningStars(data.type), 20));
             }
-            if (LightningManager.GetLightningGrow(data.type) && tile.improvement.level <= data.maxLevel)
+            for ( int i = 0; i < LightningManager.GetLightningPop(data.type); i++)
             {
-                state.ActionStack.Add(new ImprovementLevelUpAction(state.CurrentPlayer, tile.coordinates));
+                state.ActionStack.Add(new IncreasePopulationAction(state.CurrentPlayer, tile.coordinates, tile.rulingCityCoordinates, 20));
             }
             groundingImprovementCount++;
         }
@@ -179,7 +179,7 @@ public class LightningStrikeReaction : PolibReactionBase
             instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
         }
 
-        if (tile.unit != null && tile.unit.HasAbility(AMain.Capacitor))
+        if (tile.unit != null && tile.unit.HasAbility(AMain.Capacitor)  && ChargeManager.GetChargeCount(tile.unit) < ChargeManager.GetMaxCharge(tile.unit.type))
         {
             GameManager.DelayCall(200, onComplete);
             return;

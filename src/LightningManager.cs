@@ -47,26 +47,6 @@ public static class LightningManager
         }
 	}
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(ImprovementLevelUpAction), nameof(ImprovementLevelUpAction.IsValid))]
-    private static void LvlUpFix(GameState state, ImprovementLevelUpAction __instance, ref bool __result)
-	{
-        TileData tile = state.Map.GetTile(__instance.Coordinates);
-		if (tile == null) return;
-        if (tile.improvement == null) return;
-
-        if (!state.GameLogicData.TryGetData(tile.improvement.type, out var data))
-        {
-            AMain.modLogger.LogError("Nice one dumbfuck");
-            return;
-        }
-
-        if (data.HasAbility(AMain.Electric) && tile.improvement.level <= data.maxLevel)
-        {
-            __result = true;
-        }
-	}
-
     public static int GetLightningStars(ImprovementData.Type imp)
     {
         int i = 0;
@@ -74,10 +54,10 @@ public static class LightningManager
         return i;
     }
 
-    public static bool GetLightningGrow(ImprovementData.Type imp)
+    public static int GetLightningPop(ImprovementData.Type imp)
     {
-        bool b = false;
-        AMain.LightningGrow.TryGetValue(imp, out b);
-        return b;
+        int i = 0;
+        AMain.LightningPop.TryGetValue(imp, out i);
+        return i;
     }
 }

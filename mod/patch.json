@@ -466,9 +466,9 @@
 			"cost": 0,
 			"idx": -1
         },
-        "pylon_secrettech": {
-            "improvementUnlocks": [
-                "pylon_improvement"
+        "sapper_secrettech": {
+            "unitUnlocks": [
+                "sapper_unit"
             ],
 			"cost": 0,
 			"idx": -1
@@ -699,6 +699,27 @@
                 "shock_ability"
 			],
 			"idx": -1
+        },
+
+        "sapper_unit": {
+            "idx": -1,
+            "health": 100,
+            "defence": 10,
+            "movement": 3,
+            "range": 1,
+            "attack": 1,
+            "cost": 5,
+            "unitAbilities": [
+                "land",
+                "static",
+                "dash",
+                "capacitor_ability"
+            ],
+            "weapon": 1,
+            "prefab": "rider",
+
+            "maxCharge": 1,
+            "chargeConsumptionAmount": 1
         }
     },
     "unitAbility": {
@@ -748,19 +769,6 @@
         "immafixthisonceiswear": {
             "idx": -1
         },
-        "pylon_improvement": {
-			"cost": 7,
-			"terrainRequirements": [
-                {
-					"terrain": "field"
-				}
-			],
-            "improvementAbilities": [
-                "limited"
-            ],
-			"maxLevel": 0,
-			"idx": -1
-		},
         "lightningrod_improvement": {
 			"cost": 5,
 			"terrainRequirements": [
@@ -811,7 +819,7 @@
 					"terrain": "field"
 				}
 			],
-			"maxLevel": 5,
+			"maxLevel": 0,
             "improvementAbilities": [
                 "limited",
                 "electric_improvementability"
@@ -821,14 +829,9 @@
 					"improvement": "lightningrod_improvement"
 				}
 			],
-            "growthRewards": [
-				{
-					"population": 1
-				}
-			],
 			"idx": -1,
 
-            "lightningGrow": true
+            "lightningPop": 2
 		},
 
         "semiconductor_improvement": {
@@ -860,19 +863,24 @@
 
     "cityRewardData": {
         "highvoltage_secretreward": {
-            "idx": -1
+            "idx": -1,
+            "level": 0
         },
         "aviation_secretreward": {
-            "idx": -1
+            "idx": -1,
+            "level": 0
         },
         "chargestorage_secretreward": {
-            "idx": -1
+            "idx": -1,
+            "level": 0
         },
-        "pylons_secretreward": {
-            "idx": -1
+        "logistics_secretreward": {
+            "idx": -1,
+            "level": 0
         },
         "redirection_secretreward": {
-            "idx": -1
+            "idx": -1,
+            "level": 0
         }
     },
 
@@ -906,6 +914,11 @@
     },
     "sfx": {
         "lightning": {
+            "idx": -1
+        }
+    },
+    "improvementEffect": {
+        "critical": {
             "idx": -1
         }
     },

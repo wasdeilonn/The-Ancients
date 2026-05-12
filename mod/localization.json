@@ -26,6 +26,9 @@
     "unit_names_sentry__unit": {
         "English": "Sentry"
     },
+    "unit_names_sapper__unit": {
+        "English": "Sapper"
+    },
     "unit_names_spark__unit": {
         "English": "Jumpspark"
     },
@@ -89,9 +92,6 @@
     "building_names_discharge__improvement": {
         "English": "Discharge"
     },
-    "building_names_pylon__improvement": {
-        "English": "Pylon"
-    },
     "building_names_battery__improvement": {
         "English": "Battery"
     },
@@ -125,8 +125,8 @@
     "technology_names_drone__secrettech": {
         "English": "Aviation"
     },
-    "technology_names_pylon__secrettech": {
-        "English": "Pylons"
+    "technology_names_sapper__secrettech": {
+        "English": "Charge Logistics"
     },
     "technology_names_sentry__secrettech": {
         "English": "Redirection"
@@ -141,8 +141,8 @@
     "wcontroller_reward_aviation__secretreward": {
         "English": "Aviation"
     },
-    "wcontroller_reward_pylons__secretreward": {
-        "English": "Pylons"
+    "wcontroller_reward_logistics__secretreward": {
+        "English": "Charge Logistics"
     },
     "wcontroller_reward_redirection__secretreward": {
         "English": "Redirection"
