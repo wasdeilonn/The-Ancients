@@ -685,9 +685,9 @@
 			"defence": 10,
 			"movement": 2,
 			"range": 1,
-			"attack": 30,
+			"attack": 0,
 			"cost": 8,
-			"weapon": 3,
+			"weapon": 7,
 			"unitAbilities": [
 				"stiff",
 				"land",
@@ -898,6 +898,9 @@
             "idx": -1
         },
         "lightningstrikeaction": {
+            "idx": -1
+        },
+        "applyconductionaction": {
             "idx": -1
         }
     },

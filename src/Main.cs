@@ -33,12 +33,14 @@ public static class Main
         PolibActionManager.RegisterAction<AncientsExamineAction>("ancientsexamineaction");
         PolibActionManager.RegisterAction<ChargeAction>("chargeaction");
         PolibActionManager.RegisterAction<LightningStrikeAction>("lightningstrikeaction");
+        PolibActionManager.RegisterAction<ApplyConductionAction>("applyconductionaction");
 
         PolibReactionManager.AssignReaction<DischargeReaction>("dischargeaction");
         PolibReactionManager.AssignReaction<ExcavateReaction>("excavateaction");
         PolibReactionManager.AssignReaction<AncientsExamineReaction>("ancientsexamineaction");
         PolibReactionManager.AssignReaction<ChargeReaction>("chargeaction");
         PolibReactionManager.AssignReaction<LightningStrikeReaction>("lightningstrikeaction");
+        PolibReactionManager.AssignReaction<ApplyConductionReaction>("applyconductionaction");
 
         if (
             !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
@@ -168,6 +170,8 @@ public static class Main
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
     private static void UnitDataExtensions_GetAttackOptionsAtPosition(ref Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
 	{
+        if (!gameState.TryGetPlayer(playerId, out var player)) return;
+
         UnitState unit = gameState.Map.GetTile(position).unit;
         if (unit == null) return;
 
@@ -186,6 +190,19 @@ public static class Main
             }
             __result = ewaylist;
         }
+
+        if (unit.HasAbility(UnitAbility.Type.Consumed) && unit.UnitData.attack == 0 && !unit.HasAbility(UnitAbility.Type.Convert))
+        {
+            Il2Gen.List<TileData> area = gameState.Map.GetArea(position, range, allowDiagonal: true, includeCenter: false);
+            foreach (TileData tileData in area)
+            {
+                UnitState unit1 = tileData.GetUnit(gameState, playerId, includeHiddenTiles);
+                if (unit1 != null && (tileData.GetExplored(playerId) || includeHiddenTiles) && unit1.owner != playerId && !player.HasPeaceWith(unit1.owner))
+                {
+                    __result.Add(tileData.coordinates);
+                }
+            }
+        }
 	}
 
 	[HarmonyPostfix]
@@ -197,7 +214,11 @@ public static class Main
 
         if (attacker.HasAbility(Shock))
         {
-            defender.AddEffect(Conductive);
+            ApplyConductionAction action = PolibActionManager.MakeIl2CppAction<ApplyConductionAction>();
+            action.PlayerId = attacker.owner;
+            action.Coordinates = defender.coordinates;
+            action.Origin = attacker.coordinates;
+            state.ActionStack.Add(action);
 
             if (attacker.HasAbility(UnitAbility.Type.Splash))
             {
@@ -206,7 +227,11 @@ public static class Main
                 {
                     if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != __instance.PlayerId)
                     {
-                        tile.unit.AddEffect(Conductive);
+                        ApplyConductionAction action1 = PolibActionManager.MakeIl2CppAction<ApplyConductionAction>();
+                        action1.PlayerId = attacker.owner;
+                        action1.Coordinates = tile.coordinates;
+                        action1.Origin = attacker.coordinates;
+                        state.ActionStack.Add(action1);
                     }
                 }
             }
@@ -227,8 +252,12 @@ public static class Main
             {
                 if (tile1.unit != null && tile1.unit.owner == tile.unit.owner)
                 {
-                    tile1.unit.AddEffect(Conductive);
                     gameState.ActionStack.Add(new AttackAction(tile.unit.owner, tile1.coordinates, tile1.coordinates, 50, false, AttackAction.AnimationType.Splash, 20));
+                    ApplyConductionAction action = PolibActionManager.MakeIl2CppAction<ApplyConductionAction>();
+                    action.PlayerId = tile.unit.owner;
+                    action.Coordinates = tile1.coordinates;
+                    action.Origin = tile.coordinates;
+                    gameState.ActionStack.Add(action);
                 }
             }
         }
