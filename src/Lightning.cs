@@ -66,7 +66,7 @@ public class LightningStrikeAction : PolibActionBase
             }
             for ( int i = 0; i < LightningManager.GetLightningPop(data.type); i++)
             {
-                state.ActionStack.Add(new IncreasePopulationAction(state.CurrentPlayer, tile.coordinates, tile.rulingCityCoordinates, 20));
+                state.ActionStack.Add(new IncreasePopulationAction(tile.owner, tile.coordinates, tile.rulingCityCoordinates));
             }
             groundingImprovementCount++;
         }

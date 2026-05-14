@@ -698,7 +698,9 @@
                 "splash",
                 "shock_ability"
 			],
-			"idx": -1
+			"idx": -1,
+
+            "prefab": "spark"
         },
 
         "sapper_unit": {
