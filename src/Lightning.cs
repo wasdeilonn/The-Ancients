@@ -5,7 +5,6 @@ using Polibrary;
 using PolibMain = Polibrary.Main;
 using AMain = Ancients.Main;
 using Il2Gen = Il2CppSystem.Collections.Generic;
-using UnityEngine.Tilemaps;
 using Ancients;
 
 public class LightningStrikeAction : PolibActionBase
