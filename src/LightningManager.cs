@@ -1,21 +1,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
-using Il2CppInterop.Runtime.Injection;
 using Polytopia.Data;
-using UnityEngine;
-using UnityEngine.Rendering.RenderGraphModule.NativeRenderPassCompiler;
-using Newtonsoft.Json.Linq;
 using Polibrary;
-using Il2Gen = Il2CppSystem.Collections.Generic;
-using Il2CppSystem.Linq;
-using MS.Internal.Xml.XPath;
-using PolytopiaBackendBase.Common;
-using System.Data;
-using Steamworks.Data;
-using Il2CppSystem;
-using System.Timers;
-using Il2CppMono.Security.Interface;
-using Polibrary.Parsing;
 using AMain = Ancients.Main;
 
 

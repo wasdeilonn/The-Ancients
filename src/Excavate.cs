@@ -1,11 +1,6 @@
-using BepInEx.Logging;
-using HarmonyLib;
 using Polytopia.Data;
 using Polibrary;
-using PolibMain = Polibrary.Main;
 using AMain = Ancients.Main;
-using Il2Gen = Il2CppSystem.Collections.Generic;
-using Il2CppSystem;
 
 public class ExcavateCommand : PolibCommandBase
 {
@@ -112,13 +107,15 @@ public class ExcavateAction : PolibActionBase
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
     {
-        base.Serialize(writer, version); //this line is important btw
+        // base.Serialize(writer, version);
+        writer.Write(PlayerId);  // The safe way.
         Coordinates.Serialize(writer, version);
     }
 
     public override void Deserialize(Il2CppSystem.IO.BinaryReader reader, int version)
     {
-        base.Deserialize(reader, version); //leave this line in
+        // base.Deserialize(reader, version);
+        PlayerId = reader.ReadByte(); // The safe way.
         Coordinates.Deserialize(reader, version);
     }
 
