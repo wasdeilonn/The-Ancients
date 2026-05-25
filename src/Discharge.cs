@@ -115,14 +115,14 @@ public class DischargeAction : PolibActionBase
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
     {
-        base.Serialize(writer, version); //this line is important btw
+        writer.Write(PlayerId); //this line is important btw
         writer.Write(Level);
         Coordinates.Serialize(writer, version);
     }
 
     public override void Deserialize(Il2CppSystem.IO.BinaryReader reader, int version)
     {
-        base.Deserialize(reader, version); //leave this line in
+        PlayerId = reader.ReadByte(); //leave this line in
         Level = reader.ReadInt32();
         Coordinates.Deserialize(reader, version);
     }

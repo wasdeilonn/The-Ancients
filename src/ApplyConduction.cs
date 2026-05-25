@@ -45,14 +45,14 @@ public class ApplyConductionAction : PolibActionBase
 
     public override void Serialize(Il2CppSystem.IO.BinaryWriter writer, int version)
     {
-        base.Serialize(writer, version); //this line is important btw
+        writer.Write(PlayerId); //this line is important btw
         Origin.Serialize(writer, version);
         Coordinates.Serialize(writer, version);
     }
 
     public override void Deserialize(Il2CppSystem.IO.BinaryReader reader, int version)
     {
-        base.Deserialize(reader, version); //leave this line in
+        PlayerId = reader.ReadByte(); //leave this line in
         Origin.Deserialize(reader, version);
         Coordinates.Deserialize(reader, version);
     }
