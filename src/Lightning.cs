@@ -61,11 +61,11 @@ public class LightningStrikeAction : PolibActionBase
 
             if (LightningManager.GetLightningStars(data.type) > 0)
             {
-                state.ActionStack.Add(new IncreaseCurrencyAction(tile.owner, tile.coordinates, LightningManager.GetLightningStars(data.type), 20));
+                state.ActionStack.Add(new IncreaseCurrencyAction(PlayerId, tile.coordinates, LightningManager.GetLightningStars(data.type), 20));
             }
             for ( int i = 0; i < LightningManager.GetLightningPop(data.type); i++)
             {
-                state.ActionStack.Add(new IncreasePopulationAction(tile.owner, tile.coordinates, tile.rulingCityCoordinates));
+                state.ActionStack.Add(new IncreasePopulationAction(PlayerId, tile.coordinates, tile.rulingCityCoordinates));
             }
             groundingImprovementCount++;
         }
