@@ -44,54 +44,56 @@ public class LightningStrikeAction : PolibActionBase
             return;
         }
 
-        Il2Gen.List<TileData> tiles = state.Map.GetArea(Coordinates, 1, true, false);
+        Il2Gen.List<TileData> rodNeighbors = state.Map.GetArea(Coordinates, 1, true, false);
 
         int groundingImprovementCount = 0;
 
-        foreach (TileData tile in tiles)
+        foreach (TileData rodNeighbor in rodNeighbors)
         {
-            if (tile == null) continue;
+            if (rodNeighbor == null) continue;
 
-            if (tile.improvement == null)
+            if (rodNeighbor.improvement == null)
             continue;
 
-            ImprovementData data = state.GameLogicData.GetImprovementData(tile.improvement.type);
-            if (!data.HasAbility(AMain.Electric))
+            ImprovementData rodNeighborData = state.GameLogicData.GetImprovementData(rodNeighbor.improvement.type);
+            if (!rodNeighborData.HasAbility(AMain.Electric))
             continue;
 
-            if (LightningManager.GetLightningStars(data.type) > 0)
+            if (LightningManager.GetLightningStars(rodNeighborData.type) > 0)
             {
-                state.ActionStack.Add(new IncreaseCurrencyAction(PlayerId, tile.coordinates, LightningManager.GetLightningStars(data.type), 20));
+                state.ActionStack.Add(new IncreaseCurrencyAction(PlayerId, rodNeighbor.coordinates, LightningManager.GetLightningStars(rodNeighborData.type), 20));
             }
-            for ( int i = 0; i < LightningManager.GetLightningPop(data.type); i++)
+            for ( int i = 0; i < LightningManager.GetLightningPop(rodNeighborData.type); i++)
             {
-                state.ActionStack.Add(new IncreasePopulationAction(PlayerId, tile.coordinates, tile.rulingCityCoordinates));
+                if (rodNeighbor.improvement.HasEffect(AMain.Critical)) break;
+
+                state.ActionStack.Add(new IncreasePopulationAction(PlayerId, rodNeighbor.coordinates, rodNeighbor.rulingCityCoordinates));
             }
-            if (data.HasAbility(AMain.CriticalAbility))
+            if (rodNeighborData.HasAbility(AMain.CriticalAbility))
             {
-                if (tile.improvement.HasEffect(AMain.Critical))
+                if (rodNeighbor.improvement.HasEffect(AMain.Critical))
                 {
-                    Il2Gen.List<TileData> tileNeighbors = state.Map.GetTileNeighbors(Coordinates);
+                    Il2Gen.List<TileData> batteryNeighbors = state.Map.GetTileNeighbors(rodNeighbor.coordinates);
 
-                    foreach (TileData tile1 in tileNeighbors)
+                    foreach (TileData batteryNeighbor in batteryNeighbors)
                     {
-                        if (tile1 == null) continue;
+                        if (batteryNeighbor == null) continue;
                         
-                        if (tile1.unit != null)
+                        if (batteryNeighbor.unit != null)
                         {
-                            state.ActionStack.Add(new AttackAction(PlayerId, tile1.coordinates, tile1.coordinates, 100, false, AttackAction.AnimationType.Splash));
+                            state.ActionStack.Add(new AttackAction(PlayerId, batteryNeighbor.coordinates, batteryNeighbor.coordinates, 100, false, AttackAction.AnimationType.Splash));
                         }
                     }
                     
                     if (origin.unit != null)
                     state.ActionStack.Add(new AttackAction(PlayerId, Coordinates, Coordinates, 150, false, AttackAction.AnimationType.Splash));
-                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, tile.rulingCityCoordinates, 20));
-                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, tile.rulingCityCoordinates, 20));
-                    state.ActionStack.Add(new DestroyImprovementAction(PlayerId, tile.coordinates));
+                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, rodNeighbor.rulingCityCoordinates, 20));
+                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, rodNeighbor.rulingCityCoordinates, 20));
+                    state.ActionStack.Add(new DestroyImprovementAction(PlayerId, rodNeighbor.coordinates));
                 }
                 else
                 {
-                    tile.improvement.AddEffect(AMain.Critical);
+                    rodNeighbor.improvement.AddEffect(AMain.Critical);
                 }
             }
             groundingImprovementCount++;
@@ -101,13 +103,13 @@ public class LightningStrikeAction : PolibActionBase
         {
             Il2Gen.List<TileData> tileNeighbors = state.Map.GetTileNeighbors(Coordinates);
 
-            foreach (TileData tile in tileNeighbors)
+            foreach (TileData tile1 in tileNeighbors)
             {
-                if (tile == null) continue;
+                if (tile1 == null) continue;
                 
-                if (tile.unit != null)
+                if (tile1.unit != null)
                 {
-                    state.ActionStack.Add(new AttackAction(PlayerId, tile.coordinates, tile.coordinates, 100, false, AttackAction.AnimationType.Splash));
+                    state.ActionStack.Add(new AttackAction(PlayerId, tile1.coordinates, tile1.coordinates, 100, false, AttackAction.AnimationType.Splash));
                 }
             }
             
@@ -172,85 +174,85 @@ public class LightningStrikeReaction : PolibReactionBase
 
     public override void Execute(Il2CppSystem.Action onComplete)
     {
-        TileData tile = GameManager.GameState.Map.GetTile(action.Coordinates);
-        Tile instance = tile.GetInstance();
-        if (instance == null)
+        TileData originTileData = GameManager.GameState.Map.GetTile(action.Coordinates);
+        Tile originTileInstance = originTileData.GetInstance();
+        if (originTileInstance == null)
         {
             onComplete.Invoke();
             return;
         }
 
-        if (instance != null && !instance.IsHidden)
+        if (originTileInstance != null && !originTileInstance.IsHidden)
         {
-            instance.Render();
-            instance.Sway();
+            originTileInstance.Render();
+            originTileInstance.Sway();
 
             VFXManager.SizeMappings["lightning"] = 6f;
             VFXManager.FadeInOutAnimOverrideMappings["lightning"] = new UnityEngine.Vector2(0.1f, 1f);
             VFXManager.EnsureCustomPuffRegistered("Lightning", "Puff");
-            instance.DoPuff("Lightning", instance.transform, instance.VisualCenterObject.localPosition);
+            originTileInstance.DoPuff("Lightning", originTileInstance.transform, originTileInstance.VisualCenterObject.localPosition);
 
             if (EnumCache<SFXTypes>.TryGetType("lightning", out var type))
             {
-                AudioManager.PlaySFXAtTile(type, tile.coordinates);
+                AudioManager.PlaySFXAtTile(type, originTileData.coordinates);
             }
             else
             {
                 AMain.modLogger.LogInfo("can't find lightning sfx");
             }
-            AudioManager.PlaySFXAtTile(SFXTypes.FireImpact, tile.coordinates);
+            AudioManager.PlaySFXAtTile(SFXTypes.FireImpact, originTileData.coordinates);
 
             VFXManager.SizeMappings["dischargepuff"] = 2f;
             VFXManager.EnsureCustomPuffRegistered("DischargePuff", "Puff");
-            instance.DoPuff("DischargePuff", instance.transform, instance.VisualCenterObject.localPosition);
+            originTileInstance.DoPuff("DischargePuff", originTileInstance.transform, originTileInstance.VisualCenterObject.localPosition);
         }
 
-        if (tile.unit != null && tile.unit.HasAbility(AMain.Capacitor)  && ChargeManager.GetChargeCount(tile.unit) < ChargeManager.GetMaxCharge(tile.unit.type))
+        if (originTileData.unit != null && originTileData.unit.HasAbility(AMain.Capacitor)  && ChargeManager.GetChargeCount(originTileData.unit) < ChargeManager.GetMaxCharge(originTileData.unit.type))
         {
             GameManager.DelayCall(200, onComplete);
             return;
         }
 
-        Il2Gen.List<TileData> tiles = GameManager.GameState.Map.GetArea(action.Coordinates, 1, true, false);
+        Il2Gen.List<TileData> rodAreaTiles = GameManager.GameState.Map.GetArea(action.Coordinates, 1, true, false);
 
         int groundingImprovementCount = 0;
 
-        foreach (TileData tile1 in tiles)
+        foreach (TileData rodNeighbourTileData in rodAreaTiles)
         {
-            if (tile1 == null) continue;
+            if (rodNeighbourTileData == null) continue;
 
-            Tile instance1 = tile1.GetInstance();
+            Tile rodNeighbourTileInstance = rodNeighbourTileData.GetInstance();
 
-            if (instance1 == null || instance1.IsHidden) continue;
+            if (rodNeighbourTileInstance == null || rodNeighbourTileInstance.IsHidden) continue;
 
-            if (tile1.improvement == null)
+            if (rodNeighbourTileData.improvement == null)
             continue;
 
-            if (!GameManager.GameState.GameLogicData.TryGetData(tile1.improvement.type, out var data))
+            if (!GameManager.GameState.GameLogicData.TryGetData(rodNeighbourTileData.improvement.type, out var data))
             continue;
 
             if (!data.HasAbility(AMain.Electric))
             continue;
 
-            instance1.Render();
+            rodNeighbourTileInstance.Render();
 
             GameManager.DelayCall(100, (Il2CppSystem.Action)(() =>
             {
                 VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
-                instance1.DoPuff("ChargePuff", instance1.transform, instance1.VisualCenterObject.localPosition);
-                AudioManager.PlaySFXAtTile(SFXTypes.Plop, tile.coordinates);
+                rodNeighbourTileInstance.DoPuff("ChargePuff", rodNeighbourTileInstance.transform, rodNeighbourTileInstance.VisualCenterObject.localPosition);
+                AudioManager.PlaySFXAtTile(SFXTypes.Plop, originTileData.coordinates);
             }));
 
             if (data.HasAbility(AMain.CriticalAbility))
             {
-                if (tile.improvement.HasEffect(AMain.Critical))
+                if (originTileData.improvement.HasEffect(AMain.Critical))
                 {
-                    instance1.Sway();
-                    instance1.SpawnAreaDamage();
+                    rodNeighbourTileInstance.Sway();
+                    rodNeighbourTileInstance.SpawnAreaDamage();
                 }
                 else
                 {
-                    instance1.Sway();
+                    rodNeighbourTileInstance.Sway();
                 }
             }
 
@@ -259,21 +261,21 @@ public class LightningStrikeReaction : PolibReactionBase
 
         if (groundingImprovementCount == 0)
         {
-            Il2Gen.List<TileData> tileNeighbors = GameManager.GameState.Map.GetTileNeighbors(action.Coordinates);
+            Il2Gen.List<TileData> rodNeighbors = GameManager.GameState.Map.GetTileNeighbors(action.Coordinates);
 
-            foreach (TileData tile2 in tileNeighbors)
+            foreach (TileData rodNeighborTileData in rodNeighbors)
             {
-                if (tile2 == null) continue;
-                Tile instance2 = tile2.GetInstance();
+                if (rodNeighborTileData == null) continue;
+                Tile instance2 = rodNeighborTileData.GetInstance();
 
                 if (instance2 != null && !instance2.IsHidden)
                 instance2.Sway(0.1f);
             }
 
-            if (instance != null && !instance.IsHidden)
+            if (originTileInstance != null && !originTileInstance.IsHidden)
             {
-                instance.Sway();
-                instance.SpawnAreaDamage();
+                originTileInstance.Sway();
+                originTileInstance.SpawnAreaDamage();
             }
         }
 

@@ -67,11 +67,7 @@ public static class LightningManager
     {
         if (__instance.state.HasEffect(AMain.Critical))
         {
-            var materialBlock = new UnityEngine.MaterialPropertyBlock();
-            __instance.SpriteRenderer.spriteRenderer.GetPropertyBlock(materialBlock);
-            materialBlock.SetColor("_OverlayColor", new UnityEngine.Color(1, 0, 0, 1));
-            materialBlock.SetFloat("_OverlayStrength", 0.5f);
-            __instance.SpriteRenderer.spriteRenderer.SetPropertyBlock(materialBlock);
+            TerrainMaterialHelper.SetSpriteTint(__instance.SpriteRenderer, new UnityEngine.Color(1, 0, 0));
         }
     }
 }
