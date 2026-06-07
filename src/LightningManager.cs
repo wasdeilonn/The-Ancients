@@ -60,4 +60,18 @@ public static class LightningManager
         AMain.LightningPop.TryGetValue(imp, out i);
         return i;
     }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(Building), nameof(Building.UpdateObject), typeof(MapRenderContext), typeof(SkinVisualsTransientData))]
+    private static void EffectColor(Building __instance, MapRenderContext ctx, SkinVisualsTransientData transientSkinData)
+    {
+        if (__instance.state.HasEffect(AMain.Critical))
+        {
+            var materialBlock = new UnityEngine.MaterialPropertyBlock();
+            __instance.SpriteRenderer.spriteRenderer.GetPropertyBlock(materialBlock);
+            materialBlock.SetColor("_OverlayColor", new UnityEngine.Color(1, 0, 0, 1));
+            materialBlock.SetFloat("_OverlayStrength", 0.5f);
+            __instance.SpriteRenderer.spriteRenderer.SetPropertyBlock(materialBlock);
+        }
+    }
 }

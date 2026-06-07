@@ -44,14 +44,14 @@ public static class Main
         PolibReactionManager.AssignReaction<ApplyConductionReaction>("applyconductionaction");
 
         if (
-            !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out var chargeType) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("excavation_ability", out var excavateType)
-            || !EnumCache<UnitAbility.Type>.TryGetType("discharge_ability", out var dischargeAbilityType)
-            || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out var capacitorType) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out var eightwayType) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out var shockType) 
-            || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out var shockedEffectType)
-            || !EnumCache<UnitEffect>.TryGetType("charge_effect", out var chargeEffectType)
+            !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out Charge) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("excavation_ability", out Excavate)
+            || !EnumCache<UnitAbility.Type>.TryGetType("discharge_ability", out Discharge)
+            || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out Capacitor) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out Eightway) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out Shock) 
+            || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out Conductive)
+            || !EnumCache<UnitEffect>.TryGetType("charge_effect", out Charged)
             || !EnumCache<CityReward>.TryGetType("highvoltage_secretreward", out var teslaReward) 
             || !EnumCache<CityReward>.TryGetType("aviation_secretreward", out var droneReward) 
             || !EnumCache<CityReward>.TryGetType("chargestorage_secretreward", out var accReward) 
@@ -62,26 +62,16 @@ public static class Main
             || !EnumCache<TechData.Type>.TryGetType("drone_secrettech", out var droneTech)
             || !EnumCache<TechData.Type>.TryGetType("sapper_secrettech", out var sapperTech)
             || !EnumCache<TechData.Type>.TryGetType("sentry_secrettech", out var sentryTech)
-            || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out var lightningType)
-            || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out var electricType)
-            || !EnumCache<TribeType>.TryGetType("ancients", out var ancientsType)
+            || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out Lightning)
+            || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out Electric)
+            || !EnumCache<ImprovementAbility.Type>.TryGetType("critical_improvementability", out CriticalAbility)
+            || !EnumCache<TribeType>.TryGetType("ancients", out Ancients)
+            || !EnumCache<ImprovementEffect>.TryGetType("critical_improvementeffect", out Critical)
             )
 		{
 			modLogger.LogInfo("couldnt find some enumcache shit");
 			return;
 		}
-
-        Ancients = ancientsType;
-        Charge = chargeType;
-        Capacitor = capacitorType;
-        Eightway = eightwayType;
-        Shock = shockType;
-        Conductive = shockedEffectType;
-        Discharge = dischargeAbilityType;
-        Charged = chargeEffectType;
-        Lightning = lightningType;
-        Electric = electricType;
-        Excavate = excavateType;
 
         TeslaTech = teslaTech;
         DroneTech = droneTech;
@@ -138,7 +128,9 @@ public static class Main
     public static UnitEffect Conductive;
     public static ImprovementAbility.Type Lightning;
     public static ImprovementAbility.Type Electric;
+    public static ImprovementAbility.Type CriticalAbility;
     public static UnitAbility.Type Excavate;
+    public static ImprovementEffect Critical;
 
 
     [HarmonyPostfix]

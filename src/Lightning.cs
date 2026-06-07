@@ -67,6 +67,33 @@ public class LightningStrikeAction : PolibActionBase
             {
                 state.ActionStack.Add(new IncreasePopulationAction(PlayerId, tile.coordinates, tile.rulingCityCoordinates));
             }
+            if (data.HasAbility(AMain.CriticalAbility))
+            {
+                if (tile.improvement.HasEffect(AMain.Critical))
+                {
+                    Il2Gen.List<TileData> tileNeighbors = state.Map.GetTileNeighbors(Coordinates);
+
+                    foreach (TileData tile1 in tileNeighbors)
+                    {
+                        if (tile1 == null) continue;
+                        
+                        if (tile1.unit != null)
+                        {
+                            state.ActionStack.Add(new AttackAction(PlayerId, tile1.coordinates, tile1.coordinates, 100, false, AttackAction.AnimationType.Splash));
+                        }
+                    }
+                    
+                    if (origin.unit != null)
+                    state.ActionStack.Add(new AttackAction(PlayerId, Coordinates, Coordinates, 150, false, AttackAction.AnimationType.Splash));
+                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, tile.rulingCityCoordinates, 20));
+                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, tile.rulingCityCoordinates, 20));
+                    state.ActionStack.Add(new DestroyImprovementAction(PlayerId, tile.coordinates));
+                }
+                else
+                {
+                    tile.improvement.AddEffect(AMain.Critical);
+                }
+            }
             groundingImprovementCount++;
         }
 
@@ -205,14 +232,28 @@ public class LightningStrikeReaction : PolibReactionBase
             if (!data.HasAbility(AMain.Electric))
             continue;
 
+            instance1.Render();
+
             GameManager.DelayCall(100, (Il2CppSystem.Action)(() =>
             {
                 VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
                 instance1.DoPuff("ChargePuff", instance1.transform, instance1.VisualCenterObject.localPosition);
                 AudioManager.PlaySFXAtTile(SFXTypes.Plop, tile.coordinates);
             }));
-            
-            
+
+            if (data.HasAbility(AMain.CriticalAbility))
+            {
+                if (tile.improvement.HasEffect(AMain.Critical))
+                {
+                    instance1.Sway();
+                    instance1.SpawnAreaDamage();
+                }
+                else
+                {
+                    instance1.Sway();
+                }
+            }
+
             groundingImprovementCount++;
         }
 

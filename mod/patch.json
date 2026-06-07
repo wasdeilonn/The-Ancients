@@ -765,6 +765,9 @@
         },
         "electric_improvementability": {
             "idx": -1
+        },
+        "critical_improvementability": {
+            "idx": -1
         }
     },
     "improvementData": {
@@ -824,7 +827,8 @@
 			"maxLevel": 0,
             "improvementAbilities": [
                 "limited",
-                "electric_improvementability"
+                "electric_improvementability",
+                "critical_improvementability"
             ],
             "adjacencyRequirements": [
 				{
@@ -920,7 +924,7 @@
         }
     },
     "improvementEffect": {
-        "critical": {
+        "critical_improvementeffect": {
             "idx": -1
         }
     },
