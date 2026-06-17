@@ -50,6 +50,7 @@ public static class Main
             || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out Capacitor) 
             || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out Eightway) 
             || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out Shock) 
+            || !EnumCache<UnitAbility.Type>.TryGetType("protect_ability", out Protect) 
             || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out Conductive)
             || !EnumCache<UnitEffect>.TryGetType("charge_effect", out Charged)
             || !EnumCache<CityReward>.TryGetType("highvoltage_secretreward", out var teslaReward) 
@@ -124,6 +125,7 @@ public static class Main
     public static UnitAbility.Type Capacitor;
     public static UnitAbility.Type Eightway;
     public static UnitAbility.Type Shock;
+    public static UnitAbility.Type Protect;
     public static UnitEffect Charged;
     public static UnitEffect Conductive;
     public static ImprovementAbility.Type Lightning;

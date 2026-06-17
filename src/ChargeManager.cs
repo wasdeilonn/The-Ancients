@@ -178,7 +178,7 @@ public static class ChargeManager
         {
             if (effect == AMain.Charged)
             {
-                __result += 100;
+                __result += 50;
             }
         }
     }

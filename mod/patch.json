@@ -4,7 +4,7 @@
             "idx": -1,
             "startingStars": 7,
             "color": 48127,
-            "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,ty,cap,kap,sua,ius,xin,ouy,urk,ki,dor,wast,zeb,tza,on,aqu,cy",
+            "language": "pol,topan,poly,topia,toria,topius,pius,top,polan,toran,ol,tes,la,sa,tor,cite,ty,cap,kap,sua,ius,xin,ouy,urk,ki,dor,wast,ze,tza,on,aqu,cy",
             "startingUnit": "archeologist_unit",
             "category": 2,
             "terrainModifier":{
@@ -13,7 +13,7 @@
             },
             "resourceModifier":{
                 "metal": 1.5,
-                "fruit": 1,
+                "fruit": 0.5,
                 "game": 1.5,
                 "crop": 0.2
             },
@@ -571,8 +571,8 @@
             "weapon": 5,
             "prefab": "catapult",
 
-            "maxCharge": 3,
-            "chargeConsumptionAmount": 3,
+            "maxCharge": 2,
+            "chargeConsumptionAmount": 2,
             "chargeConsumptionEvent": [
                 "attack"
             ],
@@ -588,7 +588,7 @@
             "defence": 30,
             "movement": 1,
             "range": 0,
-            "attack": 10,
+            "attack": 15,
             "cost": 8,
             "unitAbilities": [
                 "stiff",
@@ -615,7 +615,7 @@
             "defence": 10,
             "movement": 1,
             "range": 1,
-            "attack": 25,
+            "attack": 3,
             "cost": 5,
             "unitAbilities": [
                 "dash",
@@ -649,16 +649,14 @@
                 "land",
                 "static",
                 "stiff",
-                "capacitor_ability"
+                "capacitor_ability",
+                "protect_ability"
             ],
             "weapon": 1,
             "prefab": "defender",
 
-            "maxCharge": 3,
-            "chargeConsumptionAmount": 1,
-            "chargeBuff": [
-                "defence"
-            ]
+            "maxCharge": 2,
+            "chargeConsumptionAmount": 1
         },
 
         "railcannon_unit": {
@@ -685,7 +683,7 @@
 			"defence": 10,
 			"movement": 2,
 			"range": 1,
-			"attack": 0,
+			"attack": 1,
 			"cost": 8,
 			"weapon": 7,
 			"unitAbilities": [
@@ -715,7 +713,9 @@
                 "land",
                 "static",
                 "dash",
-                "capacitor_ability"
+                "capacitor_ability",
+                "creep",
+                "sneak"
             ],
             "weapon": 1,
             "prefab": "rider",
@@ -746,6 +746,10 @@
         },
 
         "shock_ability": {
+            "idx": -1
+        },
+
+        "protect_ability": {
             "idx": -1
         }
     },
