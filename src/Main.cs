@@ -150,7 +150,7 @@ public static class Main
             CommandUtils.AddCommand(gameState, __result, command, includeUnavailable);
         }
 
-        if (tile.unit.HasAbility(Excavate) && !tile.unit.moved && !tile.unit.attacked)
+        if (tile.unit.HasAbility(Excavate) && !tile.unit.attacked)
         {
             ExcavateCommand command = PolibCommandManager.MakeIl2CppCommand<ExcavateCommand>();
             command.Coordinates = tile.coordinates;

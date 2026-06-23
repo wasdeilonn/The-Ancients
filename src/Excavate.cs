@@ -70,6 +70,7 @@ public class ExcavateCommand : PolibCommandBase
 public class ExcavateAction : PolibActionBase
 {
     public WorldCoordinates Coordinates;
+    public WorldCoordinates UnitHome;
     public ExcavateAction(System.IntPtr ptr) : base(ptr) {}
     public ExcavateAction() {}
 
@@ -107,6 +108,7 @@ public class ExcavateAction : PolibActionBase
                 founder = base.PlayerId
             };
         }
+        UnitHome = tile.unit.home;
         ActionUtils.KillUnit(state, tile);
     }
 
@@ -114,21 +116,24 @@ public class ExcavateAction : PolibActionBase
     {
         writer.Write(PlayerId); //this line is important btw
         Coordinates.Serialize(writer, version);
+        UnitHome.Serialize(writer, version);
     }
 
     public override void Deserialize(Il2CppSystem.IO.BinaryReader reader, int version)
     {
         PlayerId = reader.ReadByte(); //leave this line in
         Coordinates.Deserialize(reader, version);
+        UnitHome.Deserialize(reader, version);
     }
 
     public override string ToString()
     {
-        return string.Format("{0} (PlayerId: {1}, Coordinates: {2})", new object[]
+        return string.Format("{0} (PlayerId: {1}, Coordinates: {2}, UnitHome {3})", new object[]
         {
             base.GetType(),
             base.PlayerId,
-            this.Coordinates
+            this.Coordinates,
+            this.UnitHome
         });
     }
 }
@@ -175,6 +180,14 @@ public class ExcavateReaction : PolibReactionBase
             instance.Sway();
             AudioManager.PlaySFXAtTile(SFXTypes.Capture, tile.coordinates);
             GameManager.DelayCall(200, onComplete);
+        }
+        if (GameManager.GameState.Map.GetTile(action.UnitHome) != null)
+        {
+            Tile homeInstance = GameManager.GameState.Map.GetTile(action.UnitHome).GetInstance();
+            if (homeInstance != null)
+            {
+                homeInstance.Render();
+            }
         }
         else
         {

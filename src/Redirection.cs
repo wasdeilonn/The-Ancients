@@ -39,8 +39,11 @@ public static class Redirection
         UnitState defender = targetTile.unit;
 
         if (defender == null) return true;
+        GameManager.GameState.TryGetPlayer(defender.owner, out var defenderPlayer);
 
-        if (defender.HasAbility(AMain.Protect)) return true;
+        if (attacker == null) return true;
+
+        if (defender.HasAbility(AMain.Protect) || attacker.owner == defender.owner || attacker.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)) return true;
 
         UnitState protector = null;
 
@@ -49,7 +52,8 @@ public static class Redirection
             if (tileNeighbor == null) continue;
             if (tileNeighbor.unit == null) continue;
 
-            if (tileNeighbor.unit.HasAbility(AMain.Protect))
+            
+            if (tileNeighbor.unit.HasAbility(AMain.Protect) && (tileNeighbor.unit.owner == defender.owner || tileNeighbor.unit.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)))
             {
                 if (protector == null)
                 {
@@ -86,17 +90,21 @@ public static class Redirection
         }
     }
 
-    [HarmonyPostfix]
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(AttackReaction), nameof(AttackReaction.Execute))]
-    public static void AttackReaction_Execute(Il2CppSystem.Action onComplete, AttackReaction __instance)
+    public static bool AttackReaction_Execute(Il2CppSystem.Action onComplete, AttackReaction __instance)
     {
         Tile originTile = MapRenderer.Current.GetTileInstance(__instance.action.Origin);
         Tile targetTile = MapRenderer.Current.GetTileInstance(__instance.action.Target);
         UnitState defender = GameManager.GameState.Map.GetTile(__instance.action.Target).unit;
+        UnitState attacker = GameManager.GameState.Map.GetTile(__instance.action.Origin).unit;
 
-        if (defender == null) return;
+        if (defender == null) return true;
+        GameManager.GameState.TryGetPlayer(defender.owner, out var defenderPlayer);
 
-        if (defender.HasAbility(AMain.Protect)) return;
+        if (attacker == null) return true;
+
+        if (defender.HasAbility(AMain.Protect) || attacker.owner == defender.owner || attacker.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)) return true;
 
         UnitState protector = null;
 
@@ -105,7 +113,7 @@ public static class Redirection
             if (tileNeighbor == null) continue;
             if (tileNeighbor.unit == null) continue;
 
-            if (tileNeighbor.unit.HasAbility(AMain.Protect))
+            if (tileNeighbor.unit.HasAbility(AMain.Protect) && (tileNeighbor.unit.owner == defender.owner || tileNeighbor.unit.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)))
             {
                 if (protector == null)
                 {
@@ -122,12 +130,14 @@ public static class Redirection
             }
         }
 
-        if (protector == null) return;
+        if (protector == null) return true;
 
         Tile protectorTile = MapRenderer.Current.GetTileInstance(protector.coordinates);
 
+        VFXManager.SizeMappings["redirectpuff"] = 1.5f;
+        VFXManager.EnsureCustomPuffRegistered("RedirectPuff", "Puff");
+        targetTile.DoPuff("RedirectPuff", targetTile.transform, targetTile.VisualCenterObject.localPosition);
 
-        targetTile.SpawnPuff();
         if (!protectorTile.IsHidden)
         {
             protectorTile.Render();
@@ -135,5 +145,34 @@ public static class Redirection
             protectorTile.Sway();
             protectorTile.Damage(__instance.action.Damage);
         }
+
+        if (originTile != null && originTile.Unit != null && (!originTile.IsHidden || !targetTile.IsHidden))
+        {
+            originTile.Unit.Attack(__instance.action.Target, false /*we know it wont so it shouldnt*/, (Il2CppSystem.Action)delegate
+            {
+                if (targetTile != null && targetTile.Unit != null && !targetTile.IsHidden)
+                {
+                    targetTile.Damage(__instance.action.Damage);
+                    targetTile.RenderUnit();
+                    if (!__instance.action.ShouldMoveToTarget)
+                    {
+                        originTile.RenderUnit();
+                    }
+                }
+                if (__instance.action.ShouldMoveToTarget)
+                {
+                    onComplete.Invoke();
+                }
+                else
+                {
+                    GameManager.DelayCall(__instance.action.Delay, onComplete);
+                }
+            });
+        }
+        else
+        {
+            onComplete.Invoke();
+        }
+        return false;
     }
 }
