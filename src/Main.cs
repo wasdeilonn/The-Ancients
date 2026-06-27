@@ -51,23 +51,29 @@ public static class Main
             || !EnumCache<UnitAbility.Type>.TryGetType("eightway_ability", out Eightway) 
             || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out Shock) 
             || !EnumCache<UnitAbility.Type>.TryGetType("protect_ability", out Protect) 
+
             || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out Conductive)
             || !EnumCache<UnitEffect>.TryGetType("charge_effect", out Charged)
+
             || !EnumCache<CityReward>.TryGetType("highvoltage_secretreward", out var teslaReward) 
             || !EnumCache<CityReward>.TryGetType("aviation_secretreward", out var droneReward) 
             || !EnumCache<CityReward>.TryGetType("chargestorage_secretreward", out var accReward) 
             || !EnumCache<CityReward>.TryGetType("logistics_secretreward", out var sapperReward) 
             || !EnumCache<CityReward>.TryGetType("redirection_secretreward", out var sentryReward) 
+
             || !EnumCache<TechData.Type>.TryGetType("tesla_secrettech", out var teslaTech) 
             || !EnumCache<TechData.Type>.TryGetType("accumulator_secrettech", out var accTech) 
             || !EnumCache<TechData.Type>.TryGetType("drone_secrettech", out var droneTech)
             || !EnumCache<TechData.Type>.TryGetType("sapper_secrettech", out var sapperTech)
             || !EnumCache<TechData.Type>.TryGetType("sentry_secrettech", out var sentryTech)
+
             || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out Lightning)
             || !EnumCache<ImprovementAbility.Type>.TryGetType("electric_improvementability", out Electric)
-            || !EnumCache<ImprovementAbility.Type>.TryGetType("critical_improvementability", out CriticalAbility)
+            || !EnumCache<ImprovementAbility.Type>.TryGetType("collect_improvementability", out Collect)
+
+            || !EnumCache<ImprovementData.Type>.TryGetType("animacollect_improvement", out Ritual)
+
             || !EnumCache<TribeType>.TryGetType("ancients", out Ancients)
-            || !EnumCache<ImprovementEffect>.TryGetType("critical_improvementeffect", out Critical)
             )
 		{
 			modLogger.LogInfo("couldnt find some enumcache shit");
@@ -130,9 +136,9 @@ public static class Main
     public static UnitEffect Conductive;
     public static ImprovementAbility.Type Lightning;
     public static ImprovementAbility.Type Electric;
-    public static ImprovementAbility.Type CriticalAbility;
+    public static ImprovementAbility.Type Collect;
+    public static ImprovementData.Type Ritual;
     public static UnitAbility.Type Excavate;
-    public static ImprovementEffect Critical;
 
 
     [HarmonyPostfix]

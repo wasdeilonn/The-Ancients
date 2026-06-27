@@ -46,21 +46,7 @@ public static class LightningManager
             }
         }
 	}
-
-    public static int GetLightningStars(ImprovementData.Type imp)
-    {
-        int i = 0;
-        AMain.LightningStars.TryGetValue(imp, out i);
-        return i;
-    }
-
-    public static int GetLightningPop(ImprovementData.Type imp)
-    {
-        int i = 0;
-        AMain.LightningPop.TryGetValue(imp, out i);
-        return i;
-    }
-    
+    /*    
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Building), nameof(Building.UpdateObject), typeof(MapRenderContext), typeof(SkinVisualsTransientData))]
     private static void EffectColor(Building __instance, MapRenderContext ctx, SkinVisualsTransientData transientSkinData)
@@ -69,5 +55,72 @@ public static class LightningManager
         {
             TerrainMaterialHelper.SetSpriteTint(__instance.SpriteRenderer, new UnityEngine.Color(1, 0, 0));
         }
-    }
+    }*/
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ImprovementLevelUpAction), nameof(ImprovementLevelUpAction.IsValid))]
+    private static void LvlUpFix(GameState state, ImprovementLevelUpAction __instance, ref bool __result)
+	{
+        TileData tile = state.Map.GetTile(__instance.Coordinates);
+		if (tile == null) return;
+        if (tile.improvement == null) return;
+
+        if (!state.GameLogicData.TryGetData(tile.improvement.type, out var data))
+        {
+            AMain.modLogger.LogError("Nice one dumbfuck");
+            return;
+        }
+
+        if (data.HasAbility(AMain.Electric) && tile.improvement.level <= data.maxLevel)
+        {
+            __result = true;
+        }
+	}
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ImprovementLevelDownAction), nameof(ImprovementLevelDownAction.IsValid))]
+    private static void LvlDownFix(GameState state, ImprovementLevelDownAction __instance, ref bool __result)
+	{
+        TileData tile = state.Map.GetTile(__instance.Coordinates);
+		if (tile == null) return;
+        if (tile.improvement == null) return;
+
+        if (tile.improvement.type == AMain.Ritual)
+        {
+            __result = true;
+        }
+	}
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.CanBuild))]
+    private static void GameLogicData_CanBuild(GameState gameState, TileData tile, PlayerState playerState, ImprovementData improvement, ref bool __result)
+	{
+        if (improvement.type != AMain.Ritual) return;
+
+        if (tile.improvement == null)
+        {
+            __result = false;
+            return;
+        }
+
+        if (!gameState.GameLogicData.TryGetData(tile.improvement.type, out var conduitData)) return;
+
+        if (conduitData.HasAbility(AMain.Collect) && tile.improvement.level == conduitData.maxLevel)
+        {
+            __result = true;
+            return;
+        }
+
+        __result = false;
+	}
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.Execute))]
+    private static void BuildAction_AnimaConduintThingie(BuildAction __instance, GameState gameState)
+	{
+        if (__instance.Type == AMain.Ritual)
+        {
+            gameState.ActionStack.Add(new ImprovementLevelDownAction(__instance.PlayerId, __instance.Coordinates, 3));
+        }
+	}
 }

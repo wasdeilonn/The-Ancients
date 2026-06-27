@@ -59,43 +59,11 @@ public class LightningStrikeAction : PolibActionBase
             if (!rodNeighborData.HasAbility(AMain.Electric))
             continue;
 
-            if (LightningManager.GetLightningStars(rodNeighborData.type) > 0)
+            if (rodNeighbor.improvement.level < rodNeighborData.maxLevel)
             {
-                state.ActionStack.Add(new IncreaseCurrencyAction(PlayerId, rodNeighbor.coordinates, LightningManager.GetLightningStars(rodNeighborData.type), 20));
+                state.ActionStack.Add(new ImprovementLevelUpAction(state.CurrentPlayer, rodNeighbor.coordinates));
             }
-            for ( int i = 0; i < LightningManager.GetLightningPop(rodNeighborData.type); i++)
-            {
-                if (rodNeighbor.improvement.HasEffect(AMain.Critical)) break;
-
-                state.ActionStack.Add(new IncreasePopulationAction(PlayerId, rodNeighbor.coordinates, rodNeighbor.rulingCityCoordinates));
-            }
-            if (rodNeighborData.HasAbility(AMain.CriticalAbility))
-            {
-                if (rodNeighbor.improvement.HasEffect(AMain.Critical))
-                {
-                    Il2Gen.List<TileData> batteryNeighbors = state.Map.GetTileNeighbors(rodNeighbor.coordinates);
-
-                    foreach (TileData batteryNeighbor in batteryNeighbors)
-                    {
-                        if (batteryNeighbor == null) continue;
-                        
-                        if (batteryNeighbor.unit != null)
-                        {
-                            state.ActionStack.Add(new AttackAction(PlayerId, batteryNeighbor.coordinates, batteryNeighbor.coordinates, 100, false, AttackAction.AnimationType.Splash));
-                        }
-                    }
-                    
-                    if (origin.unit != null)
-                    state.ActionStack.Add(new AttackAction(PlayerId, Coordinates, Coordinates, 150, false, AttackAction.AnimationType.Splash));
-                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, rodNeighbor.rulingCityCoordinates, 20));
-                    state.ActionStack.Add(new DecreasePopulationAction(PlayerId, rodNeighbor.rulingCityCoordinates, 20));
-                    state.ActionStack.Add(new DestroyImprovementAction(PlayerId, rodNeighbor.coordinates));
-                }
-                else
-                {
-                    rodNeighbor.improvement.AddEffect(AMain.Critical);
-                }
-            }
+            
             groundingImprovementCount++;
         }
 
@@ -242,19 +210,6 @@ public class LightningStrikeReaction : PolibReactionBase
                 rodNeighbourTileInstance.DoPuff("ChargePuff", rodNeighbourTileInstance.transform, rodNeighbourTileInstance.VisualCenterObject.localPosition);
                 AudioManager.PlaySFXAtTile(SFXTypes.Plop, originTileData.coordinates);
             }));
-
-            if (data.HasAbility(AMain.CriticalAbility))
-            {
-                if (originTileData.improvement.HasEffect(AMain.Critical))
-                {
-                    rodNeighbourTileInstance.Sway();
-                    rodNeighbourTileInstance.SpawnAreaDamage();
-                }
-                else
-                {
-                    rodNeighbourTileInstance.Sway();
-                }
-            }
 
             groundingImprovementCount++;
         }

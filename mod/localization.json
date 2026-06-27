@@ -73,7 +73,7 @@
         "English": "JUMPSTART"
     },
     "tooltip_ability_shock__ability": {
-        "English": "This unit can shock enemies, making them conductive. Conductive units shock units and explode after death."
+        "English": "This unit can shock enemies, making them conductive. Conductive units shock nearby units, then explode after death."
     },
 
     "actionbox_unit_charge__effect": {
@@ -86,17 +86,17 @@
     "building_names_lightningrod__improvement": {
         "English": "Lightning Rod"
     },
-    "building_names_electrode__improvement": {
-        "English": "Electrode"
+    "building_names_animaconduit__improvement": {
+        "English": "Ænima Conduit"
     },
-    "building_names_discharge__improvement": {
-        "English": "Discharge"
+    "building_names_animacollect__improvement": {
+        "English": "Ritual"
     },
-    "building_names_battery__improvement": {
-        "English": "Battery"
+    "building_names_animatotem__improvement": {
+        "English": "Ænima Totem"
     },
-    "building_names_semiconductor__improvement": {
-        "English": "Semiconductor"
+    "building_names_animarket__improvement": {
+        "English": "Ænimarket"
     },
 
     "action_info_excavatecommand": {
@@ -131,6 +131,15 @@
     "technology_names_sentry__secrettech": {
         "English": "Redirection"
     },
+    "technology_names_forestry__tech": {
+        "English": "Forestry"
+    },
+    "technology_names_animation__tech": {
+        "English": "Ænimation"
+    },
+    "technology_names_lunacy__tech": {
+        "English": "Lunacy"
+    },
 
     "wcontroller_reward_highvoltage__secretreward": {
         "English": "High Voltage"
@@ -150,5 +159,11 @@
 
     "tribes_ancients": {
         "English": "Ancients"
+    },
+    "tribes_ancients_info": {
+        "English": "Thought to be long defeated, the Ancients rise again! These descendants of the old Polytopian Empire will do anything to restore their rule."
+    },
+    "tribes_info2__ancients": {
+        "English": "The {0} have the ability and audacity to use forbidden lunar-lightning magic to create lifeforce out of thin air, power ancient technology, and smite anyone standing in their way of rebuilding their empire!"
     }
 }

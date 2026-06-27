@@ -18,8 +18,7 @@
                 "crop": 0.2
             },
             "startingTech":[
-                "basic",
-                "hunting"
+                "basic"
             ],
             "startingResource":[
                 "crop",
@@ -30,7 +29,7 @@
 
             ],
             "techOverrides":{
-                
+                "hunting": "forestry_tech"
             },
             "unitOverrides":{
                 "warrior": "warrior_unit",
@@ -41,12 +40,7 @@
                 "rider": "rider_unit"
             },
             "improvementOverrides":{
-                "lumberhut": "electrode_improvement",
-                "hunting": "lightningrod_improvement",
-                "sawmill": "battery_improvement",
-                "market": "semiconductor_improvement",
-
-                "clearforest": "hunting"
+                "market": "animarket_improvement"
             },
             "preview": [
                 {
@@ -445,6 +439,11 @@
         }
     },
     "techData": {
+        "basic": {
+            "improvementUnlocks": [
+                "+animacollect_improvement"
+            ]
+        },
         "tesla_secrettech": {
             "unitUnlocks": [
                 "teslatower_unit"
@@ -479,7 +478,41 @@
             ],
 			"cost": 0,
 			"idx": -1
+        },
+        "forestry_tech": {
+            "improvementUnlocks": [
+                "clearforest",
+                "hunting"
+            ],
+            "techUnlocks": [
+                "archery",
+                "animation_tech"
+            ],
+			"cost": 1,
+			"idx": -1
+        },
+        "animation_tech": {
+            "improvementUnlocks": [
+                "lightningrod_improvement",
+                "animaconduit_improvement"
+            ],
+            "techUnlocks": [
+                "lunacy_tech"
+            ],
+			"cost": 2,
+			"idx": -1
+        },
+        "lunacy_tech": {
+            "improvementUnlocks": [
+                "animatotem_improvement"
+            ],
+            "unitUnlocks": [
+                "railcannon_unit"
+            ],
+			"cost": 3,
+			"idx": -1
         }
+
     },
     "unitData": {
         "warrior_unit": {
@@ -770,7 +803,7 @@
         "electric_improvementability": {
             "idx": -1
         },
-        "critical_improvementability": {
+        "collect_improvementability": {
             "idx": -1
         }
     },
@@ -795,7 +828,7 @@
 			"maxLevel": 0,
 			"idx": -1
 		},
-        "electrode_improvement": {
+        "animaconduit_improvement": {
 			"cost": 3,
 			"terrainRequirements": [
 				{
@@ -806,19 +839,28 @@
 				}
 			],
             "improvementAbilities": [
-                "electric_improvementability"
+                "electric_improvementability",
+                "collect_improvementability"
             ],
             "adjacencyRequirements": [
 				{
 					"improvement": "lightningrod_improvement"
 				}
 			],
-			"maxLevel": 0,
-			"idx": -1,
-
-            "lightningStars": 1
+			"maxLevel": 3,
+			"idx": -1
 		},
-        "battery_improvement": {
+        "animacollect_improvement": {
+            "idx": -1,
+            "cost": 2,
+            "improvementAbilities": [
+                "discrete"
+            ],
+            "rewards": [
+                {"population": 1}
+            ]
+        },
+        "animatotem_improvement": {
 			"cost": 5,
 			"terrainRequirements": [
 				{
@@ -828,23 +870,28 @@
 					"terrain": "field"
 				}
 			],
-			"maxLevel": 0,
+			"maxLevel": 8,
             "improvementAbilities": [
                 "limited",
-                "electric_improvementability",
-                "critical_improvementability"
+                "simple"
             ],
-            "adjacencyRequirements": [
+            "adjacencyImprovements": [
 				{
-					"improvement": "lightningrod_improvement"
+					"improvement": "animaconduit_improvement"
+				}
+			],
+			"adjacencyRequirements": [
+				{
+					"improvement": "animaconduit_improvement"
 				}
 			],
 			"idx": -1,
-
-            "lightningPop": 2
+            "growthRewards": [
+                {"population": 1}
+            ]
 		},
 
-        "semiconductor_improvement": {
+        "animarket_improvement": {
             "idx": -1,
 			"maxLevel": 8,
 			"cost": 5,
@@ -856,17 +903,16 @@
 			],
 			"adjacencyImprovements": [
 				{
-					"improvement": "electrode_improvement"
+					"improvement": "animatotem_improvement"
 				}
 			],
 			"adjacencyRequirements": [
 				{
-					"improvement": "electrode_improvement"
+					"improvement": "animatotem_improvement"
 				}
 			],
 			"improvementAbilities": [
-				"limited",
-				"simple"
+				"limited"
 			]
         }
     },
@@ -926,14 +972,5 @@
         "lightning": {
             "idx": -1
         }
-    },
-    "improvementEffect": {
-        "critical_improvementeffect": {
-            "idx": -1
-        }
-    },
-
-    "pActions": {
-
     }
 }
