@@ -85,7 +85,7 @@ public static class LightningManager
 		if (tile == null) return;
         if (tile.improvement == null) return;
 
-        if (tile.improvement.type == AMain.Ritual)
+        if (state.GameLogicData.TryGetData(tile.improvement.type, out var data) && data.HasAbility(AMain.Collect))
         {
             __result = true;
         }
@@ -115,7 +115,7 @@ public static class LightningManager
 	}
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.Execute))]
+    [HarmonyPatch(typeof(BuildAction), nameof(BuildAction.ExecuteDefault))]
     private static void BuildAction_AnimaConduintThingie(BuildAction __instance, GameState gameState)
 	{
         if (__instance.Type == AMain.Ritual)
