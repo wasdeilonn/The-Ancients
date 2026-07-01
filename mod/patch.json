@@ -18,7 +18,8 @@
                 "crop": 0.2
             },
             "startingTech":[
-                "basic"
+                "basic",
+                "animation_tech"
             ],
             "startingResource":[
                 "crop",
@@ -648,7 +649,7 @@
             "defence": 10,
             "movement": 1,
             "range": 1,
-            "attack": 3,
+            "attack": 30,
             "cost": 5,
             "unitAbilities": [
                 "dash",
@@ -663,7 +664,7 @@
             "maxCharge": 2,
             "chargeConsumptionAmount": 1,
             "chargeConsumptionEvent": [
-                "move"
+                "attack"
             ],
             "chargeBuff": [
                 "movement"
@@ -812,7 +813,7 @@
             "idx": -1
         },
         "lightningrod_improvement": {
-			"cost": 5,
+			"cost": 3,
 			"terrainRequirements": [
 				{
 					"terrain": "forest"
@@ -829,7 +830,7 @@
 			"idx": -1
 		},
         "animaconduit_improvement": {
-			"cost": 3,
+			"cost": 2,
 			"terrainRequirements": [
 				{
 					"terrain": "forest"
