@@ -1,0 +1,53 @@
+{
+    "skinnedKey": {
+        "unitType": "anc_lightningdagger",
+        "tribeType": "none",
+        "skinType": "default"
+    },
+    "headPositionMarker": "headPosition",
+    "uiOverride": false,
+    "visualParts": [
+        {
+            "defaultSpriteName": "body_dagger",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                0.007699998,
+                0.1574
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 1,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "bodytint_dagger",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                0.007699998,
+                0.1574
+            ],
+            "rotation": 0,
+            "tintable": true,
+            "levels": false,
+            "sortingOrderOverride": 0,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "weapon_lightningdagger",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.0612,
+                0.1118
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 3,
+            "outlineSortingOrderOverride": -1
+        }
+    ]
+}

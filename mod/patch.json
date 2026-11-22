@@ -1,0 +1,474 @@
+{
+    "tribeData": {
+        "ancients": {
+            "idx": -1,
+            "startingStars": 7,
+            "color": 48127,
+            "language": "pol,topan,poly,to,pia,ria,pius,polan,ran,ol,tes,la,sa,tor,ci,te,ty,cap,kap,sua,ius,xin,ouy,urk,ki,dor,wt,tza,on,aqu,cy",
+            "startingUnit": "anc_lightningwarrior",
+            "category": 2,
+            "terrainModifier":{
+                "mountain": 1.5,
+                "forest": 0.8
+            },
+            "resourceModifier":{
+                "metal": 0,
+                "fruit": 0.5,
+                "game": 0.5,
+                "crop": 0.5
+            },
+            "startingTech":[
+                "basic"
+            ],
+            "startingResource":[
+                "fruit",
+                "fruit"
+            ],
+            "tribeAbilities":[
+                "anc_techless"
+            ],
+            "techOverrides":{
+                
+            },
+            "unitOverrides":{
+                "warrior": "anc_lightningwarrior",
+                "giant": "none",
+                "dagger": "anc_lightningdagger",
+                "catapult": "anc_railgunner",
+                "knight": "anc_jumpspark",
+                "archer": "anc_lightningarcher",
+                "rider": "anc_lightningrider",
+                "mindbender": "anc_sentry",
+                "swordsman": "anc_accumulator",
+                "cloak": "anc_drone"
+            },
+            "improvementOverrides":{
+                "mine": "anc_rod",
+                "forge": "anc_dial"
+            },
+            "cityRewardOverrides": {
+                "explorer": "anc_freetech",
+                "citywall": "anc_teslatower",
+                "park": "anc_freetech",
+                "superunit": "anc_hammer"
+            },
+            "preview": []
+        }
+    },
+    "cityReward": {
+        "anc_internaltech": {
+            "idx": -1,
+            "level": 0
+        },
+        "anc_freetech": {
+            "idx": -1
+        },
+        "anc_teslatower": {
+            "idx": -1
+        },
+        "anc_hammer": {
+            "idx": -1
+        }
+    },
+    "techData": {
+
+    },
+    "unitData": {
+        "anc_lightningwarrior": {
+            "idx": -1,
+            "health": 100,
+            "defence": 20,
+            "movement": 1,
+            "range": 1,
+            "attack": 20,
+            "cost": 2,
+            "unitAbilities": [
+                "land",
+                "dash",
+                "fortify",
+                "anc_chargeability"
+            ],
+            "weapon": 1
+        },
+        "anc_lightningrider": {
+            "idx": -1,
+            "health": 100,
+            "defence": 10,
+            "movement": 2,
+            "range": 1,
+            "attack": 20,
+            "cost": 3,
+            "unitAbilities": [
+                "land",
+                "dash",
+                "escape",
+                "fortify",
+                "anc_chargeability"
+            ],
+            "weapon": 1
+        },
+        "anc_railgunner": {
+            "idx": -1,
+            "health": 100,
+            "defence": 0,
+            "movement": 1,
+            "range": 2,
+            "attack": 30,
+            "cost": 8,
+            "unitAbilities": [
+                "stiff",
+                "static",
+                "anc_capacitor"
+            ],
+            "weapon": 6,
+
+            "maxCharge": 2,
+            "chargeConsumptionAmount": 2,
+            "chargeConsumptionEvent": [
+                "attack"
+            ],
+            "chargeBuff": [
+                "range",
+                "attack"
+            ]
+        },
+        "anc_accumulator": {
+            "idx": -1,
+            "health": 200,
+            "defence": 30,
+            "movement": 1,
+            "range": 0,
+            "attack": 25,
+            "cost": 8,
+            "unitAbilities": [
+                "stiff",
+                "static",
+                "anc_capacitor",
+                "anc_discharge"
+            ],
+            "weapon": 5,
+            "maxCharge": 3,
+            "chargeConsumptionAmount": 3,
+            "chargeConsumptionEvent": [
+                "build"
+            ],
+            "chargeBuff": [
+                "attack"
+            ]
+        },
+        "anc_sentry": {
+            "idx": -1,
+            "health": 100,
+            "defence": 20,
+            "movement": 1,
+            "range": 0,
+            "attack": 0,
+            "cost": 8,
+            "unitAbilities": [
+                "land",
+                "static",
+                "stiff",
+                "anc_capacitor",
+                "anc_protect"
+            ],
+            "weapon": 1,
+            "maxCharge": 2,
+            "chargeConsumptionAmount": 1
+        },
+        "anc_lightningarcher": {
+            "health": 100,
+			"defence": 10,
+			"movement": 1,
+			"range": 2,
+			"attack": 20,
+			"cost": 3,
+			"weapon": 3,
+			"unitAbilities": [
+				"land",
+                "dash",
+                "fortify",
+                "anc_chargeability"
+			],
+			"idx": -1
+        },
+        "anc_jumpspark": {
+            "health": 50,
+			"defence": 10,
+			"movement": 2,
+			"range": 2,
+			"attack": 1,
+			"cost": 8,
+			"weapon": 7,
+			"unitAbilities": [
+				"stiff",
+				"land",
+                "dash",
+                "static",
+                "anc_jumpstart"
+			],
+			"idx": -1
+        },
+        "anc_lightningdagger": {
+			"health": 100,
+			"defence": 10,
+			"movement": 1,
+			"range": 1,
+			"attack": 20,
+			"cost": 2,
+			"hidden": true,
+			"unitAbilities": [
+				"dash",
+				"surprise",
+				"independent",
+				"static",
+				"land",
+                "anc_unitlightning"
+			],
+            "embarksTo": "anc_lightningpirate",
+			"weapon": 13,
+			"idx": -1
+		},
+        "anc_lightningpirate": {
+			"health": 100,
+			"defence": 10,
+			"movement": 2,
+			"range": 1,
+			"attack": 20,
+			"cost": 2,
+			"hidden": true,
+			"unitAbilities": [
+				"dash",
+				"surprise",
+				"static",
+				"water",
+                "swim",
+                "carry",
+                "anc_unitlightning"
+			],
+			"weapon": 13,
+			"idx": -1
+		},
+        "anc_drone": {
+			"health": 50,
+			"defence": 0,
+			"movement": 1,
+			"range": 1,
+			"attack": 20,
+			"cost": 8,
+			"unitAbilities": [
+				"fly",
+                "hide",
+				"creep",
+				"infiltrate",
+				"dash",
+				"scout",
+				"stiff",
+				"static",
+                "anc_capacitor"
+			],
+			"weapon": 1,
+			"idx": -1,
+            "maxCharge": 2,
+            "chargeConsumptionAmount": 2,
+            "chargeConsumptionEvent": [
+                "move"
+            ],
+            "chargeBuff": [
+                "movement"
+            ]
+		}
+    },
+    "unitAbility": {
+        "anc_capacitor": {
+            "idx": -1
+        },
+
+        "anc_chargeability": {
+            "idx": -1
+        },
+
+        "anc_discharge": {
+            "idx":-1
+        },
+
+        "anc_jumpstart": {
+            "idx": -1
+        },
+
+        "anc_protect": {
+            "idx": -1
+        },
+
+        "anc_push": {
+            "idx": -1
+        },
+
+        "anc_unitlightning": {
+            "idx": -1
+        },
+
+        "anc_capacitor/anc_chargeability/anc_discharge/anc_jumpstart/anc_protect/anc_push/anc_unitlightning": {
+            "bgColorStates": {
+				"defaultColor": [0.5,0.6,0.8,1],
+				"highlightedColor": [0,0,0,2],
+				"hoverColor": [0,0,0,2],
+				"highlightedHoverColor": [0,0,0,2],
+				"disabledColor": [0,0,0,2]
+			},
+			"labelColorStates": {
+				"defaultColor": [0,0,0,1],
+				"highlightedColor": [0,0,0,2],
+				"hoverColor": [0,0,0,2],
+				"highlightedHoverColor": [0,0,0,2],
+				"disabledColor": [0,0,0,2]
+			}
+        }
+    },
+    "unitEffect": {
+        "anc_chargeeffect": {
+            "idx": -1
+        },
+        "anc_conductive": {
+            "idx": -1,
+            "color": [0.4,0.97,1,1]
+        },
+        "anc_hammercharged": {
+            "idx": -1
+        }
+    },
+    "tileEffect": {
+        "anc_powerstored": {
+            "idx": -1
+        }
+    },
+    "improvementAbility": {
+        "anc_improvementlightning": {
+            "idx": -1
+        },
+        "anc_powerstorage": {
+            "idx": -1
+        }
+    },
+    "improvementData": {
+        "anc_rod": {
+			"cost": 3,
+			"terrainRequirements": [
+                {
+                    "terrain": "mountain"
+                }
+			],
+            "improvementAbilities": [
+                "anc_improvementlightning"
+            ],
+			"maxLevel": 0,
+            "rewards":[
+                {"population": 1}
+            ],
+			"idx": -1
+		},
+        "anc_dial": {
+			"cost": 5,
+			"terrainRequirements": [
+                {
+					"terrain": "field"
+				},
+                {
+					"terrain": "forest"
+				}
+			],
+			"adjacencyRequirements": [
+				{
+					"improvement": "anc_rod"
+				}
+			],
+            "improvementAbilities": [
+                "limited",
+                "anc_powerstorage"
+            ],
+            "rewards": [
+                {"population": 2}
+            ],
+			"maxLevel": 8,
+			"idx": -1
+		},
+        "anc_powercollect": {
+            "idx": -1,
+            "cost": 0,
+            "improvementAbilities": [
+                "discrete"
+            ],
+            "rewards": [
+                {
+                    "population": 1
+                }
+            ]
+        }
+    },
+
+
+    "tribeAbility": {
+        "anc_techless": {
+            "idx": -1
+        }
+    },
+    "commandType": {
+        "dischargecommand": {
+            "idx": -1,
+            "command": "TribeCollection.Ancients.DischargeCommand"
+        },
+        "unitlightningcommand": {
+            "idx": -1,
+            "command": "TribeCollection.Ancients.UnitLightningCommand"
+        }
+    },
+    "actionType": {
+        "dischargeaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.DischargeAction",
+            "reaction": "TribeCollection.Ancients.DischargeReaction"
+        },
+        "chargeaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.ChargeAction",
+            "reaction": "TribeCollection.Ancients.ChargeReaction"
+        },
+        "improvementlightningaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.ImprovementLightningAction",
+            "reaction": "TribeCollection.Ancients.ImprovementLightningReaction"
+        },
+        "applyconductionaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.ApplyConductionAction",
+            "reaction": "TribeCollection.Ancients.ApplyConductionReaction"
+        },
+        "unitlightningaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.UnitLightningAction",
+            "reaction": "TribeCollection.Ancients.UnitLightningReaction"
+        },
+        "pushaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.PushAction"
+        },
+        "jumpstartaction": {
+            "idx": -1,
+            "action": "TribeCollection.Ancients.JumpstartAction",
+            "reaction": "TribeCollection.Ancients.JumpstartReaction"
+        }
+    },
+    "sfx": {
+        "lightning": {
+            "idx": -1
+        },
+        "railgun": {
+            "idx": -1
+        },
+        "low": {
+            "idx": -1
+        },
+        "high": {
+            "idx": -1
+        }
+    }
+}

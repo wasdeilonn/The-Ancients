@@ -1,0 +1,81 @@
+{
+    "skinnedKey": {
+        "unitType": "anc_railgunner",
+        "tribeType": "none",
+        "skinType": "default"
+    },
+    "headPositionMarker": "Head",
+    "uiOverride": false,
+    "visualParts": [
+        {
+            "defaultSpriteName": "head",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.013,
+                0.215
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 2,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "body_default",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.147
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 1,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "bodytint_default",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.147
+            ],
+            "rotation": 0,
+            "tintable": true,
+            "levels": false,
+            "sortingOrderOverride": 0,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "weapon_railgun",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.0426,
+                0.1245
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 3,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "ui_2charge0",
+            "skinningLogic": "DontChangeSkin",
+            "improvementSkinningLogic": "DontChangeSkin",
+            "coordinates": [
+                -0.013,
+                0.310
+            ],
+            "rotation": 0,
+            "tintable": true,
+            "levels": false,
+            "sortingOrderOverride": 4,
+            "outlineSortingOrderOverride": -1
+        }
+    ]
+}

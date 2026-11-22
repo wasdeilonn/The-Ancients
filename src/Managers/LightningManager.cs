@@ -1,10 +1,8 @@
 using HarmonyLib;
 using Polibrary.PolyScript;
-using Ancients.Action;
 using Polytopia.Data;
 
-
-namespace Ancients.Manager;
+namespace Ancients;
 
 public static class LightningManager
 {
@@ -16,9 +14,9 @@ public static class LightningManager
         {
             if (tile.improvement != null && tile.owner == __instance.PlayerId)
             {
-                if (gameState.GameLogicData.GetImprovementData(tile.improvement.type).HasAbility(Main.lightning_improvementability))
+                if (gameState.GameLogicData.GetImprovementData(tile.improvement.type).HasAbility(Main.ImprovementLightning))
                 {
-                    LightningStrikeAction action = PolibActionManager.MakeIl2CppAction<LightningStrikeAction>();
+                    CAR.New(out ImprovementLightningAction action);
                     action.PlayerId = __instance.PlayerId;
                     action.Coordinates = tile.coordinates;
                     gameState.ActionStack.Add(action);
@@ -34,7 +32,7 @@ public static class LightningManager
 		if (!gameState.TryGetPlayer(tile.owner, out PlayerState playerState)
             || tile.improvement == null
             || !gameState.GameLogicData.TryGetData(tile.improvement.type, out ImprovementData improvementData)
-            || !improvementData.HasAbility(Main.powerstorage_improvementability))
+            || !improvementData.HasAbility(Main.PowerStorage))
 		{
             return;
 		}
@@ -43,12 +41,12 @@ public static class LightningManager
         if(tile.effects == null)
             tile.effects = new();
 
-        if(!tile.HasEffect(Main.powerstored))
+        if(!tile.HasEffect(Main.PowerStored))
             return;
 
         foreach(var tileEffect in tile.effects)
         {
-            if(tileEffect == Main.powerstored)
+            if(tileEffect == Main.PowerStored)
                 num++;
         }
 		int val = improvementData.MaxLevel(playerState, gameState);
@@ -67,7 +65,7 @@ public static class LightningManager
 		if (!state.TryGetPlayer(tile.owner, out PlayerState playerState)
             || tile.improvement == null
             || !state.GameLogicData.TryGetData(tile.improvement.type, out ImprovementData improvementData)
-            || !improvementData.HasAbility(Main.powerstorage_improvementability))
+            || !improvementData.HasAbility(Main.PowerStorage))
 		{
             return;
 		}
@@ -75,7 +73,7 @@ public static class LightningManager
         if(tile.effects == null)
             tile.effects = new();
 
-        if(!tile.HasEffect(Main.powerstored))
+        if(!tile.HasEffect(Main.PowerStored))
             return;
 
 		if (tile.improvement.level != improvementData.MaxLevel(playerState, state))
@@ -84,12 +82,13 @@ public static class LightningManager
         var filteredEffects = new Il2CppSystem.Collections.Generic.List<TileData.EffectType>();
         foreach (TileData.EffectType effect in tile.effects)
         {
-            if (effect != Main.powerstored)
+            if (effect != Main.PowerStored)
                 filteredEffects.Add(effect);
         }
 
         tile.effects = filteredEffects;
         tile.improvement.level = 1;
+        state.ActionStack.Add(new IncreasePopulationAction(__instance.PlayerId, tile.coordinates, tile.rulingCityCoordinates, 60));
         state.ActionStack.Add(new IncreasePopulationAction(__instance.PlayerId, tile.coordinates, tile.rulingCityCoordinates, 60));
     }
 

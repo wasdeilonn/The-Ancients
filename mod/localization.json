@@ -1,0 +1,121 @@
+{
+    "unit_names_anc__lightningwarrior": {
+        "English": "Lightning Warrior"
+    },
+    "unit_names_anc__lightningrider": {
+        "English": "Lightning Rider"
+    },
+    "unit_names_anc__lightningarcher": {
+        "English": "Lightning Archer"
+    },
+    "unit_names_anc__railgunner": {
+        "English": "Railgunner"
+    },
+    "unit_names_anc__accumulator": {
+        "English": "Accumulator"
+    },
+    "unit_names_anc__sentry": {
+        "English": "Sentry"
+    },
+    "unit_names_anc__jumpspark": {
+        "English": "Jumpspark"
+    },
+    "unit_names_anc__lightningdagger": {
+        "English": "Lightning Dagger"
+    },
+    "unit_names_anc__drone": {
+        "English": "Drone"
+    },
+    "unit_names_anc__lightningpirate": {
+        "English": "Lightning Pirate"
+    },
+
+    "unit_abilities_anc__chargeability": {
+        "English": "CHARGE"
+    },
+    "tooltip_ability_anc__chargeability": {
+        "English": "This unit can charge units with the 'Capacitor' ability."
+    },
+    "unit_abilities_anc__capacitor": {
+        "English": "CAPACITOR"
+    },
+    "tooltip_ability_anc__capacitor": {
+        "English": "This unit can store charges to become more powerful."
+    },
+    "unit_abilities_anc__discharge": {
+        "English": "DISCHARGE"
+    },
+    "tooltip_ability_anc__discharge": {
+        "English": "This unit can unleash an explosion based on its charge."
+    },
+    "unit_abilities_anc__jumpstart": {
+        "English": "JUMPSTART"
+    },
+    "tooltip_ability_anc__jumpstart": {
+        "English": "This unit can shock enemies, making them conductive. Conductive units shock nearby units, then explode after death."
+    },
+    "unit_abilities_anc__push": {
+        "English": "PUSH"
+    },
+    "tooltip_ability_anc__push": {
+        "English": "This unit can push enemies away."
+    },
+    "unit_abilities_anc__protect": {
+        "English": "PROTECT"
+    },
+    "tooltip_ability_anc__protect": {
+        "English": "This unit can absorb nearby damage."
+    },
+
+
+    "actionbox_unit_anc__chargeeffect": {
+        "English": "Charge"
+    },
+    "actionbox_unit_anc__hammercharged": {
+        "English": "Topan's Hammer"
+    },
+    "actionbox_unit_anc__conductive": {
+        "English": "Conductive"
+    },
+
+    "building_names_anc__rod": {
+        "English": "Lightning Rod"
+    },
+    "building_names_anc__dial": {
+        "English": "Ænima Dial"
+    },
+
+    "building_ability_anc__improvementlightning": {
+        "English": "{0} gets struck by lightning on the beginning of every turn. Lightning charges adjacent units and infrastructure."
+    },
+    "building_ability_anc__powerstorage": {
+        "English": "{0} levels up per lightning strike near it. If {0} reaches its maximum level, it resets and grants 2 population."
+    },
+
+    "action_info_dischargecommand": {
+        "English": "Discharge"
+    },
+
+    "wcontroller_reward_anc__internaltech": {
+        "English": "Manuscript"
+    },
+    "wcontroller_reward_anc__freetech": {
+        "English": "Manuscript"
+    },
+    "wcontroller_reward_anc__teslatower": {
+        "English": "Tesla Tower"
+    },
+    "wcontroller_reward_anc__hammer": {
+        "English": "Topan's Hammer"
+    },
+
+    "tribes_ancients": {
+        "English": "Ancients"
+    },
+    "tribes_ancients_info": {
+        "English": "Thought to be long defeated, the Ancients rise again! These descendants of the old Polytopian Empire will do anything to restore their rule."
+    },
+    "tribes_info2__ancients": {
+        "English": "The {0} have the ability to use forbidden lunar-lightning magic to create lifeforce out of thin air, power ancient technology, and electrocute anyone standing in their way of rebuilding their empire!"
+    }
+}

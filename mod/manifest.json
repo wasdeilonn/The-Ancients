@@ -1,0 +1,22 @@
+{
+    "id": "ancients",
+    "name": "The Ancients",
+    "version": "1.0",
+    "authors": [
+        "wasd_", "mxkeljii (Coding help)", "cleigh (Ænima Dial sprites)"
+    ],
+    "dependencies": [
+        {
+            "id": "polytopia",
+            "min": "2.10.0"
+        },
+        {
+            "id": "polibrary",
+            "min": "2.1.5.2"
+        },
+        {
+            "id": "wlib"
+        }
+    ],
+    "description": "Adds an unofficial Ancients tribe to the game."
+}

@@ -1,0 +1,81 @@
+{
+    "skinnedKey": {
+        "unitType": "anc_lightningarcher",
+        "tribeType": "none",
+        "skinType": "default"
+    },
+    "headPositionMarker": "Head",
+    "uiOverride": false,
+    "visualParts": [
+        {
+            "defaultSpriteName": "head",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.0138,
+                0.2169
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 3,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "weapon_lightningbow",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                0.02,
+                0.14
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 4,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "body_default",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.147
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 2,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "bodytint_default",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.147
+            ],
+            "rotation": 0,
+            "tintable": true,
+            "levels": false,
+            "sortingOrderOverride": 1,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "unit_quiver",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.15
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 0,
+            "outlineSortingOrderOverride": -1
+        }
+    ]
+}

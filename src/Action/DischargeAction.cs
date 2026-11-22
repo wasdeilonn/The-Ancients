@@ -1,7 +1,7 @@
 using Polibrary.PolyScript;
 using Il2Gen = Il2CppSystem.Collections.Generic;
 
-namespace Ancients.Action;
+namespace Ancients;
 public class DischargeAction : PolibActionBase
 {
     public int Level;
@@ -31,7 +31,7 @@ public class DischargeAction : PolibActionBase
     {
         if (!state.TryGetPlayer(base.PlayerId, out var player))
         {
-            Ancients.Main.modLogger.LogError("YOU WIN!!");
+            Main.modLogger.LogError("YOU WIN!!");
             return;
         }
 
@@ -48,7 +48,7 @@ public class DischargeAction : PolibActionBase
             }
         }
 
-        ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+        CAR.New(out ChargeAction action);
         action.PlayerId = unit.owner;
         action.Coordinates = unit.coordinates;
         action.Positive = false;

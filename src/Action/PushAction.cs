@@ -1,7 +1,6 @@
-using Ancients.Manager;
 using Polibrary.PolyScript;
 
-namespace Ancients.Action;
+namespace Ancients;
 public class PushAction : PolibActionBase
 {
     public WorldCoordinates Target;

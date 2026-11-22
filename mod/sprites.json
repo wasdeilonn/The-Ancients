@@ -1,0 +1,102 @@
+{
+    "field_ancients": {
+        "pixelsPerUnit": 1000,
+        "pivot": [0.5, 0.05]
+    },
+    "forest_ancients": {
+        "pixelsPerUnit": 1300,
+        "pivot": [0.55, 0.4]
+    },
+    "mountain_ancients": {
+        "pixelsPerUnit": 1024,
+        "pivot": [0.5, -0.11]
+    },
+    "game_ancients": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.4]
+    },
+    "game_ancients_outline": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.4]
+    },
+    "animal_ancients": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.4]
+    },
+    "animal_ancients_outline": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.4]
+    },
+    "animals_ancients": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.4]
+    },
+    "animals_ancients_outline": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.4]
+    },
+    "fruit_ancients": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.3]
+    },
+    "fruit_ancients_outline": {
+        "pixelsPerUnit": 2000,
+        "pivot": [0.5, 0.3]
+    },
+
+    "house_1_ancients": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.05]
+    },
+    "house_2_ancients": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_3_ancients": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_4_ancients": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_5_ancients": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "house_7_ancients": {
+        "pixelsPerUnit": 1450,
+        "pivot": [0.5, 0.2]
+    },
+    "weapon_lightningclub": {
+        "pixelsPerUnit": 3100,
+        "pivot": [1, 0]
+    },
+    "weapon_lightningbow": {
+        "pixelsPerUnit": 1800,
+        "pivot": [0.2, 0.425]
+    },
+    "weapon_railgun": {
+        "pixelsPerUnit": 1500,
+        "pivot": [0.2, 0.65]
+    },
+    "weapon_railgun_outline": {
+        "pixelsPerUnit": 1500,
+        "pivot": [0.2, 0.65]
+    },
+    "weapon_lightningdagger": {
+        "pixelsPerUnit": 1024,
+        "pivot": [0.15, 0.35]
+    },
+    "weapon_lightningdagger_outline": {
+        "pixelsPerUnit": 1024,
+        "pivot": [0.15, 0.35]
+    },
+
+    "anc_rod__": {
+        "pivot": [0.5, 0.15]
+    },
+    "house_3409": {
+        "pivot": [0.5, -0.09]
+    }
+}

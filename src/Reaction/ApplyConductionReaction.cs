@@ -1,7 +1,7 @@
 using Polibrary.PolyScript;
-using Ancients.Action;
+using Ancients.Visual;
 
-namespace Ancients.Reaction;
+namespace Ancients;
 public class ApplyConductionReaction : PolibReactionBase
 {
     protected ApplyConductionAction action;
@@ -13,8 +13,6 @@ public class ApplyConductionReaction : PolibReactionBase
             ApplyConductionAction ApplyConductionAction = value.TryCast<ApplyConductionAction>();
             if (ApplyConductionAction != null)
             this.action = ApplyConductionAction;
-            else
-            Main.modLogger.LogInfo("shits fucked");
         } 
     }
     public ApplyConductionReaction(IntPtr ptr) : base(ptr) {}
@@ -41,9 +39,9 @@ public class ApplyConductionReaction : PolibReactionBase
         if (instance != null && !instance.IsHidden)
         {
             instance.Render();
-            VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
-            instance.DoPuff("ChargePuff", instance.transform, instance.VisualCenterObject.localPosition);
-            GameManager.DelayCall(50, onComplete);
+            instance.SpawnChargePuff();
+            instance.Sway();
+            GameManager.DelayCall(100, onComplete);
             return;
         }
 

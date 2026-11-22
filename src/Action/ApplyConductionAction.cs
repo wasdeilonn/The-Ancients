@@ -1,21 +1,12 @@
 using Polibrary.PolyScript;
 
-namespace Ancients.Action;
+namespace Ancients;
 public class ApplyConductionAction : PolibActionBase
 {
     public WorldCoordinates Coordinates;
     public WorldCoordinates Origin;
     public ApplyConductionAction(IntPtr ptr) : base(ptr) {}
     public ApplyConductionAction() {}
-
-    public ApplyConductionAction(byte playerId, WorldCoordinates origin, WorldCoordinates coordinates) 
-    : base(playerId)
-    {
-        base.PlayerId = playerId;
-        Origin = origin;
-        Coordinates = coordinates;
-    }
-    
     public override bool IsValid(GameState state)
     {
         return true;
@@ -32,7 +23,7 @@ public class ApplyConductionAction : PolibActionBase
 
         if (tile != null && tile.unit != null)
         {
-            tile.unit.AddEffect(Main.conductive_effect);
+            tile.unit.AddEffect(Main.Conductive);
         }
     }
 

@@ -1,7 +1,6 @@
-using Ancients.Action;
 using Polibrary.PolyScript;
 
-namespace Ancients.Command;
+namespace Ancients;
 public class DischargeCommand : PolibCommandBase
 {
     public int Level; 
@@ -17,7 +16,7 @@ public class DischargeCommand : PolibCommandBase
 
     public override void ExecuteNew(GameState state)
     {
-        DischargeAction action = PolibActionManager.MakeIl2CppAction<DischargeAction>();
+        CAR.New(out DischargeAction action);
         action.PlayerId = PlayerId;
         action.Level = Level;
         action.Coordinates = Coordinates;

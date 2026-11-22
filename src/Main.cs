@@ -5,86 +5,66 @@ using Polibrary.PolyScript;
 using Il2Gen = Il2CppSystem.Collections.Generic;
 using PolytopiaBackendBase.Common;
 using Polibrary;
-using Ancients.Action;
-using Ancients.Command;
-using Ancients.Reaction;
-using Ancients.Manager;
-
+using wLib;
+using Ancients.Visual;
 
 namespace Ancients;
 
 public static class Main
 {
     public static ManualLogSource modLogger;
-    private static string ModVersion = "ALPHA1";
-
     public static void Load(ManualLogSource logger)
     {
-        Harmony.CreateAndPatchAll(typeof(Main));
+        logger.LogMessage("bitch");
+        modLogger = logger;
+
+        Harmony.CreateAndPatchAll(typeof(ChargeUI));
+        Harmony.CreateAndPatchAll(typeof(Glow));
+        Harmony.CreateAndPatchAll(typeof(House));
         Harmony.CreateAndPatchAll(typeof(ChargeManager));
         Harmony.CreateAndPatchAll(typeof(ConductionManager));
         Harmony.CreateAndPatchAll(typeof(LightningManager));
         Harmony.CreateAndPatchAll(typeof(PushManager));
         Harmony.CreateAndPatchAll(typeof(RedirectionManager));
         Harmony.CreateAndPatchAll(typeof(TechManager));
-        Harmony.CreateAndPatchAll(typeof(RewardManager));
-
-        modLogger = logger;
-        logger.LogMessage("Ancients PolyScript is loaded.");
-        modLogger.LogMessage($"Version {ModVersion}");
-
-        PolyMod.Loader.AddPatchDataType("tribeAbility", typeof(TribeAbility.Type));
-        PolyMod.Loader.AddPatchDataType("sfx", typeof(SFXTypes));
-        PolyMod.Loader.AddPatchDataType("improvementEffect", typeof(ImprovementEffect));
-        PolyMod.Loader.AddPatchDataType("tileEffect", typeof(TileData.EffectType));
+        Harmony.CreateAndPatchAll(typeof(UnitAbilityManager));
+        Harmony.CreateAndPatchAll(typeof(CityRewardManager));
     }
-
+    
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameLogicData), nameof(GameLogicData.AddGameLogicPlaceholders))]
-    public static void ProcessEnums(Newtonsoft.Json.Linq.JObject rootObject)
+    public static void Register(Newtonsoft.Json.Linq.JObject rootObject)
     {
-        PolibCommandManager.RegisterCommand<DischargeCommand>("dischargecommand");
-        PolibCommandManager.RegisterCommand<ExcavateCommandObsolete>("excavatecommand");
-        PolibCommandManager.RegisterCommand<LightningExplosionCommand>("lightningexplosioncommand");
+        Ancients.Get("ancients");
 
-        PolibActionManager.RegisterAction<DischargeAction>("dischargeaction");
-        PolibActionManager.RegisterAction<ExcavateActionObsolete>("excavateaction");
-        PolibActionManager.RegisterAction<ChargeAction>("chargeaction");
-        PolibActionManager.RegisterAction<LightningStrikeAction>("lightningstrikeaction");
-        PolibActionManager.RegisterAction<ApplyConductionAction>("applyconductionaction");
-        PolibActionManager.RegisterAction<PushAction>("pushaction");
-        PolibActionManager.RegisterAction<LightningExplosionAction>("lightningexplosionaction");
+        Techless.Get("anc_techless");
 
-        PolibReactionManager.AssignReaction<DischargeReaction>("dischargeaction");
-        PolibReactionManager.AssignReaction<ExcavateReactionObsolete>("excavateaction");
-        PolibReactionManager.AssignReaction<ChargeReaction>("chargeaction");
-        PolibReactionManager.AssignReaction<LightningStrikeReaction>("lightningstrikeaction");
-        PolibReactionManager.AssignReaction<ApplyConductionReaction>("applyconductionaction");
-        PolibReactionManager.AssignReaction<LightningExplosionReaction>("lightningexplosionaction");
+        Charge.Get("anc_chargeability");
+        Discharge.Get("anc_discharge");
+        Capacitor.Get("anc_capacitor");
+        Jumpstart.Get("anc_jumpstart");
+        Protect.Get("anc_protect");
+        Push.Get("anc_push");
+        UnitLightning.Get("anc_unitlightning");
 
-        if (
-            !EnumCache<UnitAbility.Type>.TryGetType("charge_ability", out charge_ability) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("discharge_ability", out discharge_ability)
-            || !EnumCache<UnitAbility.Type>.TryGetType("capacitor_ability", out capacitor_ability)
-            || !EnumCache<UnitAbility.Type>.TryGetType("shock_ability", out shock_ability) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("protect_ability", out protect_ability) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("push_ability", out push_ability) 
-            || !EnumCache<UnitAbility.Type>.TryGetType("lightning_ability", out lightning_ability) 
+        Charged.Get("anc_chargeeffect");
+        Conductive.Get("anc_conductive");
+        Hammered.Get("anc_hammercharged");
 
-            || !EnumCache<UnitEffect>.TryGetType("conductive_effect", out conductive_effect)
-            || !EnumCache<UnitEffect>.TryGetType("charge_effect", out charge_effect)
+        PowerStored.Get("anc_powerstored");
 
-            || !EnumCache<ImprovementAbility.Type>.TryGetType("lightning_improvementability", out lightning_improvementability)
-            || !EnumCache<ImprovementAbility.Type>.TryGetType("powerstorage_improvementability", out powerstorage_improvementability)
+        ImprovementLightning.Get("anc_improvementlightning");
+        PowerStorage.Get("anc_powerstorage");
 
-            || !EnumCache<TribeType>.TryGetType("ancients", out Ancients)
+        TeslaTower.Get("anc_teslatower");
+        Hammer.Get("anc_hammer");
+        InternalTech.Get("anc_internaltech");
+        Manuscript.Get("anc_freetech");
 
-            || !EnumCache<TileData.EffectType>.TryGetType("powerstored", out powerstored)
-            )
-		{
-			modLogger.LogFatal("Couldnt find EnumCache!");
-			return;
-		}
+        LightningSFX.Get("lightning");
+        RailgunSFX.Get("railgun");
+        LowSFX.Get("low");
+        HighSFX.Get("high");
         
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "maxCharge", MaxCharge);
         PolibUtils.ParsePerEach<UnitData.Type, int>(rootObject, "unitData", "chargeConsumptionAmount", ChargeConsumptionAmount);
@@ -100,87 +80,39 @@ public static class Main
     public static Dictionary<UnitData.Type, List<string>> ChargeBuff = new Dictionary<UnitData.Type, List<string>>();
     public static Dictionary<ImprovementData.Type, int> LightningStars = new();
     public static Dictionary<ImprovementData.Type, int> LightningPop = new();
+
     public static TribeType Ancients;
-    public static UnitAbility.Type charge_ability;
-    public static UnitAbility.Type discharge_ability;
-    public static UnitAbility.Type capacitor_ability;
-    public static UnitAbility.Type shock_ability;
-    public static UnitAbility.Type protect_ability;
-    public static UnitAbility.Type push_ability;
-    public static UnitAbility.Type lightning_ability;
-    public static UnitEffect charge_effect;
-    public static UnitEffect conductive_effect;
-    public static TileData.EffectType powerstored;
 
-    public static ImprovementAbility.Type lightning_improvementability;
-    public static ImprovementAbility.Type powerstorage_improvementability;
+    public static TribeAbility.Type Techless;
+
+    public static UnitAbility.Type Charge;
+    public static UnitAbility.Type Discharge;
+    public static UnitAbility.Type Capacitor;
+    public static UnitAbility.Type Jumpstart;
+    public static UnitAbility.Type Protect;
+    public static UnitAbility.Type Push;
+    public static UnitAbility.Type UnitLightning;
+
+    public static UnitEffect Charged;
+    public static UnitEffect Conductive;
+    public static UnitEffect Hammered;
+
+    public static TileData.EffectType PowerStored;
+
+    public static ImprovementAbility.Type ImprovementLightning;
+    public static ImprovementAbility.Type PowerStorage;
+
+    public static CityReward TeslaTower;
+    public static CityReward Hammer;
+    public static CityReward Manuscript;
+    public static CityReward InternalTech;
+
+    public static SFXTypes LightningSFX;
+    public static SFXTypes RailgunSFX;
+    public static SFXTypes LowSFX;
+    public static SFXTypes HighSFX;
 
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(CommandUtils), nameof(CommandUtils.GetUnitActions))]
-    private static void AddCommands(ref Il2Gen.List<CommandBase> __result, GameState gameState, PlayerState player, TileData tile, bool includeUnavailable)
-    {
-        if (tile.unit == null || tile.unit.owner != player.Id) return;
-
-        if (tile.unit.HasAbility(discharge_ability) && tile.unit.HasAbility(capacitor_ability) && !tile.unit.moved && !tile.unit.attacked && ChargeManager.GetChargeCount(tile.unit) > 0)
-        {
-            DischargeCommand command = PolibCommandManager.MakeIl2CppCommand<DischargeCommand>();
-            command.Coordinates = tile.coordinates;
-            command.PlayerId = player.Id;
-            command.Level = ChargeManager.GetChargeCount(tile.unit) - 1; //subtract 1 cause its 0 based
-            CommandUtils.AddCommand(gameState, __result, command, includeUnavailable);
-        }
-
-        if (tile.unit.HasAbility(lightning_ability) && ((!tile.unit.attacked && !tile.unit.moved) || tile.unit.HasAbility(UnitAbility.Type.Dash)))
-        {
-            bool flag = false;
-            if (tile.unit.HasAbility(capacitor_ability))
-            {
-                if (ChargeManager.GetChargeCount(tile.unit) > 0)
-                {
-                    flag = true;
-                }
-            }
-            else
-            {
-                flag = true;
-            }
-
-            if (flag)
-            {
-                LightningExplosionCommand command = PolibCommandManager.MakeIl2CppCommand<LightningExplosionCommand>();
-                command.Coordinates = tile.coordinates;
-                command.PlayerId = player.Id;
-                CommandUtils.AddCommand(gameState, __result, command, includeUnavailable);
-            }
-        }
-    }
-
-    
-
-	[HarmonyPostfix]
-    [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttackOptionsAtPosition))]
-    private static void UnitDataExtensions_GetAttackOptionsAtPosition(ref Il2Gen.List<WorldCoordinates> __result, GameState gameState, byte playerId, WorldCoordinates position, int range, bool includeHiddenTiles = false, UnitState customUnitState = null, bool ignoreDiplomacyRelation = false)
-	{
-        if (!gameState.TryGetPlayer(playerId, out var player)) return;
-
-        UnitState unit = gameState.Map.GetTile(position).unit;
-        if (unit == null) return;
-
-        if (unit.HasAbility(UnitAbility.Type.Consumed) && unit.UnitData.attack == 0 && !unit.HasAbility(UnitAbility.Type.Convert))
-        {
-            Il2Gen.List<TileData> area = gameState.Map.GetArea(position, range, allowDiagonal: true, includeCenter: false);
-            foreach (TileData tileData in area)
-            {
-                UnitState unit1 = tileData.GetUnit(gameState, playerId, includeHiddenTiles);
-                if (unit1 != null && (tileData.GetExplored(playerId) || includeHiddenTiles) && unit1.owner != playerId && !player.HasPeaceWith(unit1.owner))
-                {
-                    __result.Add(tileData.coordinates);
-                }
-            }
-        }
-	}
-    
     [HarmonyPrefix]
     [HarmonyPatch(typeof(ActionUtils), nameof(ActionUtils.KillUnit))]
     private static bool ActionUtils_KillUnit_NullCheck(GameState gameState, TileData tile) //why does this not have a nullcheck ingame??
@@ -188,5 +120,27 @@ public static class Main
         if (tile.unit == null) return false;
 
         return true;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(StartMatchAction), nameof(StartMatchAction.Execute))]
+    private static void PolytopiaCityName(GameState gameState)
+    {
+        foreach (PlayerState player in gameState.PlayerStates)
+        {
+            if (player.tribe == Ancients)
+            {
+                gameState.GameLogicData.TryGetData(Ancients, out var data);
+                if (player.color == data.color)
+                {
+                    TileData tile = gameState.Map.GetTile(player.GetCurrentCapitalCoordinates(gameState));
+
+                    if (tile != null && tile.improvement != null)
+                    {
+                        tile.improvement.name = "Polytopia";
+                    }
+                }
+            }
+        }
     }
 }

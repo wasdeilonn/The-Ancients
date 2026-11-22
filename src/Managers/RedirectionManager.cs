@@ -1,10 +1,8 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using Polibrary.PolyScript;
-using Ancients.Action;
 
-
-namespace Ancients.Manager;
+namespace Ancients;
 
 public static class RedirectionManager
 {
@@ -25,7 +23,7 @@ public static class RedirectionManager
 
         if (attacker == null) return true;
 
-        if (defender.HasAbility(Main.protect_ability) || attacker.owner == defender.owner || attacker.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)) return true;
+        if (defender.HasAbility(Main.Protect) || attacker.owner == defender.owner || attacker.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)) return true;
 
         UnitState protector = null;
 
@@ -35,7 +33,7 @@ public static class RedirectionManager
             if (tileNeighbor.unit == null) continue;
 
             
-            if (tileNeighbor.unit.HasAbility(Main.protect_ability) && (tileNeighbor.unit.owner == defender.owner || tileNeighbor.unit.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)))
+            if (tileNeighbor.unit.HasAbility(Main.Protect) && (tileNeighbor.unit.owner == defender.owner || tileNeighbor.unit.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)))
             {
                 if (protector == null)
                 {
@@ -58,7 +56,7 @@ public static class RedirectionManager
         {
             if (ChargeManager.GetChargeCount(protector) > 0)
             {
-                ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+                CAR.New(out ChargeAction action);
                 action.PlayerId = protector.owner;
                 action.Coordinates = protector.coordinates;
                 action.Positive = false;
@@ -86,7 +84,7 @@ public static class RedirectionManager
 
         if (attacker == null) return true;
 
-        if (defender.HasAbility(Main.protect_ability) || attacker.owner == defender.owner || attacker.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)) return true;
+        if (defender.HasAbility(Main.Protect) || attacker.owner == defender.owner || attacker.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)) return true;
 
         UnitState protector = null;
 
@@ -95,7 +93,7 @@ public static class RedirectionManager
             if (tileNeighbor == null) continue;
             if (tileNeighbor.unit == null) continue;
 
-            if (tileNeighbor.unit.HasAbility(Main.protect_ability) && (tileNeighbor.unit.owner == defender.owner || tileNeighbor.unit.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)))
+            if (tileNeighbor.unit.HasAbility(Main.Protect) && (tileNeighbor.unit.owner == defender.owner || tileNeighbor.unit.HasActivePeaceTreaty(GameManager.GameState, defenderPlayer)))
             {
                 if (protector == null)
                 {

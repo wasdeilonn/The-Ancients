@@ -2,20 +2,18 @@ using HarmonyLib;
 using Polytopia.Data;
 using Il2Gen = Il2CppSystem.Collections.Generic;
 using Polibrary.PolyScript;
-using Ancients.Action;
 
-
-namespace Ancients.Manager;
+namespace Ancients;
 
 public static class ChargeManager
 {
-    public static int GetChargeCount(UnitState unit)
+    public static int GetChargeCount(this UnitState unit)
     {
         int charges = 0;
 
         foreach (UnitEffect effect in unit.effects)
         {
-            if (effect == Main.charge_effect)
+            if (effect == Main.Charged)
             {
                 charges++;
             }
@@ -24,31 +22,31 @@ public static class ChargeManager
         return charges;
     }
 
-    public static int GetMaxCharge(UnitData.Type unit)
+    public static int GetMaxCharge(this UnitState unit)
     {
         int i = 3;
-        Main.MaxCharge.TryGetValue(unit, out i);
+        Main.MaxCharge.TryGetValue(unit.type, out i);
         return i;
     }
 
-    public static int GetChargeConsumptionAmount(UnitData.Type unit)
+    public static int GetChargeConsumptionAmount(this UnitState unit)
     {
         int i = 3;
-        Main.ChargeConsumptionAmount.TryGetValue(unit, out i);
+        Main.ChargeConsumptionAmount.TryGetValue(unit.type, out i);
         return i;
     }
 
-    public static bool DoesConsume(UnitData.Type unit, string e)
+    public static bool DoesConsume(this UnitState unit, string e)
     {
-        if (!Main.ChargeConsumptionEvent.TryGetValue(unit, out var strings))
+        if (!Main.ChargeConsumptionEvent.TryGetValue(unit.type, out var strings))
         return false;
 
         return strings.Contains(e);
     }
 
-    public static bool GetsChargeBuff(UnitData.Type unit, string e)
+    public static bool GetsChargeBuff(this UnitState unit, string e)
     {
-        if (Main.ChargeBuff.TryGetValue(unit, out var strings))
+        if (Main.ChargeBuff.TryGetValue(unit.type, out var strings))
         {
             return strings.Contains(e);
         }
@@ -56,13 +54,13 @@ public static class ChargeManager
         return false;
     }
 
-    public static void ConsumeCharge(UnitState unit)
+    public static void ConsumeCharge(this UnitState unit)
     {
-        int consumption = GetChargeConsumptionAmount(unit.type);
+        int consumption = GetChargeConsumptionAmount(unit);
 
         for (int i = 0; i < consumption; i++)
         {
-            unit.effects.Remove(Main.charge_effect);
+            unit.effects.Remove(Main.Charged);
         }
     }
 
@@ -74,15 +72,15 @@ public static class ChargeManager
         if (unit == null) return;
 
 		Il2Gen.List<TileData> list = gameState.Map.GetArea(position, range, true, false);
-		if (unit.HasAbility(Main.charge_ability))
+		if (unit.HasAbility(Main.Charge))
 		{
 			foreach (TileData tile in list)
 			{
 				if (tile.unit == null) continue;
 
-				if (tile.unit.HasAbility(Main.capacitor_ability))
+				if (tile.unit.HasAbility(Main.Capacitor))
 				{
-                    if (GetChargeCount(tile.unit) < GetMaxCharge(tile.unit.type))
+                    if (tile.unit.GetChargeCount() < tile.unit.GetMaxCharge())
                     {
                         __result.Add(tile.coordinates);
                     }
@@ -100,18 +98,18 @@ public static class ChargeManager
 
         if (attacker == null || defender == null) return;
 
-		if (attacker.HasAbility(Main.charge_ability) && defender.HasAbility(Main.capacitor_ability))
+		if (attacker.HasAbility(Main.Charge) && defender.HasAbility(Main.Capacitor))
 		{
-            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+            CAR.New(out ChargeAction action);
             action.PlayerId = defender.owner;
             action.Coordinates = defender.coordinates;
             action.Positive = true;
             state.ActionStack.Add(action);
 		}
 
-        if (attacker.HasAbility(Main.capacitor_ability) && DoesConsume(attacker.type, "attack"))
+        if (attacker.HasAbility(Main.Capacitor) && attacker.DoesConsume("attack") && attacker.GetChargeCount() != 0)
         {
-            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+            CAR.New(out ChargeAction action);
             action.PlayerId = attacker.owner;
             action.Coordinates = attacker.coordinates;
             action.Positive = false;
@@ -124,9 +122,9 @@ public static class ChargeManager
     private static void ChargeLoss_MoveAction(GameState gameState, MoveAction __instance)
 	{
 		if (!gameState.TryGetUnit(__instance.UnitId, out var unit)) return;
-        if (unit.HasAbility(Main.capacitor_ability) && DoesConsume(unit.type, "move") && __instance.Reason == MoveAction.MoveReason.Command)
+        if (unit.HasAbility(Main.Capacitor) && unit.DoesConsume("move") && __instance.Reason == MoveAction.MoveReason.Command)
         {
-            ChargeAction action = PolibActionManager.MakeIl2CppAction<ChargeAction>();
+            CAR.New(out ChargeAction action);
             action.PlayerId = unit.owner;
             action.Coordinates = unit.coordinates;
             action.Positive = false;
@@ -138,11 +136,11 @@ public static class ChargeManager
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetMovement))]
     private static void ChargeBuff_Movement(ref int __result, GameState gameState, UnitState unitState)
 	{
-        if (!GetsChargeBuff(unitState.type, "movement")) return;
+        if (!unitState.GetsChargeBuff("movement")) return;
 
         foreach (UnitEffect effect in unitState.effects)
         {
-            if (effect == Main.charge_effect)
+            if (effect == Main.Charged)
             {
                 __result++;
             }
@@ -153,11 +151,11 @@ public static class ChargeManager
     [HarmonyPatch(typeof(UnitDataExtensions), nameof(UnitDataExtensions.GetAttack), typeof(UnitState), typeof(GameState))]
     private static void ChargeBuff_Attack(ref int __result, GameState gameState, UnitState unitState)
 	{
-        if (!GetsChargeBuff(unitState.type, "attack")) return;
+        if (!unitState.GetsChargeBuff("attack")) return;
 
         foreach (UnitEffect effect in unitState.effects)
         {
-            if (effect == Main.charge_effect)
+            if (effect == Main.Charged)
             {
                 __result += 50;
             }
@@ -171,12 +169,12 @@ public static class ChargeManager
         UnitState unit = gameState.Map.GetTile(position).unit;
         if (unit == null ) return;
 
-        if (!GetsChargeBuff(unit.type, "range")) return;
+        if (!unit.GetsChargeBuff("range")) return;
 
         int newrange = range;
         foreach (UnitEffect effect in unit.effects)
         {
-            if (effect == Main.charge_effect)
+            if (effect == Main.Charged)
             {
                 newrange++;
             }

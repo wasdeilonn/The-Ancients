@@ -1,7 +1,7 @@
-using Ancients.Action;
 using Polibrary.PolyScript;
+using Ancients.Visual;
 
-namespace Ancients.Reaction;
+namespace Ancients;
 public class ChargeReaction : PolibReactionBase
 {
     protected ChargeAction action;
@@ -13,8 +13,6 @@ public class ChargeReaction : PolibReactionBase
             ChargeAction ChargeAction = value.TryCast<ChargeAction>();
             if (ChargeAction != null)
             this.action = ChargeAction;
-            else
-            Ancients.Main.modLogger.LogInfo("shits fucked");
         } 
     }
     public ChargeReaction(IntPtr ptr) : base(ptr) {}
@@ -43,9 +41,16 @@ public class ChargeReaction : PolibReactionBase
 
             if (action.Positive)
             {
-                VFXManager.EnsureCustomPuffRegistered("ChargePuff", "Puff");
-                instance.DoPuff("ChargePuff", instance.transform, instance.VisualCenterObject.localPosition);
-                AudioManager.PlaySFXAtTile(SFXTypes.Connect, tile.coordinates);
+                instance.SpawnChargePuff();
+
+                if (tile.unit != null && tile.unit.GetChargeCount() == tile.unit.GetMaxCharge())
+                {
+                    AudioManager.PlaySFXAtTile(Main.HighSFX, tile.coordinates);
+                }
+                else
+                {
+                    AudioManager.PlaySFXAtTile(Main.LowSFX, tile.coordinates);
+                }
             }
             else
             {

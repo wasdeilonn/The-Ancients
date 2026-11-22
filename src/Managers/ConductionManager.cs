@@ -2,67 +2,44 @@ using BepInEx.Logging;
 using HarmonyLib;
 using Polytopia.Data;
 using Polibrary.PolyScript;
-using Ancients.Action;
 
-namespace Ancients.Manager;
+namespace Ancients;
 
 public static class ConductionManager
 {
-    [HarmonyPostfix]
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(AttackCommand), nameof(AttackCommand.ExecuteDefault))]
-    private static void AttackCommand_Execute(GameState gameState, AttackCommand __instance)
+    private static bool AttackCommand_Execute(GameState gameState, AttackCommand __instance)
 	{
 		UnitState attacker = gameState.Map.GetTile(__instance.Origin).unit;
 		UnitState defender = gameState.Map.GetTile(__instance.Target).unit;
 
-        if (attacker.HasAbility(Main.shock_ability))
-        {
-            ApplyConductionAction action = PolibActionManager.MakeIl2CppAction<ApplyConductionAction>();
-            action.PlayerId = attacker.owner;
-            action.Coordinates = defender.coordinates;
-            action.Origin = attacker.coordinates;
-            gameState.ActionStack.Add(action);
+        if (attacker == null || defender == null) return true;
 
-            if (attacker.HasAbility(UnitAbility.Type.Splash))
-            {
-                gameState.TryGetPlayer(__instance.PlayerId, out var player);
-                foreach (TileData tile in gameState.Map.GetArea(__instance.Target, 1, true, false))
-                {
-                    if (tile.unit != null && !player.HasPeaceWith(tile.unit.owner) && tile.unit.owner != __instance.PlayerId)
-                    {
-                        ApplyConductionAction action1 = PolibActionManager.MakeIl2CppAction<ApplyConductionAction>();
-                        action1.PlayerId = attacker.owner;
-                        action1.Coordinates = tile.coordinates;
-                        action1.Origin = attacker.coordinates;
-                        gameState.ActionStack.Add(action1);
-                    }
-                }
-            }
+        if (attacker.HasAbility(Main.Jumpstart))
+        {
+            CAR.New(out JumpstartAction a);
+            a.PlayerId = __instance.PlayerId;
+            a.Target = defender.coordinates;
+            a.Origin = attacker.coordinates;
+            gameState.ActionStack.Add(a);
+            return false;
         }
+        return true;
 	}
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(ActionUtils), nameof(ActionUtils.KillUnit))]
-    private static void ActionUtils_KillUnit(GameState gameState, TileData tile)
+    [HarmonyPatch(typeof(AttackAction), nameof(AttackAction.Execute))]
+    private static void AttackAction_Execute(GameState state, AttackAction __instance)
 	{
-        if (tile.unit == null || !gameState.TryGetPlayer(tile.unit.owner, out var player))
+        TileData tile = state.Map.GetTile(__instance.Target);
+        if (tile.unit.HasEffect(Main.Conductive))
         {
-            return;
-        }
-        if (tile.unit.HasEffect(Main.conductive_effect))
-        {
-            foreach (TileData tile1 in gameState.Map.GetArea(tile.coordinates, 1, true, false))
-            {
-                if (tile1.unit != null && tile1.unit.owner == tile.unit.owner)
-                {
-                    gameState.ActionStack.Add(new AttackAction(tile.unit.owner, tile1.coordinates, tile1.coordinates, 50, false, AttackAction.AnimationType.Splash, 20));
-                    ApplyConductionAction action = PolibActionManager.MakeIl2CppAction<ApplyConductionAction>();
-                    action.PlayerId = tile.unit.owner;
-                    action.Coordinates = tile1.coordinates;
-                    action.Origin = tile.coordinates;
-                    gameState.ActionStack.Add(action);
-                }
-            }
+            CAR.New(out UnitLightningAction a);
+            a.PlayerId = __instance.PlayerId;
+            a.Coordinates = tile.coordinates;
+            a.SetDamage = 50;
+            state.ActionStack.Add(a);
         }
 	}
 }

@@ -2,10 +2,8 @@ using HarmonyLib;
 using Polytopia.Data;
 using Polibrary.PolyScript;
 using Il2Gen = Il2CppSystem.Collections.Generic;
-using Ancients.Action;
 
-
-namespace Ancients.Manager;
+namespace Ancients;
 
 public static class PushManager
 {
@@ -18,9 +16,9 @@ public static class PushManager
 
         if (origin.unit == null || target.unit == null) return;
 
-        if (!origin.unit.HasAbility(Main.push_ability)) return;
+        if (!origin.unit.HasAbility(Main.Push)) return;
 
-        PushAction action = PolibActionManager.MakeIl2CppAction<PushAction>();
+        CAR.New(out PushAction action);
         action.PlayerId = __instance.PlayerId;
         action.Target = __instance.Target;
         action.Origin = __instance.Origin;
@@ -36,7 +34,7 @@ public static class PushManager
             return;
         }
 
-        if (!unit.HasAbility(UnitAbility.Type.Stomp) || !unit.HasAbility(Main.push_ability)) return;
+        if (!unit.HasAbility(UnitAbility.Type.Stomp) || !unit.HasAbility(Main.Push)) return;
 
         TileData origin = gameState.Map.GetTile(__instance.Path[0]);
 
@@ -55,7 +53,7 @@ public static class PushManager
                 continue;
             }
 
-            PushAction action = PolibActionManager.MakeIl2CppAction<PushAction>();
+            CAR.New(out PushAction action);
             action.PlayerId = __instance.PlayerId;
             action.Target = target.coordinates;
             action.Origin = origin.coordinates;

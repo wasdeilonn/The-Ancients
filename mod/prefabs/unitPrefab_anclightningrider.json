@@ -1,0 +1,81 @@
+{
+    "skinnedKey": {
+        "unitType": "anc_lightningrider",
+        "tribeType": "none",
+        "skinType": "default"
+    },
+    "headPositionMarker": "Head",
+    "uiOverride": false,
+    "visualParts": [
+        {
+            "defaultSpriteName": "head",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.3347
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 3,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "body_rider",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.267
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 2,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "bodytint_rider",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.012,
+                0.267
+            ],
+            "rotation": 0,
+            "tintable": true,
+            "levels": false,
+            "sortingOrderOverride": 1,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "weapon_lightningclub",
+            "skinningLogic": "UseTribe",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                -0.043,
+                0.252
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 4,
+            "outlineSortingOrderOverride": -1
+        },
+        {
+            "defaultSpriteName": "animal",
+            "skinningLogic": "UseClimate",
+            "improvementSkinningLogic": "TileOwner",
+            "coordinates": [
+                0.0056,
+                0.092
+            ],
+            "rotation": 0,
+            "tintable": false,
+            "levels": false,
+            "sortingOrderOverride": 0,
+            "outlineSortingOrderOverride": -1
+        }
+    ]
+}
